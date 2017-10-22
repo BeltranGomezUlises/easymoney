@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+  <title>MachineAdmin API: Files and Libraries</title>
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  <!--custom css for these pages-->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body data-spy="scroll" data-target="#apinav">
+
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">MachineAdmin API: Files and Libraries</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="resources.html">Resources</a></li>
+          <li><a href="data.html">Data Types</a></li>
+          <li><a href="downloads.html">Files and Libraries</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar" id="apinav">
+        <ul class="nav nav-sidebar">
+          <li><a href="#artifact_LICENSE">Apache II</a></li>
+          <li><a href="#artifact_c_client_library">C Client Library</a></li>
+          <li><a href="#artifact_java_json_client_library">Java JSON Client Library</a></li>
+          <li><a href="#artifact_java_xml_client_library">Java XML Client Library</a></li>
+          <li><a href="#artifact_js_client_library">JavaScript Client Library</a></li>
+          <li><a href="#artifact_objc_client_library">Objective C Client Library</a></li>
+          <li><a href="#artifact_php_xml_client_library">PHP XML Client Library</a></li>
+          <li class="divider"></li>
+          <li class="text-right"><a href="#top"><small>Back to Top</small></a></li>
+        </ul>
+      </div>
+
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <ol class="breadcrumb" id="top">
+          <li class="active dropdown"><a href="index.html">Home</a></li>
+          <li class="dropdown"><a href="downloads.html">Files and Libraries</a></li>
+        </ol>
+
+  <h1 class="page-header">Files and Libraries</h1>
+
+  <h3 id="artifact_LICENSE">Apache II</h3>
+  <p class="lead">Created 8 de julio de 2017</p>
+  <p>The license governing this API</p>
+  <table class="table table-hover downloadfiles">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+    <tr class="clickable-row" data-href="LICENSE">
+      <td><span class="downloadfile-name">LICENSE</span></td>
+      <td><span class="downloadfile-size">1.05K</span></td>
+      <td><span class="downloadfile-description">&nbsp;</span></td>
+    </tr>
+    </tbody>
+  </table>
+  <h3 id="artifact_c_client_library">C Client Library</h3>
+  <p class="lead">Created 21 de octubre de 2017</p>
+  <p><p>
+  The C module generates the source code for the ANSI-C-compatible data structures and (de)serialization
+  functions that can be used in conjunction with <a href="http://xmlsoft.org/">libxml2</a> to (de)serialize
+  the REST resources as they are represented as XML data.
+</p>
+
+<p>
+  The generated C source code depends on the <a href="http://xmlsoft.org/html/libxml-xmlreader.html">XML Reader API</a>
+  and the <a href="http://xmlsoft.org/html/libxml-xmlwriter.html">XML Writer API</a> as well as the <code>&lt;time.h&gt;</code>,
+  <code>&lt;string.h&gt;</code>, and <code>&lt;stdlib.h&gt;</code> C standard libraries.
+</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">C Example</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-c">
+#include &lt;EasyMoney.c&gt;
+//...
+
+xmlTextWriterPtr writer = ...; //set up the writer to the url.
+EasyMoney_ns0_modelLogin *request_element = ...;
+xmlTextReaderPtr reader = ...; //set up the reader to the url.
+EasyMoney_ns0_response *response_element = ...;
+//set up the EasyMoney_ns0_modelLogin...
+xml_write_EasyMoney_ns0_modelLogin(writer, request_element);
+response_element = xml_read_EasyMoney_ns0_response(reader);
+
+//handle the response as needed...
+
+//free the EasyMoney_ns0_modelLogin
+free_EasyMoney_ns0_modelLogin(request_element);
+//free the EasyMoney_ns0_response
+free_EasyMoney_ns0_response(response_element);
+    </pre>
+  </div>
+</div>
+</p>
+  <table class="table table-hover downloadfiles">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+    <tr class="clickable-row" data-href="EasyMoney.c">
+      <td><span class="downloadfile-name">EasyMoney.c</span></td>
+      <td><span class="downloadfile-size">30.74K</span></td>
+      <td><span class="downloadfile-description">&nbsp;</span></td>
+    </tr>
+    <tr class="clickable-row" data-href="enunciate-common.c">
+      <td><span class="downloadfile-name">enunciate-common.c</span></td>
+      <td><span class="downloadfile-size">39.68K</span></td>
+      <td><span class="downloadfile-description">Common code needed for all projects.</span></td>
+    </tr>
+    </tbody>
+  </table>
+  <h3 id="artifact_java_json_client_library">Java JSON Client Library</h3>
+  <p class="lead">Created 21 de octubre de 2017</p>
+  <p><p>
+  The Java client-side library is used to provide the set of Java objects that can be serialized
+  to/from JSON using <a href="http://jackson.codehaus.org/">Jackson</a>.  This is useful for accessing the
+  JSON REST endpoints that are published by this application.
+</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Resources Example (Raw JAXB)</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-java">
+java.net.URL url = new java.net.URL(baseURL + "/accesos/login");
+ObjectMapper mapper = new ObjectMapper();
+java.net.URLConnection connection = url.openConnection();
+connection.setDoOutput(true);
+connection.connect();
+
+mapper.writeValue(connection.getOutputStream(), modelLogin);
+Response result = (Response) mapper.readValue( connection.getInputStream(), Response.class );
+//handle the result as needed...
+    </pre>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Resources Example (Jersey client)</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-java">
+javax.ws.rs.client.Client client = javax.ws.rs.client.ClientBuilder.newClient();
+
+Response result = client.target(baseUrl + "/accesos/login")
+  .post(javax.ws.rs.client.Entity.entity(modelLogin, "application/json"), Response.class);
+
+//handle the result as needed...
+    </pre>
+  </div>
+</div>
+</p>
+  <table class="table table-hover downloadfiles">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+    <tr class="clickable-row" data-href="EasyMoney-json-client.jar">
+      <td><span class="downloadfile-name">EasyMoney-json-client.jar</span></td>
+      <td><span class="downloadfile-size">3.26K</span></td>
+      <td><span class="downloadfile-description">The binaries for the Java JSON client library.</span></td>
+    </tr>
+    <tr class="clickable-row" data-href="EasyMoney-json-client-json-sources.jar">
+      <td><span class="downloadfile-name">EasyMoney-json-client-json-sources.jar</span></td>
+      <td><span class="downloadfile-size">2.59K</span></td>
+      <td><span class="downloadfile-description">The sources for the Java JSON client library.</span></td>
+    </tr>
+    </tbody>
+  </table>
+  <h3 id="artifact_java_xml_client_library">Java XML Client Library</h3>
+  <p class="lead">Created 21 de octubre de 2017</p>
+  <p><p>
+  The Java client-side library is used to access the Web service API for this application using Java.
+</p>
+
+<p>
+  The Java client-side library is used to provide the set of Java objects that can be serialized
+  to/from XML using <a href="https://jaxb.dev.java.net/">JAXB</a>.  This is useful for accessing the
+  resources that are published by this application.
+</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Resources Example (Raw JAXB)</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-java">
+java.net.URL url = new java.net.URL(baseURL + "/accesos/login");
+JAXBContext context = JAXBContext.newInstance( byte[].class, byte[].class );
+java.net.URLConnection connection = url.openConnection();
+connection.setDoOutput(true);
+connection.connect();
+
+Unmarshaller unmarshaller = context.createUnmarshaller();
+Marshaller marshaller = context.createMarshaller();
+marshaller.marshal(modelLogin, connection.getOutputStream());
+Response result = (Response) unmarshaller.unmarshal( connection.getInputStream() );
+//handle the result as needed...
+    </pre>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Resources Example (Jersey client)</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-java">
+javax.ws.rs.client.Client client = javax.ws.rs.client.ClientBuilder.newClient();
+
+Response result = client.target(baseUrl + "/accesos/login")
+  .post(javax.ws.rs.client.Entity.entity(modelLogin, "application/xml"), Response.class);
+
+//handle the result as needed...
+    </pre>
+  </div>
+</div>
+</p>
+  <table class="table table-hover downloadfiles">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+    <tr class="clickable-row" data-href="EasyMoney-xml-client.jar">
+      <td><span class="downloadfile-name">EasyMoney-xml-client.jar</span></td>
+      <td><span class="downloadfile-size">3.18K</span></td>
+      <td><span class="downloadfile-description">The binaries for the Java XML client library.</span></td>
+    </tr>
+    <tr class="clickable-row" data-href="EasyMoney-xml-client-xml-sources.jar">
+      <td><span class="downloadfile-name">EasyMoney-xml-client-xml-sources.jar</span></td>
+      <td><span class="downloadfile-size">2.71K</span></td>
+      <td><span class="downloadfile-description">The sources for the Java XML client library.</span></td>
+    </tr>
+    </tbody>
+  </table>
+  <h3 id="artifact_js_client_library">JavaScript Client Library</h3>
+  <p class="lead">Created 21 de octubre de 2017</p>
+  <p><p>
+  The JavaScript client-side library defines classes that can be (de)serialized to/from JSON.
+  This is useful for accessing the resources that are published by this application, but only
+  those that produce a JSON representation of their resources (content type "application/json").
+</p>
+<p>
+  The library uses ES6 class syntax which has limited support. See 
+  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#Browser_compatibility">MDN</a>
+  and the <a href="https://kangax.github.io/compat-table/es6/">ES6 Compatibility Table</a>
+  for more details.
+</p>
+<p>
+  The library contains a UMD loader which supports AMD, CommonJS and browser globals.
+  The browser global variable name for this library is "javascriptClient".
+</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">JavaScript Example</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-js">
+//read the resource in JSON:
+var json = JSON.parse(jsonString);
+
+//create an object
+var object = new Object(json);
+
+//retreive the json again
+var newJson = object.toJSON();
+
+//serialize the json
+var newJsonString = JSON.stringify(newJson);
+    </pre>
+  </div>
+</div>
+</p>
+  <table class="table table-hover downloadfiles">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+    <tr class="clickable-row" data-href="EasyMoney-js.zip">
+      <td><span class="downloadfile-name">EasyMoney-js.zip</span></td>
+      <td><span class="downloadfile-size">1.46K</span></td>
+      <td><span class="downloadfile-description">&nbsp;</span></td>
+    </tr>
+    </tbody>
+  </table>
+  <h3 id="artifact_objc_client_library">Objective C Client Library</h3>
+  <p class="lead">Created 21 de octubre de 2017</p>
+  <p><p>
+  The Objective C module generates the source code for the Objective C classes and (de)serialization
+  functions that can be used in conjunction with <a href="http://xmlsoft.org/">libxml2</a> to (de)serialize
+  the REST resources as they are represented as XML data.
+</p>
+
+<p>
+  The generated Objective C source code depends on the <a href="http://xmlsoft.org/html/libxml-xmlreader.html">XML Reader API</a>
+  and the <a href="http://xmlsoft.org/html/libxml-xmlwriter.html">XML Writer API</a> as well as the base OpenStep foundation classes.
+</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Objective C Example</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-c">
+#import &lt;EasyMoney.h&gt;
+//...
+
+EASYMONEYNS0ModelLogin *requestElement = [[EASYMONEYNS0ModelLogin alloc] init];
+NSData *requestData; //data holding the XML for the request.
+EASYMONEYNS0Response *responseElement;
+NSData *responseData; //data holding the XML from the response.
+NSURL *baseURL = ...; //the base url including the host and subpath.
+NSURL *url = [NSURL URLWithString: @"/accesos/login" relativeToURL: baseURL];
+NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+NSURLResponse *response = nil;
+NSError *error = NULL;
+[request setHTTPMethod: @"POST"];
+[request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];  
+
+//set up the EASYMONEYNS0ModelLogin...
+
+requestData = [requestElement writeToXML];
+[request setHTTPBody: requestData];
+
+//this example uses a synchronous request,
+//but you'll probably want to use an asynchronous call
+responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+EASYMONEYNS0Response *responseElement = [EASYMONEYNS0Response readFromXML: responseData];
+[responseElement retain];
+
+//handle the response as needed...
+    </pre>
+  </div>
+</div>
+</p>
+  <table class="table table-hover downloadfiles">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+    <tr class="clickable-row" data-href="EasyMoney.h">
+      <td><span class="downloadfile-name">EasyMoney.h</span></td>
+      <td><span class="downloadfile-size">4.23K</span></td>
+      <td><span class="downloadfile-description">&nbsp;</span></td>
+    </tr>
+    <tr class="clickable-row" data-href="EasyMoney.m">
+      <td><span class="downloadfile-name">EasyMoney.m</span></td>
+      <td><span class="downloadfile-size">25.66K</span></td>
+      <td><span class="downloadfile-description">&nbsp;</span></td>
+    </tr>
+    <tr class="clickable-row" data-href="enunciate-common.h">
+      <td><span class="downloadfile-name">enunciate-common.h</span></td>
+      <td><span class="downloadfile-size">12.83K</span></td>
+      <td><span class="downloadfile-description">Common header needed for all projects.</span></td>
+    </tr>
+    <tr class="clickable-row" data-href="enunciate-common.m">
+      <td><span class="downloadfile-name">enunciate-common.m</span></td>
+      <td><span class="downloadfile-size">42.34K</span></td>
+      <td><span class="downloadfile-description">Common implementation code needed for all projects.</span></td>
+    </tr>
+    </tbody>
+  </table>
+  <h3 id="artifact_php_xml_client_library">PHP XML Client Library</h3>
+  <p class="lead">Created 21 de octubre de 2017</p>
+  <p><p>
+  The PHP client-side library defines the PHP classes that can be (de)serialized to/from XML.
+  This is useful for accessing the resources that are published by this application, but only
+  those that produce a XML representation of their resources.
+</p>
+
+<p>
+  This library leverages the <a href="http://php.net/manual/en/book.xmlreader.php">XMLReader</a> and
+  <a href="http://php.net/manual/en/book.xmlwriter.php">XMLWriter</a> tools that were included in PHP
+  versions 5.1.0+.
+</p>
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">PHP XML Example</div>
+  <div class="panel-body">
+    <pre class="prettyprint lang-php">
+//read the resource in XML form:
+$xml = ...;
+
+$reader = new \XMLReader();
+
+if (!$reader->open($xml)) {
+  throw new \Exception('Unable to open ' . $xml);
+}
+$result = new Object($reader);
+
+//open a writer for the xml
+$out = ...;
+$writer = new \XMLWriter();
+$writer->openUri($out);
+$writer->startDocument();
+$writer->setIndent(4);
+$result->toXml($writer);
+$writer->flush();
+    </pre>
+  </div>
+</div>
+</p>
+  <table class="table table-hover downloadfiles">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+    <tr class="clickable-row" data-href="EasyMoney-php.zip">
+      <td><span class="downloadfile-name">EasyMoney-php.zip</span></td>
+      <td><span class="downloadfile-size">1.93K</span></td>
+      <td><span class="downloadfile-description">&nbsp;</span></td>
+    </tr>
+    </tbody>
+  </table>
+
+        <footer class="footer">
+          <div class="container">
+            <p class="text-muted">Generated by <a href="http://enunciate.webcohesion.com">Enunciate</a>.</p>
+          </div>
+        </footer>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- JavaScript placed at the end of the document so the pages load faster. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+  <!-- Bootstrap core JavaScript
+  ================================================== -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+  <!-- prettify code blocks. see http://code.google.com/p/google-code-prettify/ -->
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js" type="text/javascript"></script>
+  <script>
+    $(function() {
+      $(".clickable-row").click(function() {
+        window.document.location = $(this).data("href");
+      });
+
+      $('[data-toggle="tooltip"]').tooltip()
+    });
+  </script>
+
+</body>
+</html>
