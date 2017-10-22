@@ -12,7 +12,7 @@ import javax.ws.rs.core.Application;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-@javax.ws.rs.ApplicationPath("webresources")
+@javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends Application {
 
     @Override
@@ -37,6 +37,8 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(com.ub.easymoney.services.Accesos.class);
+        resources.add(com.ub.easymoney.services.Utilerias.class);
+        resources.add(com.ub.easymoney.services.commos.ServiceFacade.class);
     }
     
 }

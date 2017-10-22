@@ -10,13 +10,18 @@ import com.ub.easymoney.models.ModelLogin;
 import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.utils.UtilsJWT;
 import static com.ub.easymoney.utils.UtilsService.*;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * servicios de accesos al sistema, entrada, recuperación, contacto 
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 @Path("/accesos")
 public class Accesos {
 
