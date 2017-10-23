@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ub.easymoney.services;
+package com.ub.easymoney.services.admin;
 
 import com.ub.easymoney.utils.UtilsDate.DateClass;
 import java.util.Date;
@@ -14,7 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
- *
+ * servicios de utilerias
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Consumes(MediaType.APPLICATION_JSON)
@@ -22,6 +22,10 @@ import javax.ws.rs.core.MediaType;
 @Path("/utilerias")
 public class Utilerias {
 
+    /**
+     * servicio para obtener la fecha hora del servidor
+     * @return instancia DateClass
+     */
     @Path("/date")
     @GET
     public DateClass fechaServidor() {

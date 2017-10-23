@@ -143,15 +143,6 @@ public abstract class ManagerFacade<T extends IEntity, K> {
      * @param s cadena a trasformar
      * @return K, objeto del tipo de dato del identificador de la entidad
      */
-    public abstract K stringToKey(String s);
-
-    /**
-     * Débe de retorna el nombre de la colección que se generará en mongoDB para
-     * almacenar las bitcaras, auditorias, registros estadisticos de esta la
-     * clases entidad <T>
-     *
-     * @return nombre de la colección a utilizar para el registor de bitacoras
-     */
-    public abstract String nombreColeccionParaRegistros() throws UnsupportedOperationException ;
+    public abstract K stringToKey(String s);   
 
 }

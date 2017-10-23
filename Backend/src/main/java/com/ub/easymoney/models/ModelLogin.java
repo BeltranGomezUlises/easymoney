@@ -6,7 +6,7 @@
 package com.ub.easymoney.models;
 
 /**
- *
+ * modelo para consumo de servicio de inicio de sesion
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 public class ModelLogin {

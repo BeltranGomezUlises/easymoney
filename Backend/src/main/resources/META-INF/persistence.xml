@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-  
-    <persistence-unit name="cg" transaction-type="RESOURCE_LOCAL">                
-        <properties>
-            <!-- jdbc -->
-            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/easymoney"/>
-            <property name="javax.persistence.jdbc.user" value="postgres"/>
-            <property name="javax.persistence.jdbc.password" value="1234"/>
-            <!-- eclipse link -->
-            <property name="eclipselink.ddl-generation" value="create-tables"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="database"/>
-        </properties>
-    </persistence-unit>     
-    
+  <persistence-unit name="easymoney" transaction-type="RESOURCE_LOCAL">
+    <class>com.ub.easymoney.entities.negocio.Multa</class>
+    <class>com.ub.easymoney.entities.negocio.Abono</class>
+    <class>com.ub.easymoney.entities.negocio.Cliente</class>
+    <class>com.ub.easymoney.entities.negocio.Prestamo</class>
+    <class>com.ub.easymoney.entities.admin.Usuario</class>
+    <class>com.ub.easymoney.entities.negocio.Cobrador</class>
+    <properties>
+      <!-- jdbc -->
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://192.168.10.10:5532/easymoney"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
+      <property name="javax.persistence.jdbc.password" value="postgres.90Y9B8yh$123"/>
+      <!-- eclipse link -->
+      <property name="eclipselink.ddl-generation" value="create-tables"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+    </properties>
+  </persistence-unit>
 </persistence>

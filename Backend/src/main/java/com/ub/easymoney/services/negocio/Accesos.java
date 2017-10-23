@@ -3,10 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ub.easymoney.services;
+package com.ub.easymoney.services.negocio;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ub.easymoney.entities.admin.Usuario;
+import com.ub.easymoney.managers.admin.ManagerUsuario;
 import com.ub.easymoney.models.ModelLogin;
+import com.ub.easymoney.models.commons.exceptions.UsuarioInexistenteException;
 import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.utils.UtilsJWT;
 import static com.ub.easymoney.utils.UtilsService.*;
@@ -34,18 +37,17 @@ public class Accesos {
     @POST
     public Response login(ModelLogin modelLogin) {
         Response r = new Response();
-        try {
-            if (modelLogin.getUser().equals("admin") && modelLogin.getPass().equals("1234")) {                
-                r.setMetaData(UtilsJWT.generateSessionToken(modelLogin.getUser()));
-                r.setMessage("Bienvenido " + modelLogin.getUser());
-                r.setDevMessage("Token de sesion necesario para los siguientes servicios en la cabecera Authorizaiton");                
-            }else{
-                setWarningResponse(r, "No se reconoce usuario y/o contraseña", "usuario inválido");
-            }
+        try {            
+            ManagerUsuario managerUsuario = new ManagerUsuario();
+            Usuario u = managerUsuario.login(modelLogin);
+            
+            r.setMetaData(UtilsJWT.generateSessionToken(u.getId() + ""));
+            r.setMessage("Bienvenido " + modelLogin.getUser());
+            r.setDevMessage("Token de sesion necesario para los siguientes servicios en la cabecera Authorizaiton");                                                    
         } catch (JsonProcessingException e) {
             setErrorResponse(r, e);
-        } catch (Exception e) {
-            setErrorResponse(r, e);
+        } catch (UsuarioInexistenteException e) {
+            setWarningResponse(r, e.getMessage(), "verifique usuario");
         }
         return r;
     }
