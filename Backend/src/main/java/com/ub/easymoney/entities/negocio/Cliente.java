@@ -33,7 +33,7 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "Cliente.findByNombre", query = "SELECT c FROM Cliente c WHERE c.nombre = :nombre")
     , @NamedQuery(name = "Cliente.findByDireccion", query = "SELECT c FROM Cliente c WHERE c.direccion = :direccion")
     , @NamedQuery(name = "Cliente.findByTelefono", query = "SELECT c FROM Cliente c WHERE c.telefono = :telefono")})
-public class Cliente extends IEntity implements Serializable {
+public class Cliente implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,8 +50,8 @@ public class Cliente extends IEntity implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "telefono")
     private String telefono;
-    @OneToMany(mappedBy = "clienteId")
-    private List<Prestamo> prestamoList;
+    @OneToMany(mappedBy = "cliente")
+    private List<Prestamo> prestamos;
 
     public Cliente() {
     }
@@ -59,7 +59,8 @@ public class Cliente extends IEntity implements Serializable {
     public Cliente(Integer id) {
         this.id = id;
     }
-
+        
+    @Override
     public Integer getId() {
         return id;
     }
@@ -93,12 +94,12 @@ public class Cliente extends IEntity implements Serializable {
     }
 
     @JsonIgnore
-    public List<Prestamo> getPrestamoList() {
-        return prestamoList;
+    public List<Prestamo> getPrestamos() {
+        return prestamos;
     }
 
-    public void setPrestamoList(List<Prestamo> prestamoList) {
-        this.prestamoList = prestamoList;
+    public void setPrestamos(List<Prestamo> prestamos) {
+        this.prestamos = prestamos;
     }
 
     @Override

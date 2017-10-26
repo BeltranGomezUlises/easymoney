@@ -30,7 +30,7 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "Cobrador.findById", query = "SELECT c FROM Cobrador c WHERE c.id = :id")
     , @NamedQuery(name = "Cobrador.findByNombre", query = "SELECT c FROM Cobrador c WHERE c.nombre = :nombre")
     , @NamedQuery(name = "Cobrador.findByDireccion", query = "SELECT c FROM Cobrador c WHERE c.direccion = :direccion")})
-public class Cobrador extends IEntity implements Serializable {
+public class Cobrador implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -59,6 +59,7 @@ public class Cobrador extends IEntity implements Serializable {
         this.nombre = nombre;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

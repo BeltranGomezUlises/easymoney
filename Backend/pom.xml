@@ -186,10 +186,21 @@
                 <version>2.9.1</version>
                 <executions>
                     <execution>
+                        <id>asm</id>
                         <goals>
                             <goal>assemble</goal>
                         </goals>
                     </execution>
+<!--                    <execution>
+                        <id>doc</id>
+                        <goals>
+                            <goal>docs</goal>
+                        </goals>
+                        <configuration>
+                             the directory where to put the docs 
+                            <docsDir>${project.build.directory}/docs</docsDir>
+                        </configuration>
+                    </execution>-->
                 </executions>
             </plugin>
             <plugin>

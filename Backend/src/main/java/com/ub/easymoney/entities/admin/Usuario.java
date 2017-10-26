@@ -29,7 +29,7 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u WHERE u.id = :id")
     , @NamedQuery(name = "Usuario.findByNombre", query = "SELECT u FROM Usuario u WHERE u.nombre = :nombre")
     , @NamedQuery(name = "Usuario.findByContra", query = "SELECT u FROM Usuario u WHERE u.contra = :contra")})
-public class Usuario extends IEntity implements Serializable {
+public class Usuario implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,7 +50,8 @@ public class Usuario extends IEntity implements Serializable {
     public Usuario(Integer id) {
         this.id = id;
     }
-
+   
+    @Override
     public Integer getId() {
         return id;
     }

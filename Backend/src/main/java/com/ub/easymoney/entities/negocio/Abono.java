@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
     , @NamedQuery(name = "Abono.findByFecha", query = "SELECT a FROM Abono a WHERE a.abonoPK.fecha = :fecha")
     , @NamedQuery(name = "Abono.findByCantidad", query = "SELECT a FROM Abono a WHERE a.cantidad = :cantidad")
     , @NamedQuery(name = "Abono.findByAbonado", query = "SELECT a FROM Abono a WHERE a.abonado = :abonado")})
-public class Abono extends IEntity implements Serializable {
+public class Abono implements Serializable, IEntity<AbonoPK> {
 
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -51,7 +51,7 @@ public class Abono extends IEntity implements Serializable {
     private Multa multa;
     @JoinColumn(name = "prestamo", referencedColumnName = "id", insertable = false, updatable = false)
     @ManyToOne(optional = false)
-    private Prestamo prestamo1;
+    private Prestamo prestamo;
 
     public Abono() {
     }
@@ -104,12 +104,12 @@ public class Abono extends IEntity implements Serializable {
     }
 
     @JsonIgnore
-    public Prestamo getPrestamo1() {
-        return prestamo1;
+    public Prestamo getPrestamo() {
+        return prestamo;
     }
 
-    public void setPrestamo1(Prestamo prestamo1) {
-        this.prestamo1 = prestamo1;
+    public void setPrestamo(Prestamo prestamo) {
+        this.prestamo = prestamo;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class Abono extends IEntity implements Serializable {
     }
 
     @Override
-    public Object getId() {
+    public AbonoPK getId() {
         return abonoPK;
     }
     

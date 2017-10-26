@@ -33,7 +33,7 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "Multa.findByFecha", query = "SELECT m FROM Multa m WHERE m.multaPK.fecha = :fecha")
     , @NamedQuery(name = "Multa.findByMulta", query = "SELECT m FROM Multa m WHERE m.multa = :multa")
     , @NamedQuery(name = "Multa.findByMultaDes", query = "SELECT m FROM Multa m WHERE m.multaDes = :multaDes")})
-public class Multa extends IEntity implements Serializable {
+public class Multa implements Serializable, IEntity<MultaPK> {
 
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -118,9 +118,9 @@ public class Multa extends IEntity implements Serializable {
     public String toString() {
         return "com.ub.easymoney.entities.negocio.Multa[ multaPK=" + multaPK + " ]";
     }
-
+        
     @Override
-    public Object getId() {
+    public MultaPK getId() {
         return multaPK;
     }
     

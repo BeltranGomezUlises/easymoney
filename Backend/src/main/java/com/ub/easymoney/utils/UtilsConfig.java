@@ -5,6 +5,7 @@
  */
 package com.ub.easymoney.utils;
 
+import com.ub.easymoney.daos.admin.DaoConfig;
 import com.ub.easymoney.entities.commons.CGConfig;
 import com.ub.easymoney.entities.commons.ConfigMail;
 
@@ -23,6 +24,19 @@ public final class UtilsConfig {
     }
 
     static int getSecondsSessionJwtExp() {
-        return 600; //segundos
+        return 1800; //segundos
     }
+
+    public static int getPorcentajeComisionPrestamo() throws Exception {
+        DaoConfig daoConfig = new DaoConfig();
+        return daoConfig.findFirst().getPorcentajeInteresPrestamo();        
+    }
+
+    public static int getDiasPlazoPrestamo() throws Exception {
+        DaoConfig daoConfig = new DaoConfig();
+        return daoConfig.findFirst().getDiasPrestamo();        
+    }
+    
+    
+    
 }
