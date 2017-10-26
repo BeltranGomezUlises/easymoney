@@ -17,6 +17,7 @@
     <ruby-json-client disabled="true"/>
     <php-json-client disabled="true"/>
     <idl disabled="true"/>
+    <docs includeExampleXml="false"/>
 
     <docs>
       <download file="LICENSE" name="Apache II" description="The license governing this API" showLink="true"/>

@@ -23,3 +23,5 @@ hs_err_pid*
 
 # folders
 Front/node_modules
+
+/Backend/target/

@@ -17,7 +17,7 @@
 package com.ub.easymoney.managers.commons;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
-import com.ub.easymoney.entities.commons.commons.EntitySQL;
+import com.ub.easymoney.entities.commons.commons.IEntity;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import java.util.List;
@@ -30,7 +30,7 @@ import org.jinq.jpa.JPAJinqStream;
  * @param <T> Entidad a manejar
  * @param <K> Tipo de dato de llave primaria de la entidad
  */
-public abstract class ManagerSQL<T extends EntitySQL, K> extends ManagerFacade<T, K> {
+public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, K> {
 
     protected final DaoSQLFacade<T, K> dao;
     
