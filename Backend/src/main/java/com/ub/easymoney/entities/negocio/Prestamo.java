@@ -14,33 +14,23 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 /**
- * entidad de un prestamo asignado a un cliente
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Entity
 @Table(name = "prestamo")
-@NamedQueries({
-    @NamedQuery(name = "Prestamo.findAll", query = "SELECT p FROM Prestamo p")
-    , @NamedQuery(name = "Prestamo.findById", query = "SELECT p FROM Prestamo p WHERE p.id = :id")
-    , @NamedQuery(name = "Prestamo.findByFecha", query = "SELECT p FROM Prestamo p WHERE p.fecha = :fecha")
-    , @NamedQuery(name = "Prestamo.findByCantidad", query = "SELECT p FROM Prestamo p WHERE p.cantidad = :cantidad")
-    , @NamedQuery(name = "Prestamo.findByCantidadPagar", query = "SELECT p FROM Prestamo p WHERE p.cantidadPagar = :cantidadPagar")
-    , @NamedQuery(name = "Prestamo.findByFechaLimite", query = "SELECT p FROM Prestamo p WHERE p.fechaLimite = :fechaLimite")})
-public class Prestamo implements Serializable, IEntity<Integer> {
+public class Prestamo implements Serializable, IEntity<Integer>{
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,21 +38,30 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "fecha")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "cantidad")
-    private Integer cantidad;
+    private int cantidad;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "cantidad_pagar")
-    private Integer cantidadPagar;
+    private int cantidadPagar;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "fecha_limite")
     @Temporal(TemporalType.DATE)
     private Date fechaLimite;
-    @JoinColumn(name = "cliente_id", referencedColumnName = "id", insertable = false)
-    @ManyToOne
-    private Cliente cliente;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "prestamo")
-    private List<Abono> abonos;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "cliente_id")
+    private int clienteId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "prestamo1", fetch = FetchType.EAGER)
+    private List<Abono> abonoList;
 
     public Prestamo() {
     }
@@ -71,7 +70,15 @@ public class Prestamo implements Serializable, IEntity<Integer> {
         this.id = id;
     }
 
-    @Override
+    public Prestamo(Integer id, Date fecha, int cantidad, int cantidadPagar, Date fechaLimite, int clienteId) {
+        this.id = id;
+        this.fecha = fecha;
+        this.cantidad = cantidad;
+        this.cantidadPagar = cantidadPagar;
+        this.fechaLimite = fechaLimite;
+        this.clienteId = clienteId;
+    }
+    
     public Integer getId() {
         return id;
     }
@@ -88,19 +95,19 @@ public class Prestamo implements Serializable, IEntity<Integer> {
         this.fecha = fecha;
     }
 
-    public Integer getCantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(Integer cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 
-    public Integer getCantidadPagar() {
+    public int getCantidadPagar() {
         return cantidadPagar;
     }
 
-    public void setCantidadPagar(Integer cantidadPagar) {
+    public void setCantidadPagar(int cantidadPagar) {
         this.cantidadPagar = cantidadPagar;
     }
 
@@ -112,21 +119,21 @@ public class Prestamo implements Serializable, IEntity<Integer> {
         this.fechaLimite = fechaLimite;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public int getClienteId() {
+        return clienteId;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setClienteId(int clienteId) {
+        this.clienteId = clienteId;
     }
-
+        
     @JsonIgnore
-    public List<Abono> getAbonos() {
-        return abonos;
+    public List<Abono> getAbonoList() {
+        return abonoList;
     }
 
-    public void setAbonos(List<Abono> abonos) {
-        this.abonos = abonos;
+    public void setAbonoList(List<Abono> abonoList) {
+        this.abonoList = abonoList;
     }
 
     @Override
@@ -154,4 +161,9 @@ public class Prestamo implements Serializable, IEntity<Integer> {
         return "com.ub.easymoney.entities.negocio.Prestamo[ id=" + id + " ]";
     }
 
+    @Override
+    public Integer obtenerIdentificador() {
+        return id;
+    }
+    
 }

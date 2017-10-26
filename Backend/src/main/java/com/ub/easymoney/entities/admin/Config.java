@@ -74,8 +74,7 @@ public class Config implements Serializable, IEntity {
     public void setPorcentajeInteresPrestamo(int porcentajeInteresPrestamo) {
         this.porcentajeInteresPrestamo = porcentajeInteresPrestamo;
     }
-
-    @Override
+    
     public Integer getId() {
         return id;
     }
@@ -107,6 +106,11 @@ public class Config implements Serializable, IEntity {
     @Override
     public String toString() {
         return "com.ub.easymoney.entities.admin.Config[ id=" + id + " ]";
+    }
+
+    @Override
+    public Object obtenerIdentificador() {
+        return id;
     }
     
 }

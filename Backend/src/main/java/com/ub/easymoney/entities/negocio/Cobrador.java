@@ -13,8 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -25,11 +23,6 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "cobrador")
-@NamedQueries({
-    @NamedQuery(name = "Cobrador.findAll", query = "SELECT c FROM Cobrador c")
-    , @NamedQuery(name = "Cobrador.findById", query = "SELECT c FROM Cobrador c WHERE c.id = :id")
-    , @NamedQuery(name = "Cobrador.findByNombre", query = "SELECT c FROM Cobrador c WHERE c.nombre = :nombre")
-    , @NamedQuery(name = "Cobrador.findByDireccion", query = "SELECT c FROM Cobrador c WHERE c.direccion = :direccion")})
 public class Cobrador implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
@@ -59,7 +52,6 @@ public class Cobrador implements Serializable, IEntity<Integer> {
         this.nombre = nombre;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -107,6 +99,11 @@ public class Cobrador implements Serializable, IEntity<Integer> {
     @Override
     public String toString() {
         return "com.ub.easymoney.entities.negocio.Cobrador[ id=" + id + " ]";
+    }
+
+    @Override
+    public Integer obtenerIdentificador() {
+        return id;
     }
     
 }

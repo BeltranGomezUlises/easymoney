@@ -33,6 +33,26 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer>{
     public Response eliminar(String token, Prestamo t) {
         return super.eliminar(token, t); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Response modificar(String token, Prestamo t) {
+        return super.modificar(token, t); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Response alta(String token, Prestamo t) {
+        return super.alta(token, t); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Response detalle(String token, String id) {
+        return super.detalle(token, id); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Response listar(String token) {
+        return super.listar(token); //To change body of generated methods, choose Tools | Templates.
+    }
     
     
     

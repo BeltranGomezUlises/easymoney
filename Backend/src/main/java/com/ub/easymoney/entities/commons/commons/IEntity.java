@@ -33,6 +33,6 @@ public interface IEntity<K> {
      *
      * @return objeto que representa la llave unica de la entidad
      */
-    public K getId();
+    public K obtenerIdentificador();
 
 }

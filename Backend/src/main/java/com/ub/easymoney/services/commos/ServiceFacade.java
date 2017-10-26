@@ -161,7 +161,7 @@ public class ServiceFacade<T extends IEntity, K> {
         Response response = new Response();
         try {
             this.manager.setToken(token);
-            manager.delete((K) t.getId());
+            manager.delete((K) t.obtenerIdentificador());
             response.setMessage("Entidad eliminada");
         } catch (TokenExpiradoException | TokenInvalidoException ex) {
             setInvalidTokenResponse(response);

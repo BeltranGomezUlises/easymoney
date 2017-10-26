@@ -5,7 +5,6 @@
  */
 package com.ub.easymoney.entities.negocio;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
 import java.util.Date;
@@ -14,26 +13,19 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
- * un abono de un prestamo, representa un pago de un día espeficico de un prestamo
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Entity
 @Table(name = "abono")
-@NamedQueries({
-    @NamedQuery(name = "Abono.findAll", query = "SELECT a FROM Abono a")
-    , @NamedQuery(name = "Abono.findByPrestamo", query = "SELECT a FROM Abono a WHERE a.abonoPK.prestamo = :prestamo")
-    , @NamedQuery(name = "Abono.findByFecha", query = "SELECT a FROM Abono a WHERE a.abonoPK.fecha = :fecha")
-    , @NamedQuery(name = "Abono.findByCantidad", query = "SELECT a FROM Abono a WHERE a.cantidad = :cantidad")
-    , @NamedQuery(name = "Abono.findByAbonado", query = "SELECT a FROM Abono a WHERE a.abonado = :abonado")})
 public class Abono implements Serializable, IEntity<AbonoPK> {
 
     private static final long serialVersionUID = 1L;
@@ -47,11 +39,11 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
     @NotNull
     @Column(name = "abonado")
     private boolean abonado;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "abono")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "abono", fetch = FetchType.EAGER)
     private Multa multa;
     @JoinColumn(name = "prestamo", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Prestamo prestamo;
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Prestamo prestamo1;
 
     public Abono() {
     }
@@ -94,7 +86,6 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.abonado = abonado;
     }
 
-    @JsonIgnore
     public Multa getMulta() {
         return multa;
     }
@@ -103,13 +94,12 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.multa = multa;
     }
 
-    @JsonIgnore
-    public Prestamo getPrestamo() {
-        return prestamo;
+    public Prestamo getPrestamo1() {
+        return prestamo1;
     }
 
-    public void setPrestamo(Prestamo prestamo) {
-        this.prestamo = prestamo;
+    public void setPrestamo1(Prestamo prestamo1) {
+        this.prestamo1 = prestamo1;
     }
 
     @Override
@@ -138,7 +128,7 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
     }
 
     @Override
-    public AbonoPK getId() {
+    public AbonoPK obtenerIdentificador() {
         return abonoPK;
     }
     
