@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {  } from 'semantic-ui-react';
+
 export default class Cobradores extends React.Component{
   render(){
     return(
       <div>
-        <H1>COBRADORES</H1>
+        <h1>COBRADORES</h1>
       </div>
     )
   }
