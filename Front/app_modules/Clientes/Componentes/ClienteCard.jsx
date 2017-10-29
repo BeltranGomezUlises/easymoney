@@ -1,13 +1,17 @@
-import React from 'react'
-import { Card , Icon, Input, Image, Button} from 'semantic-ui-react'
+import React from 'react';
+import ClienteModal from './ClienteModal.jsx';
+import { Card , Icon, Input, Button} from 'semantic-ui-react';
 
 export default class ClienteCard extends React.Component{
 
   constructor(props) {
     super(props);    
   }
-
+  toggleModal = () =>{
+    this.setState({open: !this.state.open});
+  }
   render(){
+
     return(
         <Card>
           <Card.Content>
@@ -23,7 +27,8 @@ export default class ClienteCard extends React.Component{
           </Card.Content>
           <Card.Content extra>
              <div className='ui two buttons'>
-               <Button basic color='blue'>Editar</Button>
+               <Button >Tiny</Button>
+               <Button basic color='blue' onClick={.show()}>Editar</Button>
                <Button basic color='red'>Eliminar</Button>
              </div>
           </Card.Content>

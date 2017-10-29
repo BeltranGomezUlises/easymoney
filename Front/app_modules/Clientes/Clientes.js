@@ -57,6 +57,10 @@ export default class Clientes extends React.Component{
   }
 
   render(){
+    const Clientes = [
+      1,
+      2,
+    ].map((i) => <ClienteCard key={i}/>);
     return(
       <div style={{'padding':'10px'}}>
 
