@@ -51,7 +51,6 @@ public class Usuario implements Serializable, IEntity<Integer> {
         this.id = id;
     }
    
-    @Override
     public Integer getId() {
         return id;
     }
@@ -99,6 +98,11 @@ public class Usuario implements Serializable, IEntity<Integer> {
     @Override
     public String toString() {
         return "com.ub.easymoney.entities.admin.Usuario[ id=" + id + " ]";
+    }
+
+    @Override
+    public Integer obtenerIdentificador() {
+        return id;
     }
     
 }
