@@ -113,7 +113,7 @@
             <groupId>com.webcohesion.enunciate</groupId>
             <artifactId>enunciate-rt-util</artifactId>
             <version>2.9.1</version>
-        </dependency>           
+        </dependency>                 
     </dependencies>
 
 
@@ -191,7 +191,7 @@
                             <goal>assemble</goal>
                         </goals>
                     </execution>
-<!--                    <execution>
+                    <!--                    <execution>
                         <id>doc</id>
                         <goals>
                             <goal>docs</goal>

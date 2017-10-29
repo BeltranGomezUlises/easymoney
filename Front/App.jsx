@@ -19,7 +19,7 @@ class MainContainer extends React.Component{
   }
 
   render() {
-    return( <div>
+    return( <div style={mystyle}>
         <Menu secondary attached="top">
           <Menu.Item onClick={() => this.setState({ menuVisible: !this.state.menuVisible })} >
             <strong>Menú</strong>
@@ -32,8 +32,7 @@ class MainContainer extends React.Component{
           <Menu.Item as={Link} to='/prestamos'>Prestamos</Menu.Item>
         </Sidebar>
          <Sidebar.Pusher >
-              <div style={mystyle}>
-
+              <div>
                 <Route path="/clientes" component={Clientes}/>
                 <Route path="/cobradores" component={Cobradores}/>
                 <Route path="/prestamos" component={Prestamos}/>
@@ -48,6 +47,6 @@ class MainContainer extends React.Component{
 
 //estilos
 var mystyle={
-  'height' : '700px'
+  'height' : 'inherit'
 }
 export default App
