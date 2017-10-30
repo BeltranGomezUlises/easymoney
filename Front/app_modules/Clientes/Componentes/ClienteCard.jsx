@@ -1,12 +1,11 @@
 import React from 'react';
-import ClienteModal from './ClienteModal.jsx';
-import { Card , Icon, Input, Button} from 'semantic-ui-react';
+//import ClienteModal from './ClienteModal.jsx';
+import { Card , Icon, Input, Button, Modal} from 'semantic-ui-react';
 
 export default class ClienteCard extends React.Component{
 
   constructor(props) {
     super(props);
-    this.state = {open:false};
   }
 
   render(){
