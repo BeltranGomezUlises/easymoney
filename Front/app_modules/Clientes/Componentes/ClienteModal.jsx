@@ -11,7 +11,6 @@ class ClienteModal extends Component {
 
     return (
       <div>
-
         <Modal size='tiny' open={open} onClose={this.close}>
           <Modal.Header>
             Delete Your Account

@@ -3,7 +3,7 @@ import { Route, Link, HashRouter } from 'react-router-dom';
 import { Button, Container, Divider,  Dropdown,  Header,  Message,  Segment,  Menu, Icon, Sidebar, Image } from 'semantic-ui-react';
 
 import Clientes from './app_modules/Clientes/Clientes.js';
-import Cobradores from './app_modules/Cobradores.js';
+import Cobradores from './app_modules/Cobradores/Cobradores.js';
 import Prestamos from './app_modules/Prestamos.js';
 
 const App =()=>(
@@ -15,7 +15,8 @@ const App =()=>(
 class MainContainer extends React.Component{
   constructor(props) {
     super(props);
-    this.state = {menuVisible: false};
+    this.state = {menuVisible: true};
+    localStorage.setItem('url', 'http://201.165.0.142:8383/EasyMoney/api/');
   }
 
   render() {
