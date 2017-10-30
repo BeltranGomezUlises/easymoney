@@ -8,6 +8,7 @@ export default class Clientes extends React.Component{
   constructor(props) {
     super(props)
     this.state = { clientes: [] }
+    this.removeCliente = this.removeCliente.bind(this);
   }
 
   componentWillMount() {
@@ -48,12 +49,19 @@ export default class Clientes extends React.Component{
      <Card.Group>
        {this.state.clientes.map((c) =>{
          return (
-           <ClienteCard key={c.id} nombre={c.nombre} direccion={c.direccion} telefono={c.telefono} id={c.id}>
+           <ClienteCard key={c.id} nombre={c.nombre} direccion={c.direccion} telefono={c.telefono} id={c.id} removeCliente={this.removeCliente}>
            </ClienteCard>
          )
        })}
       </Card.Group>
     )
+  }
+
+  removeCliente(cliente){
+    const clientesViejo = this.state.clientes.filter((c) =>{
+      return c.id != cliente.id
+    });
+    this.setState({clientes: clientesViejo});
   }
 
   render(){

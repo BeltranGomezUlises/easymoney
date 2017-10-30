@@ -10,6 +10,7 @@ import com.ub.easymoney.entities.negocio.AbonoPK;
 import com.ub.easymoney.managers.negocio.ManagerAbono;
 import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.services.commos.ServiceFacade;
+import java.util.List;
 import javax.ws.rs.Path;
 
 /**
@@ -24,30 +25,28 @@ public class Abonos extends ServiceFacade<Abono, AbonoPK>{
     }
 
     @Override
-    public Response eliminar(String token, Abono t) {
+    public Response<Abono> eliminar(String token, Abono t) {
         return super.eliminar(token, t); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Response modificar(String token, Abono t) {
+    public Response<Abono> modificar(String token, Abono t) {
         return super.modificar(token, t); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Response alta(String token, Abono t) {
+    public Response<Abono> alta(String token, Abono t) {
         return super.alta(token, t); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Response detalle(String token, String id) {
+    public Response<Abono> detalle(String token, String id) {
         return super.detalle(token, id); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Response listar(String token) {
+    public Response<List<Abono>> listar(String token) {
         return super.listar(token); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
     
 }

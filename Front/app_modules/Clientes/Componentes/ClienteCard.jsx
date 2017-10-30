@@ -1,6 +1,6 @@
 import React from 'react';
-import ClienteModal from './ClienteModal.jsx';
-import { Card , Icon, Input, Button, Header, Modal} from 'semantic-ui-react';
+import { Card , Icon, Input, Button, Header, Modal, Label, Form} from 'semantic-ui-react';
+import ClienteForm from './ClienteForm.jsx'
 
 export default class ClienteCard extends React.Component{
 
@@ -10,6 +10,11 @@ export default class ClienteCard extends React.Component{
       modalOpenEditar: false,
       modalOpenEliminar: false
     };
+
+    this.handleOpenEditar = this.handleOpenEditar.bind(this);
+    this.handleOpenEliminar = this.handleOpenEliminar.bind(this);
+    this.handleCloseEditar = this.handleCloseEditar.bind(this);
+    this.handleCloseEliminar = this.handleCloseEliminar.bind(this);
   }
 
   handleOpenEditar(){
@@ -29,7 +34,7 @@ export default class ClienteCard extends React.Component{
     this.setState({ modalOpenEliminar: false })
   }
 
-  editarCliente(){
+  editarCliente(cliente){
     fetch(localStorage.getItem('url') + 'accesos/login', {
       method: 'POST',
       headers: {
@@ -52,13 +57,13 @@ export default class ClienteCard extends React.Component{
           'Authorization': localStorage.getItem('tokenSesion')
         },
         body: JSON.stringify({
-          id: this.props.id,
-          nombre: this.props.nombre,
-          direccion: this.props.direccion,
-          telefono: this.props.telefono
+          id: cliente.id,
+          nombre: cliente.nombre,
+          direccion: cliente.direccion,
+          telefono: cliente.telefono
         })
       }).then((res)=> res.json())
-      .then((response) =>{        
+      .then((response) =>{
           this.setState({modalOpenEditar:false});
       })
      })
@@ -92,6 +97,7 @@ export default class ClienteCard extends React.Component{
       }).then((res)=> res.json())
       .then((response) =>{
           this.setState({modalOpenEliminar:false});
+          this.props.removeCliente(response.data);
       })
      })
   }
@@ -114,25 +120,26 @@ export default class ClienteCard extends React.Component{
           <Card.Content extra>
              <div className='ui two buttons'>
                <Modal
-                 trigger={<Button basic color='blue' onClick={this.handleOpenEditar.bind(this)}>Editar</Button>}
+                 trigger={<Button basic color='blue' onClick={this.handleOpenEditar}>Editar</Button>}
                  onClose={this.handleCloseEditar.bind(this)}
-                 open={this.state.modalOpenEditar}
->
+                 open={this.state.modalOpenEditar}>
                  <Header content='Editar cliente' />
                  <Modal.Content>
-                   <h3>contenido cliente</h3>
+                   <ClienteForm>
+
+                   </ClienteForm>
                  </Modal.Content>
                  <Modal.Actions>
-                   <Button color='green' onClick={this.editarCliente.bind(this)}>
+                   <Button color='green' onClick={this.editarCliente}>
                      Guardar
                    </Button>
-                   <Button color='red' onClick={this.handleCloseEditar.bind(this)}>
+                   <Button color='red' onClick={this.handleCloseEditar}>
                      Cancelar
                    </Button>
                  </Modal.Actions>
                </Modal>
                <Modal
-                 trigger={<Button basic color='red' onClick={this.handleOpenEliminar.bind(this)}>Eliminar</Button>}
+                 trigger={<Button basic color='red' onClick={this.handleOpenEliminar}>Eliminar</Button>}
                  onClose={this.handleCloseEliminar.bind(this)}
                  open={this.state.modalOpenEliminar}>
                  <Header content='Eliminar cliente' />
@@ -140,10 +147,10 @@ export default class ClienteCard extends React.Component{
                    <h3>¿Está seguro de eliminar al cliente y borrar su historial?</h3>
                  </Modal.Content>
                  <Modal.Actions>
-                   <Button color='green' onClick={this.eliminarCliente.bind(this)}>
+                   <Button color='green' onClick={this.eliminarCliente}>
                      Borrar
                    </Button>
-                   <Button color='red' onClick={this.handleCloseEliminar.bind(this)}>
+                   <Button color='red' onClick={this.handleCloseEliminar}>
                      Cancelar
                    </Button>
                  </Modal.Actions>

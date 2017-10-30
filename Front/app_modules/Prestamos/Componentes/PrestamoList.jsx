@@ -36,7 +36,7 @@ export default class PrestamoList extends React.Component {
           'Authorization': localStorage.getItem('tokenSesion')
         }
       }).then((res)=> res.json())
-      .then((response) =>{        
+      .then((response) =>{
         this.setState({prestamos:response.data});
       })
      })
@@ -46,7 +46,7 @@ export default class PrestamoList extends React.Component {
     return(
         this.state.prestamos.map((prestamo) =>{
           return(
-            <Table.Row>
+            <Table.Row key={prestamo.id}>
               <Table.Cell>
                 <Header as='h3' textAlign='center'>
                   {prestamo.id}
