@@ -48,7 +48,7 @@ export default class Cobradores extends React.Component{
      <Card.Group>
        {this.state.cobradores.map((c) =>{
          return (
-           <CobradorCard key={c.id} nombre={c.nombre} direccion={c.direccion}>
+           <CobradorCard key={c.id} nombre={c.nombre} direccion={c.direccion} id={c.id}>
            </CobradorCard>
          )
        })}

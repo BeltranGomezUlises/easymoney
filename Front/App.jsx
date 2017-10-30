@@ -2,9 +2,9 @@ import React from 'react';
 import { Route, Link, HashRouter } from 'react-router-dom';
 import { Button, Container, Divider,  Dropdown,  Header,  Message,  Segment,  Menu, Icon, Sidebar, Image } from 'semantic-ui-react';
 
-import Clientes from './app_modules/Clientes/Clientes.js';
-import Cobradores from './app_modules/Cobradores/Cobradores.js';
-import Prestamos from './app_modules/Prestamos.js';
+import Clientes from './app_modules/Clientes/Clientes.jsx';
+import Cobradores from './app_modules/Cobradores/Cobradores.jsx';
+import Prestamos from './app_modules/Prestamos/Prestamos.jsx';
 
 const App =()=>(
     <HashRouter>
