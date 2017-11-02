@@ -8,17 +8,19 @@ export default class ClienteCard extends React.Component{
     super(props);
     this.state = {
       modalOpenEditar: false,
-      modalOpenEliminar: false
+      modalOpenEliminar: false,
+      cliente: this.props.cliente
     };
 
     this.handleOpenEditar = this.handleOpenEditar.bind(this);
     this.handleOpenEliminar = this.handleOpenEliminar.bind(this);
     this.handleCloseEditar = this.handleCloseEditar.bind(this);
     this.handleCloseEliminar = this.handleCloseEliminar.bind(this);
+    this.onEditHandler = this.onEditHandler.bind(this);
+    this.editarCliente = this.editarCliente.bind(this);
   }
 
   handleOpenEditar(){
-    const {id, nombre, direccion, telefono}  = this.props;
     this.setState({ modalOpenEditar: true })
   }
 
@@ -34,7 +36,12 @@ export default class ClienteCard extends React.Component{
     this.setState({ modalOpenEliminar: false })
   }
 
-  editarCliente(cliente){
+  onEditHandler(cliente){
+    this.setState({cliente});
+  }
+
+  editarCliente(){
+    console.log(this.state);
     fetch(localStorage.getItem('url') + 'accesos/login', {
       method: 'POST',
       headers: {
@@ -57,13 +64,14 @@ export default class ClienteCard extends React.Component{
           'Authorization': localStorage.getItem('tokenSesion')
         },
         body: JSON.stringify({
-          id: cliente.id,
-          nombre: cliente.nombre,
-          direccion: cliente.direccion,
-          telefono: cliente.telefono
+          id: this.state.cliente.id,
+          nombre: this.state.cliente.nombre,
+          direccion: this.state.cliente.direccion,
+          telefono: this.state.cliente.telefono
         })
       }).then((res)=> res.json())
       .then((response) =>{
+        console.log(response);
           this.setState({modalOpenEditar:false});
       })
      })
@@ -92,7 +100,7 @@ export default class ClienteCard extends React.Component{
           'Authorization': localStorage.getItem('tokenSesion')
         },
         body: JSON.stringify({
-          id: this.props.id
+          id: this.props.cliente.id
         })
       }).then((res)=> res.json())
       .then((response) =>{
@@ -108,24 +116,24 @@ export default class ClienteCard extends React.Component{
         <Card>
           <Card.Content>
              <Card.Header>
-               {this.props.nombre}
+               {this.state.cliente.nombre}
              </Card.Header>
              <Card.Meta>
-               {this.props.telefono}
+               {this.state.cliente.telefono}
              </Card.Meta>
              <Card.Description>
-               {this.props.direccion}
+               {this.state.cliente.direccion}
              </Card.Description>
           </Card.Content>
           <Card.Content extra>
              <div className='ui two buttons'>
                <Modal
                  trigger={<Button basic color='blue' onClick={this.handleOpenEditar}>Editar</Button>}
-                 onClose={this.handleCloseEditar.bind(this)}
+                 onClose={this.handleCloseEditar}
                  open={this.state.modalOpenEditar}>
                  <Header content='Editar cliente' />
                  <Modal.Content>
-                   <ClienteForm>
+                   <ClienteForm cliente={this.state.cliente} getData={this.onEditHandler}>
 
                    </ClienteForm>
                  </Modal.Content>
@@ -140,7 +148,7 @@ export default class ClienteCard extends React.Component{
                </Modal>
                <Modal
                  trigger={<Button basic color='red' onClick={this.handleOpenEliminar}>Eliminar</Button>}
-                 onClose={this.handleCloseEliminar.bind(this)}
+                 onClose={this.handleCloseEliminar}
                  open={this.state.modalOpenEliminar}>
                  <Header content='Eliminar cliente' />
                  <Modal.Content>
