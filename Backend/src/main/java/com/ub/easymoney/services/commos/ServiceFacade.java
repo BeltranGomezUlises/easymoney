@@ -68,8 +68,9 @@ public class ServiceFacade<T extends IEntity<K>, K> {
      */
     @GET    
     public Response<List<T>> listar(@HeaderParam("Authorization") String token) {
+        
         Response response = new Response();
-        try {
+        try {            
             this.manager.setToken(token);
             setOkResponse(response, manager.findAll(), "Entidades encontradas");           
         } catch (TokenExpiradoException | TokenInvalidoException e) {

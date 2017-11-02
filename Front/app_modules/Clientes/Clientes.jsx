@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ClienteCard from './Componentes/ClienteCard.jsx'
 import ClienteForm from './Componentes/ClienteForm.jsx'
-import { Container, Segment, Card, Button, Icon, Image, Modal, Header} from 'semantic-ui-react';
+import { Container, Segment, Card, Button, Icon, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
 
 export default class Clientes extends React.Component{
 
@@ -111,6 +111,28 @@ export default class Clientes extends React.Component{
      })
   }
 
+  renderClientesCards(){
+    if (this.state.clientes.length > 0) {
+      return(
+        this.state.clientes.map((cliente) =>{
+          return (
+            <ClienteCard key={cliente.id} cliente={cliente} removeCliente={this.removeCliente}>
+            </ClienteCard>
+          )
+        })
+      )
+    }else{
+      return (
+        <div>
+          <Dimmer active inverted>
+            <Loader size='large'>Descargando</Loader>
+          </Dimmer>
+          <Image src='/assets/images/descargandoClientes.png'/>
+        </div>
+      )
+    }
+  }
+
   renderClientes(){
     return(
       <Segment>
@@ -132,12 +154,7 @@ export default class Clientes extends React.Component{
           </Modal.Actions>
         </Modal>
         <Card.Group>
-         {this.state.clientes.map((cliente) =>{
-           return (
-             <ClienteCard key={cliente.id} cliente={cliente} removeCliente={this.removeCliente}>
-             </ClienteCard>
-           )
-         })}
+         {this.renderClientesCards()}
         </Card.Group>
       </Segment>
     )
