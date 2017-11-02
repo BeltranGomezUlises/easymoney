@@ -41,15 +41,12 @@ public class Accesos {
      */
     @Path("/login")
     @POST
-    public Response login(ModelLogin modelLogin) {
+    public Response<Usuario> login(ModelLogin modelLogin) {
         Response r = new Response();
         try {            
             ManagerUsuario managerUsuario = new ManagerUsuario();
-            Usuario u = managerUsuario.login(modelLogin);
-            
-            r.setMetaData(UtilsJWT.generateSessionToken(u.obtenerIdentificador() + ""));
-            r.setMessage("Bienvenido " + modelLogin.getUser());
-            r.setDevMessage("Token de sesion necesario para los siguientes servicios en la cabecera Authorizaiton");                                                    
+            Usuario u = managerUsuario.login(modelLogin);            
+            setOkResponse(r, u, UtilsJWT.generateSessionToken(u.obtenerIdentificador() + ""), "Bienvenido " + modelLogin.getUser(), "Token de sesion necesario para los siguientes servicios en la cabecera Authorizaiton");            
         } catch (JsonProcessingException e) {
             setErrorResponse(r, e);
         } catch (UsuarioInexistenteException e) {
@@ -61,7 +58,7 @@ public class Accesos {
     
     @GET
     @Path("/resetAll")
-    public Response resetUsuarios(){
+    public Response<List> resetUsuarios(){
         Response r = new Response();
         try {
             ManagerUsuario managerUsuario = new ManagerUsuario();

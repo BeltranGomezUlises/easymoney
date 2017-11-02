@@ -2,13 +2,12 @@ var config = {
    entry: './main.js',
 
    output: {
-      path:'/',
+      path:__dirname + '/builds',
       filename: 'index.js'
    },
 
    devServer: {
       inline: true,
-      port: 8080
    },
 
    module: {

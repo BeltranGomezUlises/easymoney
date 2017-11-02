@@ -24,6 +24,7 @@ import com.ub.easymoney.models.commons.reponses.Response;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
 import static com.ub.easymoney.utils.UtilsService.setOkResponse;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -46,7 +47,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ServiceFacade<T extends IEntity, K> {
+public class ServiceFacade<T extends IEntity<K>, K> {
 
     protected ManagerFacade<T, K> manager;
 
@@ -66,9 +67,10 @@ public class ServiceFacade<T extends IEntity, K> {
      * entidades de esta clase servicio
      */
     @GET    
-    public Response listar(@HeaderParam("Authorization") String token) {
+    public Response<List<T>> listar(@HeaderParam("Authorization") String token) {
+        
         Response response = new Response();
-        try {
+        try {            
             this.manager.setToken(token);
             setOkResponse(response, manager.findAll(), "Entidades encontradas");           
         } catch (TokenExpiradoException | TokenInvalidoException e) {
@@ -89,7 +91,7 @@ public class ServiceFacade<T extends IEntity, K> {
      */
     @GET
     @Path("/{id}")
-    public Response detalle(@HeaderParam("Authorization") String token, @PathParam("id") String id) {
+    public Response<T> detalle(@HeaderParam("Authorization") String token, @PathParam("id") String id) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
@@ -111,7 +113,7 @@ public class ServiceFacade<T extends IEntity, K> {
      * @return response con el estatus y el mensaje
      */
     @POST
-    public Response alta(@HeaderParam("Authorization") String token, T t) {
+    public Response<T> alta(@HeaderParam("Authorization") String token, T t) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
@@ -134,7 +136,7 @@ public class ServiceFacade<T extends IEntity, K> {
      * @return Response, en data asignado con la entidad que se actualizó
      */
     @PUT
-    public Response modificar(@HeaderParam("Authorization") String token, T t) {
+    public Response<T> modificar(@HeaderParam("Authorization") String token, T t) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
@@ -157,12 +159,12 @@ public class ServiceFacade<T extends IEntity, K> {
      * @return
      */
     @DELETE
-    public Response eliminar(@HeaderParam("Authorization") String token, T t) {
+    public Response<T> eliminar(@HeaderParam("Authorization") String token, T t) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
-            manager.delete((K) t.obtenerIdentificador());
-            response.setMessage("Entidad eliminada");
+            manager.delete(t.obtenerIdentificador());
+            setOkResponse(response, t, "Entidad Eliminada");
         } catch (TokenExpiradoException | TokenInvalidoException ex) {
             setInvalidTokenResponse(response);
         } catch (Exception e) {

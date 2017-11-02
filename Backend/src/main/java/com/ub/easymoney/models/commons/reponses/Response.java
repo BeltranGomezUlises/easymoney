@@ -13,16 +13,16 @@ import com.ub.easymoney.models.commons.commons.enums.Status;
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Response {
+public class Response<T> {
 
-    private Object data;
+    private T data;
     private MetaData meta;
         
     public Response() {
         meta = new MetaData();
     }
 
-    public Response(Object data, String message, Status status, String devMessage) {
+    public Response(T data, String message, Status status, String devMessage) {
         this.data=data;
         this.meta = new MetaData(message, status, devMessage);
     }   
@@ -31,12 +31,12 @@ public class Response {
         this.meta = new MetaData(status, devMessage);
     }
 
-    public Response(Object data, Status status, String devMessage) {
+    public Response(T data, Status status, String devMessage) {
         this.data = data;
         this.meta = new MetaData(status, devMessage);
     }
     
-    public Response(Object data, Object metaData, String message, Status status, String devMessage) {
+    public Response(T data, Object metaData, String message, Status status, String devMessage) {
         this.data=data;
         this.meta = new MetaData(message, status, devMessage);
     }   
@@ -45,16 +45,16 @@ public class Response {
         this.meta = new MetaData(status, devMessage);
     }
 
-    public Response(Object data, Object metaData, Status status, String devMessage) {
+    public Response(T data, Object metaData, Status status, String devMessage) {
         this.data = data;
         this.meta = new MetaData(status, devMessage);
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 

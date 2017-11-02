@@ -11,6 +11,7 @@ import com.ub.easymoney.managers.negocio.ManagerCliente;
 import com.ub.easymoney.managers.negocio.ManagerPrestamo;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
+import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.services.commos.ServiceFacade;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
@@ -34,12 +35,33 @@ public class Clientes extends ServiceFacade<Cliente, Integer> {
     @GET
     @Path("/{id}/prestamos")
     public List<Prestamo> prestamosDelClientes(@HeaderParam("Authorization") String token, @PathParam("id") int clienteId) throws TokenInvalidoException, TokenExpiradoException {
-
         ManagerPrestamo managerPrestamo = new ManagerPrestamo();
         managerPrestamo.setToken(token);
-
         return managerPrestamo.stream().where(p -> p.getClienteId() == clienteId).collect(toList());
-
     }
 
+    @Override
+    public Response<Cliente> eliminar(String token, Cliente t) {
+        return super.eliminar(token, t); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Response<Cliente> modificar(String token, Cliente t) {
+        return super.modificar(token, t); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Response<Cliente> alta(String token, Cliente t) {
+        return super.alta(token, t); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Response<Cliente> detalle(String token, String id) {
+        return super.detalle(token, id); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Response<List<Cliente>> listar(String token) {
+        return super.listar(token); //To change body of generated methods, choose Tools | Templates.
+    }        
 }
