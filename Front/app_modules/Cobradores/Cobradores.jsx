@@ -1,13 +1,39 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import CobradorCard from './Componentes/CobradorCard.jsx'
-import { Container, Segment, Card} from 'semantic-ui-react';
+import { Container, Segment, Card, Button, Modal, Header} from 'semantic-ui-react';
 
 export default class Cobradores extends React.Component{
 
   constructor(props) {
     super(props)
-    this.state = { cobradores: [] }
+    this.state = {
+      cobradores: [],
+      modalOpenAgregar: false,
+      modalOpenWarning: false
+     }
+
+    this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
+    this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
+    this.onCreateHandler = this.onCreateHandler.bind(this);
+    this.handleCloseWarning = this.handleCloseWarning.bind(this);
+  }
+
+
+  handleCloseWarning(){
+    this.setState({modalOpenWarning: false});
+  }
+
+  handleCloseAgregar(){
+    this.setState({modalOpenAgregar: false});
+  }
+
+  handleOpenAgregar(){
+    this.setState({modalOpenAgregar: true});
+  }
+
+  onCreateHandler(nuevoCliente){
+    this.setState({nuevoCliente});
   }
 
   componentWillMount() {
@@ -45,14 +71,34 @@ export default class Cobradores extends React.Component{
 
   renderCobradores(){
     return(
-     <Card.Group>
-       {this.state.cobradores.map((c) =>{
-         return (
-           <CobradorCard key={c.id} nombre={c.nombre} direccion={c.direccion} id={c.id}>
-           </CobradorCard>
-         )
-       })}
-      </Card.Group>
+      <Segment>
+          <Modal
+            trigger={<Button color='green' style={{ 'margin-bottom': '15px'}} onClick={this.handleOpenAgregar}>Agregar</Button>}
+            onClose={this.handleCloseAgregar}
+            open={this.state.modalOpenAgregar}>
+            <Header content='Agregar cobrador' />
+            <Modal.Content>
+              <CobradorForm ></CobradorForm>
+            </Modal.Content>
+            <Modal.Actions>
+              <Button color='green' onClick={this.agregarCobrador}>
+                Guardar
+              </Button>
+              <Button color='red' onClick={this.handleCloseAgregar}>
+                Cancelar
+              </Button>
+            </Modal.Actions>
+          </Modal>
+
+         <Card.Group>
+           {this.state.cobradores.map((c) =>{
+             return (
+               <CobradorCard key={c.id} nombre={c.nombre} direccion={c.direccion} id={c.id}>
+               </CobradorCard>
+             )
+           })}
+          </Card.Group>
+      </Segment>
     )
   }
 

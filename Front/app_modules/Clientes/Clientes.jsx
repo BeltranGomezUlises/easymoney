@@ -11,6 +11,7 @@ export default class Clientes extends React.Component{
     this.state = {
       clientes: [],
       modalOpenAgregar: false,
+      modalOpenWarning: false,
       nuevoCliente:{}
     }
 
@@ -19,6 +20,12 @@ export default class Clientes extends React.Component{
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
     this.onCreateHandler = this.onCreateHandler.bind(this);
     this.agregarCliente = this.agregarCliente.bind(this);
+    this.handleCloseWarning = this.handleCloseWarning.bind(this);
+
+  }
+
+  handleCloseWarning(){
+    this.setState({modalOpenWarning: false});
   }
 
   handleCloseAgregar(){
@@ -34,52 +41,53 @@ export default class Clientes extends React.Component{
   }
 
   agregarCliente(){
-    console.log(this.state.nuevoCliente);
-
-    fetch(localStorage.getItem('url') + 'accesos/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: 'admin',
-        pass: '1234',
-      })
-    }).then((res) => res.json())
-    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-    .then(()=>{
-      fetch(localStorage.getItem('url') + 'clientes',{
+    if (this.state.nuevoCliente.nombre) {
+      fetch(localStorage.getItem('url') + 'accesos/login', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin':'*',
-          'Authorization': localStorage.getItem('tokenSesion')
         },
-        body:JSON.stringify({
-          nombre: this.state.nuevoCliente.nombre,
-          direccion: this.state.nuevoCliente.direccion,
-          telefono: this.state.nuevoCliente.telefono
+        body: JSON.stringify({
+          user: 'admin',
+          pass: '1234',
         })
-      }).then((res)=> res.json())
-      .then((response) =>{
-        console.log(response);
-        //agregar nuevoCliente a la lista actual
-        let clientes = [...this.state.clientes, response.data];
-        //limpiar nuevo cliente
-        this.setState({
-          clientes,
-          nuevoCliente:{}
-        });
-        this.handleCloseAgregar();
-      })
-     })
+      }).then((res) => res.json())
+      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
+      .then(()=>{
+        fetch(localStorage.getItem('url') + 'clientes',{
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin':'*',
+            'Authorization': localStorage.getItem('tokenSesion')
+          },
+          body:JSON.stringify({
+            nombre: this.state.nuevoCliente.nombre,
+            direccion: this.state.nuevoCliente.direccion,
+            telefono: this.state.nuevoCliente.telefono
+          })
+        }).then((res)=> res.json())
+        .then((response) =>{
+          console.log(response);
+          //agregar nuevoCliente a la lista actual
+          let clientes = [...this.state.clientes, response.data];
+          //limpiar nuevo cliente
+          this.setState({
+            clientes,
+            nuevoCliente:{}
+          });
+          this.handleCloseAgregar();
+        })
+       })
+    }else{
+      console.log('');
+      this.setState({modalOpenWarning:true});
 
-  }
+    }
 
-  componentWillMount() {
-    this.cargarClientes();
+
   }
 
   cargarClientes(){
@@ -125,7 +133,7 @@ export default class Clientes extends React.Component{
       return (
         <div>
           <Dimmer active inverted>
-            <Loader size='large'>Descargando</Loader>
+            <Loader size='large'>Descargando...</Loader>
           </Dimmer>
           <Image src='/assets/images/descargandoClientes.png'/>
         </div>
@@ -167,14 +175,27 @@ export default class Clientes extends React.Component{
     this.setState({clientes: clientesViejo});
   }
 
+  componentWillMount() {
+    this.cargarClientes();
+  }
+
   render(){
     return(
       <div style={{'padding':'10px'}}>
           <Segment textAlign='center'>
             <h2>CLIENTES</h2>
           </Segment>
+          <Modal open={this.state.modalOpenWarning} onClose={this.handleCloseWarning} closeOnRootNodeClick={false}>
+            <Modal.Content>
+              <h3>Es necesario llenar el nombre del cliente</h3>
+            </Modal.Content>
+            <Modal.Actions>
+              <Button color='green' onClick={this.handleCloseWarning} inverted> Entendido </Button>
+            </Modal.Actions>
+          </Modal>
           {this.renderClientes()}
       </div>
     );
   }
+
 }

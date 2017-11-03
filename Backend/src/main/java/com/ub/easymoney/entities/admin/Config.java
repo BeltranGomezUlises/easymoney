@@ -13,8 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -24,11 +22,6 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "config")
-@NamedQueries({
-    @NamedQuery(name = "Config.findAll", query = "SELECT c FROM Config c")
-    , @NamedQuery(name = "Config.findByDiasPrestamo", query = "SELECT c FROM Config c WHERE c.diasPrestamo = :diasPrestamo")
-    , @NamedQuery(name = "Config.findByPorcentajeInteresPrestamo", query = "SELECT c FROM Config c WHERE c.porcentajeInteresPrestamo = :porcentajeInteresPrestamo")
-    , @NamedQuery(name = "Config.findById", query = "SELECT c FROM Config c WHERE c.id = :id")})
 public class Config implements Serializable, IEntity {
 
     private static final long serialVersionUID = 1L;
