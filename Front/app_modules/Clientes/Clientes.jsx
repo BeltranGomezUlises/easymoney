@@ -143,28 +143,32 @@ export default class Clientes extends React.Component{
 
   renderClientes(){
     return(
-      <Segment>
-        <Modal
-          trigger={<Button color='green' style={{ 'margin-bottom': '15px'}} onClick={this.handleOpenAgregar}>Agregar</Button>}
-          onClose={this.handleCloseAgregar}
-          open={this.state.modalOpenAgregar}>
-          <Header content='Agregar cliente' />
-          <Modal.Content>
-              <ClienteForm getData={this.onCreateHandler}></ClienteForm>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button color='green' onClick={this.agregarCliente}>
-              Guardar
-            </Button>
-            <Button color='red' onClick={this.handleCloseAgregar}>
-              Cancelar
-            </Button>
-          </Modal.Actions>
-        </Modal>
-        <Card.Group>
-         {this.renderClientesCards()}
-        </Card.Group>
-      </Segment>
+      <div>
+        <Segment>
+          <Modal
+            trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
+            onClose={this.handleCloseAgregar}
+            open={this.state.modalOpenAgregar}>
+            <Header content='Agregar cliente' />
+            <Modal.Content>
+                <ClienteForm getData={this.onCreateHandler}></ClienteForm>
+            </Modal.Content>
+            <Modal.Actions>
+              <Button color='green' onClick={this.agregarCliente}>
+                Guardar
+              </Button>
+              <Button color='red' onClick={this.handleCloseAgregar}>
+                Cancelar
+              </Button>
+            </Modal.Actions>
+          </Modal>
+        </Segment>
+        <Segment>
+          <Card.Group>
+           {this.renderClientesCards()}
+          </Card.Group>
+        </Segment>
+      </div>
     )
   }
 

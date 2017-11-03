@@ -32,7 +32,6 @@ export default class ClienteCard extends React.Component{
   }
 
   handleOpenEditar(){
-    console.log("open", this.state);
     this.setState({ modalOpenEditar: true})
   }
 
@@ -40,8 +39,7 @@ export default class ClienteCard extends React.Component{
     this.setState({ modalOpenEditar: false })
   }
 
-  cancelEditar(){
-    console.log("cancel",this.state);
+  cancelEditar(){    
     let {clienteOriginal} = this.state;
     this.setState({ modalOpenEditar: false, cliente: clienteOriginal })
   }
