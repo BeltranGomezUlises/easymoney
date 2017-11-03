@@ -86,8 +86,7 @@ export default class ClienteCard extends React.Component{
     }
   }
 
-  eliminarCliente(){
-    console.log(this.state.cliente)
+  eliminarCliente(){    
     fetch(localStorage.getItem('url') + 'accesos/login', {
       method: 'POST',
       headers: {

@@ -8,8 +8,7 @@ export default class PrestamoForm extends Component{
       this.state={
         clientes: [],
         cobradores: [],
-        cantidad: 0,
-        prestamo:{
+        nuevoPrestamo:{
           cantidad:0,
           cliente:{
             id:0
@@ -24,20 +23,30 @@ export default class PrestamoForm extends Component{
       this.updateInputCantidad = this.updateInputCantidad.bind(this);
       this.updateInputCliente = this.updateInputCliente.bind(this);
       this.updateInputCobrador = this.updateInputCobrador.bind(this);
+      this.renderClientes = this.renderClientes.bind(this);
+      this.renderCobradores = this.renderCobradores.bind(this);
     }
 
-
     updateInputCliente(e){
-      console.log(e.target.name);
+      let {nuevoPrestamo} = this.state;
+      nuevoPrestamo.cliente.id = e.target.value;
+      this.setState({nuevoPrestamo})
+      this.props.getData({nuevoPrestamo})
     }
 
     updateInputCobrador(e){
-      console.log(e.target.valueKey);
+      let {nuevoPrestamo} = this.state;
+      nuevoPrestamo.cobrador.id = e.target.value;
+      this.setState({nuevoPrestamo})
+      this.props.getData({nuevoPrestamo})
     }
 
     updateInputCantidad(evt){
       const cantidad = (evt.target.validity.valid) ? evt.target.value : this.state.cantidad;
-      this.setState({cantidad})
+      let {nuevoPrestamo} = this.state;
+      nuevoPrestamo.cantidad = cantidad;
+      this.setState({nuevoPrestamo})
+      this.props.getData({nuevoPrestamo})
     }
 
     componentWillMount(){
@@ -69,11 +78,13 @@ export default class PrestamoForm extends Component{
           }
         }).then((res)=> res.json())
         .then((response) =>{
-          let clientes = response.data.map((c) =>{
-            return { key: c.id, text: c.nombre, value: c.id }
+          let {nuevoPrestamo} = this.state;
+          nuevoPrestamo.cliente.id = response.data[0].id;
+          this.setState({
+            clientes:response.data,
+            nuevoPrestamo
           });
-
-          this.setState({clientes});
+          this.props.getData({nuevoPrestamo})
         })
        })
     }
@@ -102,22 +113,40 @@ export default class PrestamoForm extends Component{
           }
         }).then((res)=> res.json())
         .then((response) =>{
-          let cobradores = response.data.map((c) =>{
-            return {key: c.id, text: c.nombre, value: c.id}
-          })
-          this.setState({cobradores});
+          let {nuevoPrestamo} = this.state;
+          nuevoPrestamo.cobrador.id = response.data[0].id;
+          this.setState({cobradores:response.data, nuevoPrestamo});
+          this.props.getData({nuevoPrestamo})
         })
        })
+    }
+
+    renderClientes(){
+          return this.state.clientes.map((c) =>{
+            return <option key={c.id} value={c.id}>{c.nombre}</option>
+          })
+    }
+
+    renderCobradores(){
+      return this.state.cobradores.map((c) =>{
+        return <option key={c.id} value={c.id}>{c.nombre}</option>
+      })
     }
 
     render(){
       return(
         <Form>
           <Form.Group widths='equal'>
-             <Form.Dropdown control={Select} label='Cliente:' options={this.state.clientes} placeholder='cliente...' onChange={this.updateInputCliente}/>
-             <Form.Dropdown control={Select} label='Cobrador:' options={this.state.cobradores} placeholder='cobrador...' onChange={this.updateInputCobrador} />
+             <Label>Cliente:</Label>
+             <select value={this.state.nuevoPrestamo.cliente.id} onChange={this.updateInputCliente}>
+               {this.renderClientes()}
+             </select>
+             <Label>Cobrador:</Label>
+             <select value={this.state.nuevoPrestamo.cobrador.id} onChange={this.updateInputCobrador}>
+               {this.renderCobradores()}
+             </select>
           </Form.Group>
-          <input type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.cantidad} />
+          <input type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.nuevoPrestamo.cantidad} />
         </Form>
       );
     }

@@ -20,7 +20,7 @@ export default class CobradorCard extends React.Component{
     this.onEditHandler = this.onEditHandler.bind(this);
     this.editarCobrador = this.editarCobrador.bind(this);
     this.eliminarCobrador = this.eliminarCobrador.bind(this);
-    this.handleCloseWarning = this.handleCloseWarning.bind(this);    
+    this.handleCloseWarning = this.handleCloseWarning.bind(this);
   }
 
   handleCloseWarning(){
@@ -85,8 +85,7 @@ export default class CobradorCard extends React.Component{
     }
   }
 
-  eliminarCobrador(){
-    console.log(this.state.cobrador)
+  eliminarCobrador(){    
     fetch(localStorage.getItem('url') + 'accesos/login', {
       method: 'POST',
       headers: {

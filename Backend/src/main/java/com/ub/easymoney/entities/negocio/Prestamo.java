@@ -34,14 +34,6 @@ import javax.validation.constraints.NotNull;
 @Table(name = "prestamo")
 public class Prestamo implements Serializable, IEntity<Integer> {
 
-    @JoinColumn(name = "cliente_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    private Cliente cliente;
-
-    @JoinColumn(name = "cobrador", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    private Cobrador cobrador;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,9 +57,16 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @NotNull
     @Column(name = "fecha_limite")
     @Temporal(TemporalType.DATE)
-    private Date fechaLimite;    
+    private Date fechaLimite;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "prestamo1", fetch = FetchType.EAGER)
-    private List<Abono> abonoList;
+    private List<Abono> abonos;
+    @JoinColumn(name = "cliente_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Cliente cliente;
+
+    @JoinColumn(name = "cobrador", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Cobrador cobrador;
 
     public Prestamo() {
     }
@@ -114,15 +113,14 @@ public class Prestamo implements Serializable, IEntity<Integer> {
 
     public void setFechaLimite(Date fechaLimite) {
         this.fechaLimite = fechaLimite;
-    }   
+    }
     
-    @JsonIgnore
-    public List<Abono> getAbonoList() {
-        return abonoList;
+    public List<Abono> getAbonos() {
+        return abonos;
     }
 
-    public void setAbonoList(List<Abono> abonoList) {
-        this.abonoList = abonoList;
+    public void setAbonos(List<Abono> abonos) {
+        this.abonos = abonos;
     }
 
     @Override
@@ -161,7 +159,7 @@ public class Prestamo implements Serializable, IEntity<Integer> {
 
     public void setCobrador(Cobrador cobrador) {
         this.cobrador = cobrador;
-    }    
+    }
 
     public Cliente getCliente() {
         return cliente;
@@ -170,5 +168,5 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
-    
+
 }

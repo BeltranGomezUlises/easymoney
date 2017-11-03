@@ -69,7 +69,6 @@ export default class Cobradores extends React.Component{
         })
       }).then((res)=> res.json())
       .then((response) =>{
-        console.log(response);
         //agregar nuevocobrador a la lista actual
         let cobradores = [...this.state.cobradores, response.data];
         //limpiar nuevo cobrador
@@ -80,8 +79,7 @@ export default class Cobradores extends React.Component{
         this.handleCloseAgregar();
       })
      })
-   }else{
-     console.log('');
+   }else{     
      this.setState({modalOpenWarning:true});
    }
   }

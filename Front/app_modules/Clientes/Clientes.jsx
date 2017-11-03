@@ -70,7 +70,6 @@ export default class Clientes extends React.Component{
           })
         }).then((res)=> res.json())
         .then((response) =>{
-          console.log(response);
           //agregar nuevoCliente a la lista actual
           let clientes = [...this.state.clientes, response.data];
           //limpiar nuevo cliente
@@ -82,9 +81,7 @@ export default class Clientes extends React.Component{
         })
        })
     }else{
-      console.log('');
       this.setState({modalOpenWarning:true});
-
     }
 
 
