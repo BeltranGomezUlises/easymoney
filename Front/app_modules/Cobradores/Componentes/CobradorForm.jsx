@@ -13,7 +13,7 @@ export default class CobradorForm extends Component{
         this.state={
           cobrador:{
             nombre:'',
-            telefono:''
+            direccion:''
           }
         }
       }
@@ -47,10 +47,10 @@ export default class CobradorForm extends Component{
             {this.renderInputName()}
           </Form.Field>
           <Form.Field>
-            <label>Teléfono:</label>
-            <Input placeholder='teléfono del cobrador' value={this.state.cobrador.telefono} onChange={ (e) => {
+            <label>Dirección:</label>
+            <Input placeholder='Dirección del cobrador' value={this.state.cobrador.direccion} onChange={ (e) => {
                 let {cobrador} = this.state;
-                cobrador.telefono = e.target.value;
+                cobrador.direccion = e.target.value;
                 this.setState({cobrador});
                 this.props.getData(cobrador);
               }}/>

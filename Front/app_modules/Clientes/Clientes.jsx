@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ClienteCard from './Componentes/ClienteCard.jsx'
 import ClienteForm from './Componentes/ClienteForm.jsx'
-import { Container, Segment, Card, Button, Icon, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
+import { Segment, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
 
 export default class Clientes extends React.Component{
 
@@ -84,10 +84,7 @@ export default class Clientes extends React.Component{
     }else{
       console.log('');
       this.setState({modalOpenWarning:true});
-
     }
-
-
   }
 
   cargarClientes(){
