@@ -10,12 +10,8 @@ export default class CobradorCard extends React.Component{
       modalOpenEditar: false,
       modalOpenEliminar: false,
       modalOpenWarning: false,
-      cobrador: this.props.cobrador,
-      cobradorOriginal: {}
+      cobrador: this.props.cobrador
     };
-
-
-    Object.assign(this.state.cobradorOriginal, this.props.cobrador);
 
     this.handleOpenEditar = this.handleOpenEditar.bind(this);
     this.handleOpenEliminar = this.handleOpenEliminar.bind(this);
@@ -24,8 +20,7 @@ export default class CobradorCard extends React.Component{
     this.onEditHandler = this.onEditHandler.bind(this);
     this.editarCobrador = this.editarCobrador.bind(this);
     this.eliminarCobrador = this.eliminarCobrador.bind(this);
-    this.handleCloseWarning = this.handleCloseWarning.bind(this);
-    this.cancelEditar = this.cancelEditar.bind(this);
+    this.handleCloseWarning = this.handleCloseWarning.bind(this);    
   }
 
   handleCloseWarning(){
@@ -38,11 +33,6 @@ export default class CobradorCard extends React.Component{
 
   handleCloseEditar(){
     this.setState({ modalOpenEditar: false })
-  }
-
-  cancelEditar(){
-    let {cobradorOriginal} = this.state;
-    this.setState({ modalOpenEditar: false, cobrador: cobradorOriginal })
   }
 
   handleOpenEliminar(){
@@ -157,7 +147,7 @@ export default class CobradorCard extends React.Component{
                    <Button color='green' onClick={this.editarCobrador}>
                      Guardar
                    </Button>
-                   <Button color='red' onClick={this.cancelEditar}>
+                   <Button color='red' onClick={this.handleCloseEditar}>
                      Cancelar
                    </Button>
                  </Modal.Actions>

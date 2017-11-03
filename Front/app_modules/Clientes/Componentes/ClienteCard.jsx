@@ -10,11 +10,8 @@ export default class ClienteCard extends React.Component{
       modalOpenEditar: false,
       modalOpenEliminar: false,
       modalOpenWarning: false,
-      cliente: this.props.cliente,
-      clienteOriginal: {}
+      cliente: this.props.cliente
     };
-
-    Object.assign(this.state.clienteOriginal, this.props.cliente);
 
     this.handleOpenEditar = this.handleOpenEditar.bind(this);
     this.handleOpenEliminar = this.handleOpenEliminar.bind(this);
@@ -24,7 +21,6 @@ export default class ClienteCard extends React.Component{
     this.editarCliente = this.editarCliente.bind(this);
     this.eliminarCliente = this.eliminarCliente.bind(this);
     this.handleCloseWarning = this.handleCloseWarning.bind(this);
-    this.cancelEditar = this.cancelEditar.bind(this);
   }
 
   handleCloseWarning(){
@@ -39,11 +35,6 @@ export default class ClienteCard extends React.Component{
     this.setState({ modalOpenEditar: false })
   }
 
-  cancelEditar(){    
-    let {clienteOriginal} = this.state;
-    this.setState({ modalOpenEditar: false, cliente: clienteOriginal })
-  }
-
   handleOpenEliminar(){
     this.setState({ modalOpenEliminar: true })
   }
@@ -53,7 +44,7 @@ export default class ClienteCard extends React.Component{
   }
 
   onEditHandler(cliente){
-    this.setState({cliente});
+    this.setItem({cliente});
   }
 
   editarCliente(){
@@ -160,7 +151,7 @@ export default class ClienteCard extends React.Component{
                    <Button color='green' onClick={this.editarCliente}>
                      Guardar
                    </Button>
-                   <Button color='red' onClick={this.cancelEditar}>
+                   <Button color='red' onClick={this.handleCloseEditar}>
                      Cancelar
                    </Button>
                  </Modal.Actions>

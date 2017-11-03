@@ -139,9 +139,11 @@ export default class Cobradores extends React.Component{
 
   renderCobradores(){
     return(
-      <Segment>
+
+      <div>
+        <Segment>
           <Modal
-            trigger={<Button color='green' style={{ 'margin-bottom': '15px'}} onClick={this.handleOpenAgregar}>Agregar</Button>}
+            trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
             onClose={this.handleCloseAgregar}
             open={this.state.modalOpenAgregar}>
             <Header content='Agregar cobrador' />
@@ -157,10 +159,13 @@ export default class Cobradores extends React.Component{
               </Button>
             </Modal.Actions>
           </Modal>
-         <Card.Group>
-           {this.renderCobradoresCards()}
-          </Card.Group>
-      </Segment>
+        </Segment>
+        <Segment>
+           <Card.Group>
+             {this.renderCobradoresCards()}
+            </Card.Group>
+        </Segment>
+      </div>
     )
   }
 

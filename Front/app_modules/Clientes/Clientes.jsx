@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ClienteCard from './Componentes/ClienteCard.jsx'
 import ClienteForm from './Componentes/ClienteForm.jsx'
-import { Segment, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
+import { Container, Segment, Card, Button, Icon, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
 
 export default class Clientes extends React.Component{
 
@@ -84,7 +84,10 @@ export default class Clientes extends React.Component{
     }else{
       console.log('');
       this.setState({modalOpenWarning:true});
+
     }
+
+
   }
 
   cargarClientes(){
@@ -143,7 +146,7 @@ export default class Clientes extends React.Component{
       <div>
         <Segment>
           <Modal
-            trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
+            trigger={<Button color='green'  onClick={this.handleOpenAgregar}>Agregar</Button>}
             onClose={this.handleCloseAgregar}
             open={this.state.modalOpenAgregar}>
             <Header content='Agregar cliente' />

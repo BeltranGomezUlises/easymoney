@@ -33,11 +33,49 @@ export default class PrestamoList extends React.Component {
   }
 
   agregarPrestamo(){
-
+    fetch(localStorage.getItem('url') + 'accesos/login', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user: 'admin',
+        pass: '1234',
+      })
+    }).then((res) => res.json())
+    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
+    .then(()=>{
+      fetch(localStorage.getItem('url') + 'prestamos',{
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin':'*',
+          'Authorization': localStorage.getItem('tokenSesion')
+        },
+        body:JSON.stringify({
+          cantidad: this.state.nuevoPrestamo.cantidad,
+          cliente: this.state.nuevoCliente.cliente,
+          cobrador: this.state.nuevoCliente.cobrador
+        })
+      }).then((res)=> res.json())
+      .then((response) =>{
+        console.log(response);
+        //agregar nuevoPrestmoa a la lista actual
+        let prestamos = [...this.state.prestamos, response.data];
+        //limpiar nuevo cliente
+        this.setState({
+          prestamos,
+          nuevoPrestamo:{}
+        });
+        this.handleCloseAgregar();
+      })
+     })
   }
 
-  onCreateHandler(prestamo){
-
+  onCreateHandler(nuevoPrestamo){
+    this.setState({nuevoPrestamo});
   }
 
   cargarPrestamos(){
@@ -151,7 +189,6 @@ export default class PrestamoList extends React.Component {
                 <Table.HeaderCell>Porcentaje Pagado</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
-
             <Table.Body>
               {this.renderPrestamos()}
             </Table.Body>

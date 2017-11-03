@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Input, Button, Label, Form} from 'semantic-ui-react';
+import { Input, Button, Label, Form, Select} from 'semantic-ui-react';
 
 export default class PrestamoForm extends Component{
 
@@ -28,11 +28,11 @@ export default class PrestamoForm extends Component{
 
 
     updateInputCliente(e){
-      console.log(e.target.valueOf());
+      console.log(e.target.name);
     }
 
     updateInputCobrador(e){
-      console.log(e.target);
+      console.log(e.target.valueKey);
     }
 
     updateInputCantidad(evt){
@@ -114,8 +114,8 @@ export default class PrestamoForm extends Component{
       return(
         <Form>
           <Form.Group widths='equal'>
-             <Form.Select label='Cliente:' options={this.state.clientes} placeholder='cliente...' onChange={this.updateInputCliente} />
-             <Form.Select label='Cobrador:' options={this.state.cobradores} placeholder='cobrador...' onChange={this.updateInputCobrador} />
+             <Form.Dropdown control={Select} label='Cliente:' options={this.state.clientes} placeholder='cliente...' onChange={this.updateInputCliente}/>
+             <Form.Dropdown control={Select} label='Cobrador:' options={this.state.cobradores} placeholder='cobrador...' onChange={this.updateInputCobrador} />
           </Form.Group>
           <input type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.cantidad} />
         </Form>
