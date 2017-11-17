@@ -54,19 +54,6 @@ export default class PrestamoList extends React.Component {
   agregarPrestamo(){
     let {nuevoPrestamo} = this.state.nuevoPrestamo;
     if (nuevoPrestamo.cantidad > 0) {
-      fetch(localStorage.getItem('url') + 'accesos/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: 'admin',
-          pass: '1234',
-        })
-      }).then((res) => res.json())
-      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-      .then(()=>{
         fetch(localStorage.getItem('url') + 'prestamos',{
           method: 'POST',
           headers: {
@@ -85,7 +72,6 @@ export default class PrestamoList extends React.Component {
           this.handleCloseAgregar();
           this.cargarPrestamos();
         })
-       })
     }else{
       this.handleOpenWarning();
     }
@@ -96,19 +82,6 @@ export default class PrestamoList extends React.Component {
   }
 
   cargarPrestamos(){
-    fetch(localStorage.getItem('url') + 'accesos/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: 'admin',
-        pass: '1234',
-      })
-    }).then((res) => res.json())
-    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-    .then(()=>{
       fetch(localStorage.getItem('url') + 'prestamos',{
         method: 'GET',
         headers: {
@@ -121,7 +94,6 @@ export default class PrestamoList extends React.Component {
       .then((response) =>{
         this.setState({prestamos:response.data});
       })
-     })
   }
 
   renderPrestamos(){

@@ -21,7 +21,6 @@ export default class Clientes extends React.Component{
     this.onCreateHandler = this.onCreateHandler.bind(this);
     this.agregarCliente = this.agregarCliente.bind(this);
     this.handleCloseWarning = this.handleCloseWarning.bind(this);
-
   }
 
   handleCloseWarning(){
@@ -42,19 +41,6 @@ export default class Clientes extends React.Component{
 
   agregarCliente(){
     if (this.state.nuevoCliente.nombre) {
-      fetch(localStorage.getItem('url') + 'accesos/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: 'admin',
-          pass: '1234',
-        })
-      }).then((res) => res.json())
-      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-      .then(()=>{
         fetch(localStorage.getItem('url') + 'clientes',{
           method: 'POST',
           headers: {
@@ -79,7 +65,6 @@ export default class Clientes extends React.Component{
           });
           this.handleCloseAgregar();
         })
-       })
     }else{
       this.setState({modalOpenWarning:true});
     }
@@ -88,19 +73,6 @@ export default class Clientes extends React.Component{
   }
 
   cargarClientes(){
-    fetch(localStorage.getItem('url') + 'accesos/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: 'admin',
-        pass: '1234',
-      })
-    }).then((res) => res.json())
-    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-    .then(()=>{
       fetch(localStorage.getItem('url') + 'clientes',{
         method: 'GET',
         headers: {
@@ -113,7 +85,6 @@ export default class Clientes extends React.Component{
       .then((response) =>{
         this.setState({clientes:response.data});
       })
-     })
   }
 
   renderClientesCards(){

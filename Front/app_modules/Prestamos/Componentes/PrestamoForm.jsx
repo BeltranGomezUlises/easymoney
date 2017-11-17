@@ -42,7 +42,7 @@ export default class PrestamoForm extends Component{
     }
 
     updateInputCantidad(evt){
-      const cantidad = (evt.target.validity.valid) ? evt.target.value : this.state.cantidad;
+      const cantidad = (evt.target.validity.valid) ? evt.target.value : this.state.nuevoPrestamo.cantidad;
       let {nuevoPrestamo} = this.state;
       nuevoPrestamo.cantidad = cantidad;
       this.setState({nuevoPrestamo})
@@ -55,19 +55,6 @@ export default class PrestamoForm extends Component{
     }
 
     cargarClientes(){
-      fetch(localStorage.getItem('url') + 'accesos/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: 'admin',
-          pass: '1234',
-        })
-      }).then((res) => res.json())
-      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-      .then(()=>{
         fetch(localStorage.getItem('url') + 'clientes',{
           method: 'GET',
           headers: {
@@ -86,23 +73,9 @@ export default class PrestamoForm extends Component{
           });
           this.props.getData({nuevoPrestamo})
         })
-       })
     }
 
     cargarCobradores(){
-      fetch(localStorage.getItem('url') + 'accesos/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: 'admin',
-          pass: '1234',
-        })
-      }).then((res) => res.json())
-      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-      .then(()=>{
         fetch(localStorage.getItem('url') + 'cobradores',{
           method: 'GET',
           headers: {
@@ -118,7 +91,6 @@ export default class PrestamoForm extends Component{
           this.setState({cobradores:response.data, nuevoPrestamo});
           this.props.getData({nuevoPrestamo})
         })
-       })
     }
 
     renderClientes(){

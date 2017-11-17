@@ -42,20 +42,7 @@ export default class Cobradores extends React.Component{
 
   agregarCobrador(){
     if (this.state.nuevoCobrador.nombre){
-      fetch(localStorage.getItem('url') + 'accesos/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: 'admin',
-          pass: '1234',
-        })
-      }).then((res) => res.json())
-      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-      .then(()=>{
-        fetch(localStorage.getItem('url') + 'cobradores',{
+      fetch(localStorage.getItem('url') + 'cobradores',{
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -78,26 +65,12 @@ export default class Cobradores extends React.Component{
         });
         this.handleCloseAgregar();
       })
-     })
-   }else{     
+   }else{
      this.setState({modalOpenWarning:true});
    }
   }
 
   cargarCobradores(){
-    fetch(localStorage.getItem('url') + 'accesos/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: 'admin',
-        pass: '1234',
-      })
-    }).then((res) => res.json())
-    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-    .then(()=>{
       fetch(localStorage.getItem('url') + 'cobradores',{
         method: 'GET',
         headers: {
@@ -110,7 +83,6 @@ export default class Cobradores extends React.Component{
       .then((response) =>{
         this.setState({cobradores:response.data});
       })
-     })
   }
 
   renderCobradoresCards(){
