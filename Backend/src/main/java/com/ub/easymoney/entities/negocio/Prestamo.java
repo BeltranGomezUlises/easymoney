@@ -18,6 +18,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -30,7 +32,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "prestamo")
-public class Prestamo implements Serializable, IEntity<Integer>{
+public class Prestamo implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -56,12 +58,15 @@ public class Prestamo implements Serializable, IEntity<Integer>{
     @Column(name = "fecha_limite")
     @Temporal(TemporalType.DATE)
     private Date fechaLimite;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "cliente_id")
-    private int clienteId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "prestamo1", fetch = FetchType.EAGER)
-    private List<Abono> abonoList;
+    private List<Abono> abonos;
+    @JoinColumn(name = "cliente_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Cliente cliente;
+
+    @JoinColumn(name = "cobrador", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Cobrador cobrador;
 
     public Prestamo() {
     }
@@ -70,15 +75,6 @@ public class Prestamo implements Serializable, IEntity<Integer>{
         this.id = id;
     }
 
-    public Prestamo(Integer id, Date fecha, int cantidad, int cantidadPagar, Date fechaLimite, int clienteId) {
-        this.id = id;
-        this.fecha = fecha;
-        this.cantidad = cantidad;
-        this.cantidadPagar = cantidadPagar;
-        this.fechaLimite = fechaLimite;
-        this.clienteId = clienteId;
-    }
-    
     public Integer getId() {
         return id;
     }
@@ -118,22 +114,13 @@ public class Prestamo implements Serializable, IEntity<Integer>{
     public void setFechaLimite(Date fechaLimite) {
         this.fechaLimite = fechaLimite;
     }
-
-    public int getClienteId() {
-        return clienteId;
+    
+    public List<Abono> getAbonos() {
+        return abonos;
     }
 
-    public void setClienteId(int clienteId) {
-        this.clienteId = clienteId;
-    }
-        
-    @JsonIgnore
-    public List<Abono> getAbonoList() {
-        return abonoList;
-    }
-
-    public void setAbonoList(List<Abono> abonoList) {
-        this.abonoList = abonoList;
+    public void setAbonos(List<Abono> abonos) {
+        this.abonos = abonos;
     }
 
     @Override
@@ -165,5 +152,21 @@ public class Prestamo implements Serializable, IEntity<Integer>{
     public Integer obtenerIdentificador() {
         return id;
     }
-    
+
+    public Cobrador getCobrador() {
+        return cobrador;
+    }
+
+    public void setCobrador(Cobrador cobrador) {
+        this.cobrador = cobrador;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
 }

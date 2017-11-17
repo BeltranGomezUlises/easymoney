@@ -31,7 +31,7 @@ public class ManagerUsuario extends ManagerSQL<Usuario, Integer>{
             Usuario u = this.dao.stream().where( a -> a.getNombre().equals(user) && a.getContra().equals(pass)).findFirst().get();            
             return u;
         } catch (NoSuchElementException e) {            
-            throw new UsuarioInexistenteException("no se reconoce usuario y/o contraseña");
+            throw new UsuarioInexistenteException("No se reconoce usuario y/o contraseña");
         }                                
     }
 

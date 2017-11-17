@@ -9,6 +9,7 @@ export default class ClienteCard extends React.Component{
     this.state = {
       modalOpenEditar: false,
       modalOpenEliminar: false,
+      modalOpenWarning: false,
       cliente: this.props.cliente
     };
 
@@ -18,10 +19,16 @@ export default class ClienteCard extends React.Component{
     this.handleCloseEliminar = this.handleCloseEliminar.bind(this);
     this.onEditHandler = this.onEditHandler.bind(this);
     this.editarCliente = this.editarCliente.bind(this);
+    this.eliminarCliente = this.eliminarCliente.bind(this);
+    this.handleCloseWarning = this.handleCloseWarning.bind(this);
+  }
+
+  handleCloseWarning(){
+    this.setState({modalOpenWarning: false});
   }
 
   handleOpenEditar(){
-    this.setState({ modalOpenEditar: true })
+    this.setState({ modalOpenEditar: true})
   }
 
   handleCloseEditar(){
@@ -37,47 +44,49 @@ export default class ClienteCard extends React.Component{
   }
 
   onEditHandler(cliente){
-    this.setState({cliente});
+    this.setItem({cliente});
   }
 
   editarCliente(){
-    console.log(this.state);
-    fetch(localStorage.getItem('url') + 'accesos/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: 'admin',
-        pass: '1234',
-      })
-    }).then((res) => res.json())
-    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-    .then(()=>{
-      fetch(localStorage.getItem('url') + 'clientes',{
-        method: 'PUT',
+    if (this.state.cliente.nombre !== '') {
+      fetch(localStorage.getItem('url') + 'accesos/login', {
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin':'*',
-          'Authorization': localStorage.getItem('tokenSesion')
         },
         body: JSON.stringify({
-          id: this.state.cliente.id,
-          nombre: this.state.cliente.nombre,
-          direccion: this.state.cliente.direccion,
-          telefono: this.state.cliente.telefono
+          user: 'admin',
+          pass: '1234',
         })
-      }).then((res)=> res.json())
-      .then((response) =>{
-        console.log(response);
-          this.setState({modalOpenEditar:false});
-      })
-     })
+      }).then((res) => res.json())
+      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
+      .then(()=>{
+        fetch(localStorage.getItem('url') + 'clientes',{
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin':'*',
+            'Authorization': localStorage.getItem('tokenSesion')
+          },
+          body: JSON.stringify({
+            id: this.state.cliente.id,
+            nombre: this.state.cliente.nombre,
+            direccion: this.state.cliente.direccion,
+            telefono: this.state.cliente.telefono
+          })
+        }).then((res)=> res.json())
+        .then((response) =>{
+            this.setState({modalOpenEditar:false});
+        })
+       })
+    }else{
+        this.setState({modalOpenWarning:true});
+    }
   }
 
-  eliminarCliente(){
+  eliminarCliente(){    
     fetch(localStorage.getItem('url') + 'accesos/login', {
       method: 'POST',
       headers: {
@@ -100,7 +109,7 @@ export default class ClienteCard extends React.Component{
           'Authorization': localStorage.getItem('tokenSesion')
         },
         body: JSON.stringify({
-          id: this.props.cliente.id
+          id: this.state.cliente.id
         })
       }).then((res)=> res.json())
       .then((response) =>{
@@ -161,6 +170,14 @@ export default class ClienteCard extends React.Component{
                    <Button color='red' onClick={this.handleCloseEliminar}>
                      Cancelar
                    </Button>
+                 </Modal.Actions>
+               </Modal>
+               <Modal open={this.state.modalOpenWarning} onClose={this.handleCloseWarning} closeOnRootNodeClick={false}>
+                 <Modal.Content>
+                   <h3>Es necesario llenar el nombre del cliente</h3>
+                 </Modal.Content>
+                 <Modal.Actions>
+                   <Button color='green' onClick={this.handleCloseWarning} inverted> Entendido </Button>
                  </Modal.Actions>
                </Modal>
              </div>

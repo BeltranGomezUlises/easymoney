@@ -37,6 +37,4 @@ public final class UtilsConfig {
         return daoConfig.findFirst().getDiasPrestamo();        
     }
     
-    
-    
 }
