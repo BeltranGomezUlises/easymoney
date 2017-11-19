@@ -16,11 +16,14 @@
  */
 package com.ub.easymoney.services.commos;
 
+import com.ub.easymoney.daos.exceptions.ForeignKeyException;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import com.ub.easymoney.managers.commons.ManagerFacade;
+import com.ub.easymoney.models.commons.commons.enums.Status;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
+import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
 import static com.ub.easymoney.utils.UtilsService.setOkResponse;
@@ -167,6 +170,9 @@ public class ServiceFacade<T extends IEntity<K>, K> {
             setOkResponse(response, t, "Entidad Eliminada");
         } catch (TokenExpiradoException | TokenInvalidoException ex) {
             setInvalidTokenResponse(response);
+        }catch (ForeignKeyException e) {
+            response.setStatus(Status.WARNING);
+            response.setMessage(e.getMessage());            
         } catch (Exception e) {
             setErrorResponse(response, e);
         }

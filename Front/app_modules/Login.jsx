@@ -23,7 +23,6 @@ export default class Login extends React.Component{
   }
 
   handleSumbit(){
-    console.log(this.state)
     fetch(localStorage.getItem('url') + 'accesos/login', {
       method: 'POST',
       headers: {
@@ -35,8 +34,7 @@ export default class Login extends React.Component{
         pass: this.state.pass,
       })
     }).then((res) => res.json())
-    .then((response) => {
-      console.log(response);
+    .then((response) => {      
       if (response.meta.status == 'OK') {
         localStorage.setItem('tokenSesion', response.meta.metaData);
         let ruta = window.location.href.split('#');

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card , Icon, Input, Button, Modal, Header, Label, Form} from 'semantic-ui-react';
 import CobradorForm from './CobradorForm.jsx';
+import * as utils from '../../../utils.js';
 
 export default class CobradorCard extends React.Component{
 
@@ -44,24 +45,11 @@ export default class CobradorCard extends React.Component{
   }
 
   onEditHandler(cobrador){
-    this.setItem({cobrador});
+    this.setState({cobrador});
   }
 
   editarCobrador(){
     if (this.state.cobrador.nombre !== '') {
-      fetch(localStorage.getItem('url') + 'accesos/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: 'admin',
-          pass: '1234',
-        })
-      }).then((res) => res.json())
-      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-      .then(()=>{
         fetch(localStorage.getItem('url') + 'cobradores',{
           method: 'PUT',
           headers: {
@@ -79,26 +67,12 @@ export default class CobradorCard extends React.Component{
         .then((response) =>{
             this.setState({modalOpenEditar:false});
         })
-       })
     }else{
         this.setState({modalOpenWarning:true});
     }
   }
 
-  eliminarCobrador(){    
-    fetch(localStorage.getItem('url') + 'accesos/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: 'admin',
-        pass: '1234',
-      })
-    }).then((res) => res.json())
-    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-    .then(()=>{
+  eliminarCobrador(){
       fetch(localStorage.getItem('url') + 'cobradores',{
         method: 'DELETE',
         headers: {
@@ -113,9 +87,10 @@ export default class CobradorCard extends React.Component{
       }).then((res)=> res.json())
       .then((response) =>{
           this.setState({modalOpenEliminar:false});
-          this.props.removeCobrador(response.data);
+          utils.evalResponse(response, () => {
+            this.props.removeCobrador(response.data);
+          });
       })
-     })
   }
 
   render(){

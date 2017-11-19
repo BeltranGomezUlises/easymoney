@@ -47,7 +47,7 @@ public class Cliente implements Serializable, IEntity<Integer> {
     @Size(max = 2147483647)
     @Column(name = "telefono")
     private String telefono;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
     private List<Prestamo> prestamoList;
 
     public Cliente() {

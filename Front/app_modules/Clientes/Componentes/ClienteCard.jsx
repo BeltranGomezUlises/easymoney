@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card , Icon, Input, Button, Header, Modal, Label, Form} from 'semantic-ui-react';
 import ClienteForm from './ClienteForm.jsx'
-
+import * as utils from '../../../utils.js';
 export default class ClienteCard extends React.Component{
 
   constructor(props){
@@ -44,7 +44,7 @@ export default class ClienteCard extends React.Component{
   }
 
   onEditHandler(cliente){
-    this.setItem({cliente});
+    this.setState({cliente});
   }
 
   editarCliente(){
@@ -86,20 +86,7 @@ export default class ClienteCard extends React.Component{
     }
   }
 
-  eliminarCliente(){    
-    fetch(localStorage.getItem('url') + 'accesos/login', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: 'admin',
-        pass: '1234',
-      })
-    }).then((res) => res.json())
-    .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-    .then(()=>{
+  eliminarCliente(){
       fetch(localStorage.getItem('url') + 'clientes',{
         method: 'DELETE',
         headers: {
@@ -114,9 +101,10 @@ export default class ClienteCard extends React.Component{
       }).then((res)=> res.json())
       .then((response) =>{
           this.setState({modalOpenEliminar:false});
-          this.props.removeCliente(response.data);
+          utils.evalResponse(response, () => {
+            this.props.removeCliente(response.data);
+          });
       })
-     })
   }
 
   render(){

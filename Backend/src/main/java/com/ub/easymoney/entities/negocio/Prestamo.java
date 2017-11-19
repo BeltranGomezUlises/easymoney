@@ -63,7 +63,6 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @JoinColumn(name = "cliente_id", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Cliente cliente;
-
     @JoinColumn(name = "cobrador", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Cobrador cobrador;

@@ -44,7 +44,7 @@ public class Cobrador implements Serializable, IEntity<Integer> {
     @Size(max = 2147483647)
     @Column(name = "direccion")
     private String direccion;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cobrador", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cobrador", fetch = FetchType.EAGER)
     private List<Prestamo> prestamoList;
 
     public Cobrador() {

@@ -5,10 +5,15 @@
  */
 package com.ub.easymoney.daos.commons;
 
+import com.ub.easymoney.daos.exceptions.ForeignKeyException;
 import com.ub.easymoney.entities.commons.commons.IEntity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -159,13 +164,16 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
         return entities;
     }
 
-    public void delete(K id) throws Exception {
+    public void delete(K id) throws ForeignKeyException, Exception {
         EntityManager em = this.getEM();
         try {
             em.getTransaction().begin();
             em.remove(em.getReference(claseEntity, id));
             em.getTransaction().commit();
-        } catch (Exception e) {
+        } catch (Exception e) {          
+            if (e.getMessage().contains("violates foreign key constraint")) {
+                throw new ForeignKeyException(this.foreignKeyMessage(e.getMessage(), "eliminar"));
+            }
             throw e;
         } finally {
             if (em != null) {
@@ -259,4 +267,13 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
         return count;
     }
 
+    private String foreignKeyMessage(String s, String accionAMostrar){                
+        Pattern p = Pattern.compile("\"(.+?)\"");
+        Matcher m = p.matcher(s);        
+        List<String> incidencias = new ArrayList<>(5);
+        while(m.find()){
+            incidencias.add(m.group(1));
+        }               
+        return "No se pudo " + accionAMostrar + " " + incidencias.get(0) + " por que aun está siendo utilizado en algún " + incidencias.get(incidencias.size() - 1);        
+    }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Link, HashRouter } from 'react-router-dom';
 import { Button, Container, Divider,  Dropdown,  Header,  Message,  Segment,  Menu, Icon, Sidebar, Image } from 'semantic-ui-react';
+import Notifications, {notify} from 'react-notify-toast';
 
 import Clientes from './app_modules/Clientes/Clientes.jsx';
 import Cobradores from './app_modules/Cobradores/Cobradores.jsx';
@@ -35,7 +36,7 @@ class MainContainer extends React.Component{
            <Menu.Item position='left' onClick={() => this.setState({ menuVisible: !this.state.menuVisible })} >
              <strong>Menú</strong>
            </Menu.Item>
-           <Menu.Item position='right' link='/login' onClick={() => {
+           <Menu.Item position='right' onClick={() => {
                localStorage.setItem('tokenSesion', '');
                let ruta = window.location.href.split('#');
                window.location.href = ruta[0] + '#/login';
@@ -66,6 +67,7 @@ class MainContainer extends React.Component{
   render() {
     return(
       <div style={mystyle}>
+        <Notifications />
         {this.renderMainContent()}
       </div>
     )
