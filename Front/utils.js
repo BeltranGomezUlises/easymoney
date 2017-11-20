@@ -10,11 +10,11 @@ export function evalResponse(response, callback){
       callback();
       break;
     case 'WARNING':
-      notify.show(response.meta.message, 'warning', 6000, '#FFCC00');
+      notify.show(response.meta.message, 'warning', 6000);
       console.log(response);
       break;
     case 'ERROR':
-      notify.show(response.meta.message + ' causado por: ' + response.meta.devMessage, 'error', 8000, '#FF3300');      
+      notify.show(response.meta.message + ' causado por: ' + response.meta.devMessage, 'error', 8000);
       console.log(response);
       break;
   }

@@ -135,9 +135,6 @@ export default class PrestamoList extends React.Component {
           <Table.Cell>
               {new Date(prestamo.fechaLimite).toLocaleDateString()}
           </Table.Cell>
-          <Table.Cell>
-              30%
-          </Table.Cell>
         </Table.Row>
       )
     })
@@ -156,8 +153,7 @@ export default class PrestamoList extends React.Component {
               <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
               <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
               <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
-              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
-              <Table.HeaderCell>Porcentaje Pagado</Table.HeaderCell>
+              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>              
             </Table.Row>
           </Table.Header>
           <Table.Body>

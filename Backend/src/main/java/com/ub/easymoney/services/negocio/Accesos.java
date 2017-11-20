@@ -55,7 +55,10 @@ public class Accesos {
         return r;
     }
     
-    
+    /**
+     * servicio de reseteo de configuraciones, para uso solo en desarrollo
+     * @return 
+     */
     @GET
     @Path("/resetAll")
     public Response<List> resetUsuarios(){

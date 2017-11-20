@@ -18,5 +18,5 @@ public class ManagerConfig extends ManagerSQL<Config, Integer> {
     public ManagerConfig() {
         super(new DaoConfig());
     }
-    
+            
 }

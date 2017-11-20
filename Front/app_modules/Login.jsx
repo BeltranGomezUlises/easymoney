@@ -10,7 +10,8 @@ export default class Login extends React.Component{
     this.state = {
       user: '',
       pass: '',
-      message: ''
+      message: '',
+      loading:false
     }
 
     localStorage.setItem('tokenSesion', '');
@@ -23,6 +24,7 @@ export default class Login extends React.Component{
   }
 
   handleSumbit(){
+    this.setState({loading:true});
     fetch(localStorage.getItem('url') + 'accesos/login', {
       method: 'POST',
       headers: {
@@ -34,14 +36,14 @@ export default class Login extends React.Component{
         pass: this.state.pass,
       })
     }).then((res) => res.json())
-    .then((response) => {      
+    .then((response) => {
       if (response.meta.status == 'OK') {
         localStorage.setItem('tokenSesion', response.meta.metaData);
         let ruta = window.location.href.split('#');
         window.location.href = ruta[0] + '#/prestamos';
       }else{
         if (response.meta.status == 'WARNING') {
-          this.setState({message: response.meta.message});
+          this.setState({message: response.meta.message, loading: false});
         }
       }
     })
@@ -65,6 +67,18 @@ export default class Login extends React.Component{
     }
   }
 
+  renderButton(){
+    if (this.state.loading) {
+      return(
+          <Button loading primary type='sumbit'>Iniciar Sesion</Button>
+      );
+    }else{
+      return(
+        <Button primary type='sumbit'>Iniciar Sesion</Button>
+      );
+    }
+  }
+
   render(){
     return(
       <div>
@@ -85,7 +99,7 @@ export default class Login extends React.Component{
                   <label>Contraseña:</label>
                   <input type='password' placeholder='ingrese la contraseña...' onChange={this.handlePassChange}/>
                 </Form.Field>
-                <Button primary type='sumbit'>Iniciar Sesion</Button>
+                {this.renderButton()}
               </Form>
           </Segment>
         </Container>

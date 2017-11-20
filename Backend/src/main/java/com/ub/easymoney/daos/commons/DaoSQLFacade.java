@@ -7,6 +7,7 @@ package com.ub.easymoney.daos.commons;
 
 import com.ub.easymoney.daos.exceptions.ForeignKeyException;
 import com.ub.easymoney.entities.commons.commons.IEntity;
+import com.ub.easymoney.entities.negocio.Abono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static java.util.stream.Collectors.toList;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -26,8 +28,7 @@ import org.jinq.jpa.JinqJPAStreamProvider;
  * Facade Data Access Object para entidades SQL
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
- * @param <T> Entidad JPA a utilizar por el controlador C JPA respaldado de
- * DaoSQLFacade
+ * @param <T> Entidad JPA a utilizar por el controlador C JPA respaldado de DaoSQLFacade
  * @param <K> Tipo de dato de la llave primaria de la entidad
  */
 public abstract class DaoSQLFacade<T extends IEntity, K> {
@@ -38,12 +39,9 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     private final JinqJPAStreamProvider streamProvider;
 
     /**
-     * al sobreescribir considerar la fabrica de EntityManager, que sea la que
-     * apunte a la base de datos adecuada, que la clase entidad sea correcta y
-     * la clase que represente la llave primaria tambien corresponda
+     * al sobreescribir considerar la fabrica de EntityManager, que sea la que apunte a la base de datos adecuada, que la clase entidad sea correcta y la clase que represente la llave primaria tambien corresponda
      *
-     * @param eMFactory fabrica de manejadores de entidad EntityManager que
-     * corresponda a la base de datos con la cual trabajar
+     * @param eMFactory fabrica de manejadores de entidad EntityManager que corresponda a la base de datos con la cual trabajar
      * @param claseEntity clase de la entidad con la cual operar
      * @param clasePk clase que represente la llave primaria de la entidad
      */
@@ -73,8 +71,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     /**
-     * obtiene una nueva instancia de un EntityManager de la fabrica
-     * proporsionada al construir el objeto
+     * obtiene una nueva instancia de un EntityManager de la fabrica proporsionada al construir el objeto
      *
      * @return EntityManager de la fabrica de este Data Access Object
      */
@@ -93,8 +90,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     /**
-     * construye un Stream de datos de tipo JPAJinq, esto para poder realizar
-     * consultas con funciones lambda
+     * construye un Stream de datos de tipo JPAJinq, esto para poder realizar consultas con funciones lambda
      *
      * @return strema de datos de la entidad con la cual operar
      */
@@ -150,9 +146,9 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
         EntityManager em = this.getEM();
         try {
             em.getTransaction().begin();
-            for (T entity : entities) {
+            entities.forEach((entity) -> {
                 em.persist(entity);
-            }
+            });
             em.getTransaction().commit();
         } catch (Exception e) {
             throw e;
@@ -170,7 +166,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
             em.getTransaction().begin();
             em.remove(em.getReference(claseEntity, id));
             em.getTransaction().commit();
-        } catch (Exception e) {          
+        } catch (Exception e) {
             if (e.getMessage().contains("violates foreign key constraint")) {
                 throw new ForeignKeyException(this.foreignKeyMessage(e.getMessage(), "eliminar"));
             }
@@ -267,13 +263,14 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
         return count;
     }
 
-    private String foreignKeyMessage(String s, String accionAMostrar){                
+    private String foreignKeyMessage(String s, String accionAMostrar) {
         Pattern p = Pattern.compile("\"(.+?)\"");
-        Matcher m = p.matcher(s);        
+        Matcher m = p.matcher(s);
         List<String> incidencias = new ArrayList<>(5);
-        while(m.find()){
+        while (m.find()) {
             incidencias.add(m.group(1));
-        }               
-        return "No se pudo " + accionAMostrar + " " + incidencias.get(0) + " por que aun está siendo utilizado en algún " + incidencias.get(incidencias.size() - 1);        
+        }
+        return "No se pudo " + accionAMostrar + " " + incidencias.get(0) + " por que aun está siendo utilizado en algún " + incidencias.get(incidencias.size() - 1);
     }
+    
 }

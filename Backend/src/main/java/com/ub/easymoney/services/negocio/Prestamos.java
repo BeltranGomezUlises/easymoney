@@ -7,7 +7,6 @@ package com.ub.easymoney.services.negocio;
 
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.negocio.ManagerPrestamo;
-import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.services.commos.ServiceFacade;
 import javax.ws.rs.Path;
 
@@ -21,39 +20,6 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer>{
     public Prestamos() {
         super(new ManagerPrestamo());
     }
-
-    
-    /**
-     * solo es necesario mandar el atributo id correpondiente
-     * @param token
-     * @param t
-     * @return 
-     */
-    @Override
-    public Response eliminar(String token, Prestamo t) {
-        return super.eliminar(token, t); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Response modificar(String token, Prestamo t) {
-        return super.modificar(token, t); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Response alta(String token, Prestamo t) {
-        return super.alta(token, t); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Response detalle(String token, String id) {
-        return super.detalle(token, id); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Response listar(String token) {
-        return super.listar(token); //To change body of generated methods, choose Tools | Templates.
-    }
-    
     
     
 }

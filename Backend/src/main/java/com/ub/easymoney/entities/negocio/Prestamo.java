@@ -113,7 +113,7 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     public void setFechaLimite(Date fechaLimite) {
         this.fechaLimite = fechaLimite;
     }
-    
+
     public List<Abono> getAbonos() {
         return abonos;
     }

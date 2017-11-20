@@ -5,6 +5,7 @@
  */
 package com.ub.easymoney.entities.negocio;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
 import java.util.Date;
@@ -87,6 +88,7 @@ public class Multa implements Serializable, IEntity<MultaPK> {
         this.multaDes = multaDes;
     }
 
+    @JsonIgnore
     public Abono getAbono() {
         return abono;
     }

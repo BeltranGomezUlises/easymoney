@@ -15,6 +15,8 @@ import com.ub.easymoney.entities.commons.ConfigMail;
  */
 public final class UtilsConfig {       
 
+    private static final DaoConfig DAO_CONFIG = new DaoConfig();
+    
     static ConfigMail getResetPasswordConfigMail() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -27,14 +29,12 @@ public final class UtilsConfig {
         return 1800; //segundos
     }
 
-    public static int getPorcentajeComisionPrestamo() throws Exception {
-        DaoConfig daoConfig = new DaoConfig();
-        return daoConfig.findFirst().getPorcentajeInteresPrestamo();        
+    public static int getPorcentajeComisionPrestamo() throws Exception {        
+        return DAO_CONFIG.findFirst().getPorcentajeInteresPrestamo();        
     }
 
-    public static int getDiasPlazoPrestamo() throws Exception {
-        DaoConfig daoConfig = new DaoConfig();
-        return daoConfig.findFirst().getDiasPrestamo();        
+    public static int getDiasPlazoPrestamo() throws Exception {        
+        return DAO_CONFIG.findFirst().getDiasPrestamo();        
     }
     
 }
