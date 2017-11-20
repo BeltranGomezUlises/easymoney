@@ -51,7 +51,7 @@ public class UtilsDate {
     /**
      * convierte date en su representacion texto en formato d/MM/yyyy
      * @param date fecha a convertir
-     * @return 
+     * @return texto de la fecha
      */
     public static String format_D_MM_YYYY(Date date) {
         return SDF_D_MM_YYYY.format(date);
@@ -94,11 +94,11 @@ public class UtilsDate {
     }
 
     /**
-     * obtiene el nombre del dia de la semana de la fecha otorgada en el parametro date en formato texto "EEEE"
+     * obtiene el nombre del dia de la semana de la fecha otorgada en el parametro "date" en formato texto "EEEE"
      * @param date fecha de la cuel obtener el día
      * @param DateFormat formato de texto en el que se encuentra la fecha
      * @return texto con el nombre del dáa de la semana
-     * @throws ParseException 
+     * @throws ParseException
      */
     public static String nameDayOfWeek(String date, String DateFormat) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(DateFormat);

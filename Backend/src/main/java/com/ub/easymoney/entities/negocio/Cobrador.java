@@ -5,16 +5,19 @@
  */
 package com.ub.easymoney.entities.negocio;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -25,12 +28,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "cobrador")
-@NamedQueries({
-    @NamedQuery(name = "Cobrador.findAll", query = "SELECT c FROM Cobrador c")
-    , @NamedQuery(name = "Cobrador.findById", query = "SELECT c FROM Cobrador c WHERE c.id = :id")
-    , @NamedQuery(name = "Cobrador.findByNombre", query = "SELECT c FROM Cobrador c WHERE c.nombre = :nombre")
-    , @NamedQuery(name = "Cobrador.findByDireccion", query = "SELECT c FROM Cobrador c WHERE c.direccion = :direccion")})
-public class Cobrador extends IEntity implements Serializable {
+public class Cobrador implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,6 +44,8 @@ public class Cobrador extends IEntity implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "direccion")
     private String direccion;
+    @OneToMany(mappedBy = "cobrador", fetch = FetchType.EAGER)
+    private List<Prestamo> prestamoList;
 
     public Cobrador() {
     }
@@ -83,6 +83,15 @@ public class Cobrador extends IEntity implements Serializable {
         this.direccion = direccion;
     }
 
+    @JsonIgnore
+    public List<Prestamo> getPrestamoList() {
+        return prestamoList;
+    }
+
+    public void setPrestamoList(List<Prestamo> prestamoList) {
+        this.prestamoList = prestamoList;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -107,5 +116,10 @@ public class Cobrador extends IEntity implements Serializable {
     public String toString() {
         return "com.ub.easymoney.entities.negocio.Cobrador[ id=" + id + " ]";
     }
-    
+
+    @Override
+    public Integer obtenerIdentificador() {
+        return id;
+    }
+
 }

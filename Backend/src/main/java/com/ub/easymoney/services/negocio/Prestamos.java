@@ -21,4 +21,5 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer>{
         super(new ManagerPrestamo());
     }
     
+    
 }

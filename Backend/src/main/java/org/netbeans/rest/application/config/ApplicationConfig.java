@@ -36,8 +36,10 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(com.ub.easymoney.services.admin.Configs.class);
         resources.add(com.ub.easymoney.services.admin.Usuarios.class);
         resources.add(com.ub.easymoney.services.admin.Utilerias.class);
+        resources.add(com.ub.easymoney.services.commos.ServiceFacade.class);
         resources.add(com.ub.easymoney.services.negocio.Abonos.class);
         resources.add(com.ub.easymoney.services.negocio.Accesos.class);
         resources.add(com.ub.easymoney.services.negocio.Clientes.class);

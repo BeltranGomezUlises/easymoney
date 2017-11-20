@@ -10,30 +10,25 @@ import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * entidad de un cliente al que se le realizan prestamos
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Entity
 @Table(name = "cliente")
-@NamedQueries({
-    @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c")
-    , @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id")
-    , @NamedQuery(name = "Cliente.findByNombre", query = "SELECT c FROM Cliente c WHERE c.nombre = :nombre")
-    , @NamedQuery(name = "Cliente.findByDireccion", query = "SELECT c FROM Cliente c WHERE c.direccion = :direccion")
-    , @NamedQuery(name = "Cliente.findByTelefono", query = "SELECT c FROM Cliente c WHERE c.telefono = :telefono")})
-public class Cliente extends IEntity implements Serializable {
+public class Cliente implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -41,7 +36,9 @@ public class Cliente extends IEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 2147483647)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
     @Size(max = 2147483647)
@@ -50,7 +47,7 @@ public class Cliente extends IEntity implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "telefono")
     private String telefono;
-    @OneToMany(mappedBy = "clienteId")
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
     private List<Prestamo> prestamoList;
 
     public Cliente() {
@@ -58,6 +55,11 @@ public class Cliente extends IEntity implements Serializable {
 
     public Cliente(Integer id) {
         this.id = id;
+    }
+
+    public Cliente(Integer id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
     }
 
     public Integer getId() {
@@ -124,6 +126,11 @@ public class Cliente extends IEntity implements Serializable {
     @Override
     public String toString() {
         return "com.ub.easymoney.entities.negocio.Cliente[ id=" + id + " ]";
+    }
+
+    @Override
+    public Integer obtenerIdentificador() {
+        return id;
     }
 
 }

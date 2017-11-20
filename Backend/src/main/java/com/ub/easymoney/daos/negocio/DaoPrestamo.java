@@ -18,5 +18,5 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
     public DaoPrestamo() {
         super(UtilsDB.getEMFactoryCG(), Prestamo.class, Integer.class);
     }
-    
+     
 }

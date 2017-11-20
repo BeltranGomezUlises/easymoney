@@ -20,11 +20,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * clase padre de cualquier entidad de la configuracion general
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ * @param <K> tipo de dato de llave primaria
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class IEntity {
-     
-    public abstract Object getId();
-                
+public interface IEntity<K> {
+
+    /**
+     * todas las entidades necesitan tener una forma de identificarse, en este metodo se retorna el atributo que indentifica a una entidad 
+     * como unica, puede ser un atributo simple o un modelo que encapsule atributos y convierta el id en una llave compuesta
+     *
+     * @return objeto que representa la llave unica de la entidad
+     */
+    public K obtenerIdentificador();
+
 }

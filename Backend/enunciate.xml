@@ -16,18 +16,23 @@
     <swagger disabled="true"/>
     <ruby-json-client disabled="true"/>
     <php-json-client disabled="true"/>
+    <java-client disabled="true"/>
+    <java-json-client disabled="true"/>
+    <javascript-client disabled="true"/>
     <idl disabled="true"/>
     <docs includeExampleXml="false"/>
 
     <docs>
       <download file="LICENSE" name="Apache II" description="The license governing this API" showLink="true"/>
     </docs>
-
+<!--
     <java-xml-client>
       <package-conversions>
         <convert from="com.ub" to="com.ub.client"/>
       </package-conversions>
     </java-xml-client>
+-->
+
   </modules>
 
 </enunciate>

@@ -7,47 +7,44 @@ package com.ub.easymoney.entities.negocio;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
-import com.webcohesion.enunciate.metadata.Ignore;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * entidad de una multa aplicada a un abono de un prestamo
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Entity
 @Table(name = "multa")
-@NamedQueries({
-    @NamedQuery(name = "Multa.findAll", query = "SELECT m FROM Multa m")
-    , @NamedQuery(name = "Multa.findByPrestamo", query = "SELECT m FROM Multa m WHERE m.multaPK.prestamo = :prestamo")
-    , @NamedQuery(name = "Multa.findByFecha", query = "SELECT m FROM Multa m WHERE m.multaPK.fecha = :fecha")
-    , @NamedQuery(name = "Multa.findByMulta", query = "SELECT m FROM Multa m WHERE m.multa = :multa")
-    , @NamedQuery(name = "Multa.findByMultaDes", query = "SELECT m FROM Multa m WHERE m.multaDes = :multaDes")})
-public class Multa extends IEntity implements Serializable {
+public class Multa implements Serializable, IEntity<MultaPK> {
 
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected MultaPK multaPK;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "multa")
-    private Integer multa;
-    @Size(max = 2147483647)
+    private int multa;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2147483647)
     @Column(name = "multa_des")
     private String multaDes;
     @JoinColumns({
         @JoinColumn(name = "prestamo", referencedColumnName = "prestamo", insertable = false, updatable = false)
         , @JoinColumn(name = "fecha", referencedColumnName = "fecha", insertable = false, updatable = false)})
-    @OneToOne(optional = false)
-    @Ignore
+    @OneToOne(optional = false, fetch = FetchType.EAGER)
     private Abono abono;
 
     public Multa() {
@@ -55,6 +52,12 @@ public class Multa extends IEntity implements Serializable {
 
     public Multa(MultaPK multaPK) {
         this.multaPK = multaPK;
+    }
+
+    public Multa(MultaPK multaPK, int multa, String multaDes) {
+        this.multaPK = multaPK;
+        this.multa = multa;
+        this.multaDes = multaDes;
     }
 
     public Multa(int prestamo, Date fecha) {
@@ -69,11 +72,11 @@ public class Multa extends IEntity implements Serializable {
         this.multaPK = multaPK;
     }
 
-    public Integer getMulta() {
+    public int getMulta() {
         return multa;
     }
 
-    public void setMulta(Integer multa) {
+    public void setMulta(int multa) {
         this.multa = multa;
     }
 
@@ -117,10 +120,10 @@ public class Multa extends IEntity implements Serializable {
     @Override
     public String toString() {
         return "com.ub.easymoney.entities.negocio.Multa[ multaPK=" + multaPK + " ]";
-    }
+    }   
 
     @Override
-    public Object getId() {
+    public MultaPK obtenerIdentificador() {
         return multaPK;
     }
     

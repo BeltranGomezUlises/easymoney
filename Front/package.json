@@ -4,7 +4,8 @@
   "description": "front of Easy money",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --hot"
+    "start": "webpack-dev-server --hot",
+    "build:": "webpack -p"
   },
   "author": "Armando Beltrán Gómez",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "history": "^4.7.2",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
+    "react-notify-toast": "^0.4.0",
     "react-router-dom": "^4.2.2",
     "semantic-ui-react": "^0.75.1",
     "webpack": "^3.8.1",

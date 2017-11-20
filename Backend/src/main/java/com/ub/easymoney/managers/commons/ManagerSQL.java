@@ -17,6 +17,7 @@
 package com.ub.easymoney.managers.commons;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
+import com.ub.easymoney.daos.exceptions.ForeignKeyException;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
@@ -56,7 +57,7 @@ public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, 
         return entity;
     }
     @Override
-    public void delete(K id) throws Exception {        
+    public void delete(K id) throws ForeignKeyException, Exception {        
         dao.delete(id);
     }
 

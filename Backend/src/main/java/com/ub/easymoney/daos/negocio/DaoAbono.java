@@ -20,4 +20,7 @@ public class DaoAbono extends DaoSQLFacade<Abono, AbonoPK>{
         super(UtilsDB.getEMFactoryCG(), Abono.class, AbonoPK.class);
     }
     
+    
+    
+    
 }

@@ -32,14 +32,8 @@ public class UtilsJWT {
 
     public static String generateSessionToken(String userId) throws JsonProcessingException {
         JwtBuilder builder = Jwts.builder();
-        Calendar cal = new GregorianCalendar();        //calendario de tiempos        
-        builder.setIssuedAt(cal.getTime());     //fecha de expedicion        
-
-        cal.add(Calendar.SECOND, UtilsConfig.getSecondsSessionJwtExp()); //aumentar tiempo para asignar expiracion
-        builder.setExpiration(cal.getTime());
-
+        Calendar cal = new GregorianCalendar();        //calendario de tiempos                
         builder.setSubject(userId); //poner el sujeto en jwt
-
         return builder.signWith(SignatureAlgorithm.HS512, STRING_KEY).compact();
     }
 

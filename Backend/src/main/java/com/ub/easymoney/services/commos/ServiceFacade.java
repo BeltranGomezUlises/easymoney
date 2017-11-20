@@ -16,15 +16,18 @@
  */
 package com.ub.easymoney.services.commos;
 
+import com.ub.easymoney.daos.exceptions.ForeignKeyException;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import com.ub.easymoney.managers.commons.ManagerFacade;
+import com.ub.easymoney.models.commons.commons.enums.Status;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
+import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
 import static com.ub.easymoney.utils.UtilsService.setOkResponse;
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,7 +37,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -48,7 +50,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ServiceFacade<T extends IEntity, K> {
+public class ServiceFacade<T extends IEntity<K>, K> {
 
     protected ManagerFacade<T, K> manager;
 
@@ -63,16 +65,15 @@ public class ServiceFacade<T extends IEntity, K> {
     /**
      * proporciona el listado de las entidades de esta clase servicio
      *
-     * @param request contexto de peticion necesario para obtener datos como ip,
-     * sistema operativo y navegador del cliente
      * @param token token de sesion
      * @return reponse, con su campo data asignado con una lista de las
      * entidades de esta clase servicio
      */
     @GET    
-    public Response listar(@Context HttpServletRequest request, @HeaderParam("Authorization") String token) {
+    public Response<List<T>> listar(@HeaderParam("Authorization") String token) {
+        
         Response response = new Response();
-        try {
+        try {            
             this.manager.setToken(token);
             setOkResponse(response, manager.findAll(), "Entidades encontradas");           
         } catch (TokenExpiradoException | TokenInvalidoException e) {
@@ -87,15 +88,13 @@ public class ServiceFacade<T extends IEntity, K> {
      * obtiene una entidad en particular por su identificador de esta clase
      * servicio
      *
-     * @param request contexto de peticion necesario para obtener datos como ip,
-     * sistema operativo y navegador del cliente
      * @param token token de sesion
      * @param id identificador de la entidad buscada
      * @return response, con su campo data asignado con la entidad buscada
      */
     @GET
     @Path("/{id}")
-    public Response detalle(@Context HttpServletRequest request, @HeaderParam("Authorization") String token, @PathParam("id") String id) {
+    public Response<T> detalle(@HeaderParam("Authorization") String token, @PathParam("id") String id) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
@@ -112,14 +111,12 @@ public class ServiceFacade<T extends IEntity, K> {
     /**
      * persiste la entidad de esta clase servicio en base de datos
      *
-     * @param request contexto de peticion necesario para obtener datos como ip,
-     * sistema operativo y navegador del cliente
      * @param token token de sesion
      * @param t entidad a persistir en base de datos
      * @return response con el estatus y el mensaje
      */
     @POST
-    public Response alta(@Context HttpServletRequest request, @HeaderParam("Authorization") String token, T t) {
+    public Response<T> alta(@HeaderParam("Authorization") String token, T t) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
@@ -137,14 +134,12 @@ public class ServiceFacade<T extends IEntity, K> {
      * actualiza la entidad proporsionada a su equivalente en base de datos,
      * tomando como referencia su identificador
      *
-     * @param request contexto de peticion necesario para obtener datos como ip,
-     * sistema operativo y navegador del cliente
      * @param token token de sesion
      * @param t entidad con los datos actualizados
      * @return Response, en data asignado con la entidad que se actualizó
      */
     @PUT
-    public Response modificar(@Context HttpServletRequest request, @HeaderParam("Authorization") String token, T t) {
+    public Response<T> modificar(@HeaderParam("Authorization") String token, T t) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
@@ -162,21 +157,22 @@ public class ServiceFacade<T extends IEntity, K> {
     /**
      * eliminar la entidad proporsionada
      *
-     * @param request contexto de peticion necesario para obtener datos como ip,
-     * sistema operativo y navegador del cliente
      * @param token token de sesion
      * @param t entidad proporsionada
      * @return
      */
     @DELETE
-    public Response eliminar(@Context HttpServletRequest request, @HeaderParam("Authorization") String token, T t) {
+    public Response<T> eliminar(@HeaderParam("Authorization") String token, T t) {
         Response response = new Response();
         try {
             this.manager.setToken(token);
-            manager.delete((K) t.getId());
-            response.setMessage("Entidad eliminada");
+            manager.delete(t.obtenerIdentificador());
+            setOkResponse(response, t, "Entidad Eliminada");
         } catch (TokenExpiradoException | TokenInvalidoException ex) {
             setInvalidTokenResponse(response);
+        }catch (ForeignKeyException e) {
+            response.setStatus(Status.WARNING);
+            response.setMessage(e.getMessage());            
         } catch (Exception e) {
             setErrorResponse(response, e);
         }
