@@ -12,7 +12,8 @@ export default class Clientes extends React.Component{
       clientes: [],
       modalOpenAgregar: false,
       modalOpenWarning: false,
-      nuevoCliente:{}
+      nuevoCliente:{},
+      conClientes: true
     }
 
     this.removeCliente = this.removeCliente.bind(this);
@@ -61,7 +62,8 @@ export default class Clientes extends React.Component{
           //limpiar nuevo cliente
           this.setState({
             clientes,
-            nuevoCliente:{}
+            nuevoCliente:{},
+            conClientes:true
           });
           this.handleCloseAgregar();
         })
@@ -83,29 +85,42 @@ export default class Clientes extends React.Component{
         }
       }).then((res)=> res.json())
       .then((response) =>{
-        this.setState({clientes:response.data});
+        if (response.data.length > 0) {
+          this.setState({clientes:response.data, conClientes:true});
+        }else{
+          this.setState({conClientes:false});
+        }
+
       })
   }
 
   renderClientesCards(){
-    if (this.state.clientes.length > 0) {
-      return(
-        this.state.clientes.map((cliente) =>{
-          return (
-            <ClienteCard key={cliente.id} cliente={cliente} removeCliente={this.removeCliente}>
-            </ClienteCard>
-          )
-        })
-      )
+    if (this.state.conClientes) {
+      if (this.state.clientes.length > 0) {
+        return(
+          this.state.clientes.map((cliente) =>{
+            return (
+              <ClienteCard key={cliente.id} cliente={cliente} removeCliente={this.removeCliente}>
+              </ClienteCard>
+            )
+          })
+        )
+      }else{
+        return (
+          <div>
+            <Dimmer active inverted>
+              <Loader size='large'>Descargando...</Loader>
+            </Dimmer>
+            <Image src='/assets/images/descargandoClientes.png'/>
+          </div>
+        )
+      }
     }else{
-      return (
-        <div>
-          <Dimmer active inverted>
-            <Loader size='large'>Descargando...</Loader>
-          </Dimmer>
-          <Image src='/assets/images/descargandoClientes.png'/>
-        </div>
-      )
+      return(
+        <Container textAlign='center'>
+            <h2>Sin Clientes...</h2>
+        </Container>
+      );
     }
   }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CobradorCard from './Componentes/CobradorCard.jsx';
 import CobradorForm from './Componentes/CobradorForm.jsx';
-import { Segment, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
+import { Segment, Container, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
 
 export default class Cobradores extends React.Component{
 
@@ -12,7 +12,8 @@ export default class Cobradores extends React.Component{
       cobradores: [],
       modalOpenAgregar: false,
       modalOpenWarning: false,
-      nuevoCobrador: {}
+      nuevoCobrador: {},
+      conCobradores: true
      }
 
     this.removeCobrador = this.removeCobrador.bind(this);
@@ -61,7 +62,8 @@ export default class Cobradores extends React.Component{
         //limpiar nuevo cobrador
         this.setState({
           cobradores,
-          nuevocobrador:{}
+          nuevocobrador:{},
+          conCobradores: true
         });
         this.handleCloseAgregar();
       })
@@ -81,29 +83,41 @@ export default class Cobradores extends React.Component{
         }
       }).then((res)=> res.json())
       .then((response) =>{
-        this.setState({cobradores:response.data});
+        if (response.data.length > 0) {
+            this.setState({cobradores:response.data, conCobradores: true});
+        }else{
+          this.setState({conCobradores:false});
+        }
       })
   }
 
   renderCobradoresCards(){
-    if (this.state.cobradores.length > 0) {
-      return(
-        this.state.cobradores.map((cobrador) =>{
-          return (
-            <CobradorCard key={cobrador.id} cobrador={cobrador} removeCobrador={this.removeCobrador}>
-            </CobradorCard>
-          )
-        })
-      )
+    if (this.state.conCobradores) {
+      if (this.state.cobradores.length > 0) {
+        return(
+          this.state.cobradores.map((cobrador) =>{
+            return (
+              <CobradorCard key={cobrador.id} cobrador={cobrador} removeCobrador={this.removeCobrador}>
+              </CobradorCard>
+            )
+          })
+        )
+      }else{
+        return (
+          <div>
+            <Dimmer active inverted>
+              <Loader size='large'>Descargando...</Loader>
+            </Dimmer>
+            <Image src='/assets/images/descargandoCobradores.png'/>
+          </div>
+        )
+      }
     }else{
-      return (
-        <div>
-          <Dimmer active inverted>
-            <Loader size='large'>Descargando...</Loader>
-          </Dimmer>
-          <Image src='/assets/images/descargandoCobradores.png'/>
-        </div>
-      )
+      return(
+        <Container textAlign='center'>
+            <h2>Sin Cobradores...</h2>
+        </Container>
+      );
     }
   }
 

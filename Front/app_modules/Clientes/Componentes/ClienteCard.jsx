@@ -49,19 +49,6 @@ export default class ClienteCard extends React.Component{
 
   editarCliente(){
     if (this.state.cliente.nombre !== '') {
-      fetch(localStorage.getItem('url') + 'accesos/login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: 'admin',
-          pass: '1234',
-        })
-      }).then((res) => res.json())
-      .then((response) => localStorage.setItem('tokenSesion', response.meta.metaData))
-      .then(()=>{
         fetch(localStorage.getItem('url') + 'clientes',{
           method: 'PUT',
           headers: {
@@ -80,7 +67,6 @@ export default class ClienteCard extends React.Component{
         .then((response) =>{
             this.setState({modalOpenEditar:false});
         })
-       })
     }else{
         this.setState({modalOpenWarning:true});
     }

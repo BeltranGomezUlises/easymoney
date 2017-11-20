@@ -16,7 +16,6 @@ export default class Prestamos extends React.Component{
             <h2>PRESTAMOS</h2>
           </Segment>
           <PrestamoList>
-
           </PrestamoList>
       </div>
     );

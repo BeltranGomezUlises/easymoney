@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Header, Table, Dimmer, Loader, Segment, Modal, Button} from 'semantic-ui-react'
+import { Header, Table, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
 import PrestamoForm from './PrestamoForm.jsx'
 import PrestamoDetalle from './PrestamoDetalle.jsx'
-
 
 export default class PrestamoList extends React.Component {
 
@@ -12,6 +11,7 @@ export default class PrestamoList extends React.Component {
     this.state = {
       prestamos: [],
       modalOpenAgregar: false,
+      conPrestamos:true,
       nuevoPrestamo:{
         cantidad:0,
         cliente:{
@@ -92,64 +92,94 @@ export default class PrestamoList extends React.Component {
         }
       }).then((res)=> res.json())
       .then((response) =>{
-        this.setState({prestamos:response.data});
+        if (response.data.length > 0) {
+          this.setState({prestamos:response.data, conPrestamos:true});
+        }else{
+          this.setState({conPrestamos: false});
+        }
       })
   }
 
-  renderPrestamos(){
-    if (this.state.prestamos.length > 0) {
+  renderPrestamosList(){
+    return this.state.prestamos.map((prestamo) =>{
       return(
-          this.state.prestamos.map((prestamo) =>{
-            return(
-              <Table.Row key={prestamo.id}>
-
-                <Modal trigger={
-                    <Table.Cell style={{cursor: 'pointer'}}>
-                      <Header textAlign='center'>
-                        {prestamo.id}
-                      </Header>
-                    </Table.Cell>
-                  }>
-                  <Modal.Header>Detalle Prestamo</Modal.Header>
-                  <Modal.Content>
-                    <PrestamoDetalle prestamo={prestamo}>
-                    </PrestamoDetalle>
-                  </Modal.Content>
-                </Modal>
-
-                <Table.Cell>
-                  {prestamo.cliente.nombre}
-                </Table.Cell>
-                <Table.Cell>
-                  {prestamo.cobrador.nombre}
-                </Table.Cell>
-                <Table.Cell textAlign='right'>
-                  ${prestamo.cantidad}
-                </Table.Cell>
-                <Table.Cell textAlign='right'>
-                    ${prestamo.cantidadPagar}
-                </Table.Cell>
-                <Table.Cell>
-                    {new Date(prestamo.fecha).toLocaleString()}
-                </Table.Cell>
-                <Table.Cell>
-                    {new Date(prestamo.fechaLimite).toLocaleDateString()}
-                </Table.Cell>
-                <Table.Cell>
-                    30%
-                </Table.Cell>
-              </Table.Row>
-            )
-          })
+        <Table.Row key={prestamo.id}>
+          <Modal trigger={
+              <Table.Cell style={{cursor: 'pointer'}}>
+                <Header textAlign='center'>
+                  {prestamo.id}
+                </Header>
+              </Table.Cell>
+            }>
+            <Modal.Header>Detalle Prestamo</Modal.Header>
+            <Modal.Content>
+              <PrestamoDetalle prestamo={prestamo}>
+              </PrestamoDetalle>
+            </Modal.Content>
+          </Modal>
+          <Table.Cell>
+            {prestamo.cliente.nombre}
+          </Table.Cell>
+          <Table.Cell>
+            {prestamo.cobrador.nombre}
+          </Table.Cell>
+          <Table.Cell textAlign='right'>
+            ${prestamo.cantidad}
+          </Table.Cell>
+          <Table.Cell textAlign='right'>
+              ${prestamo.cantidadPagar}
+          </Table.Cell>
+          <Table.Cell>
+              {new Date(prestamo.fecha).toLocaleString()}
+          </Table.Cell>
+          <Table.Cell>
+              {new Date(prestamo.fechaLimite).toLocaleDateString()}
+          </Table.Cell>
+          <Table.Cell>
+              30%
+          </Table.Cell>
+        </Table.Row>
       )
-    }else{
+    })
+  }
+
+  renderPrestamos(){
+    if (this.state.conPrestamos) {
+      if (this.state.prestamos.length > 0) {
         return(
-          <div>
-            <Dimmer active inverted>
-              <Loader size='large'>Descargando...</Loader>
-            </Dimmer>
-          </div>
+          <Table celled selectable>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
+              <Table.HeaderCell>Cliente</Table.HeaderCell>
+              <Table.HeaderCell>Cobrador</Table.HeaderCell>
+              <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
+              <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
+              <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
+              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
+              <Table.HeaderCell>Porcentaje Pagado</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {this.renderPrestamosList()}
+          </Table.Body>
+        </Table>
         )
+      }else{
+          return(
+            <div>
+              <Dimmer active inverted>
+                <Loader size='large'>Descargando...</Loader>
+              </Dimmer>
+            </div>
+          )
+      }
+    }else{
+      return(
+        <Container textAlign='center'>
+            <h2>Sin Prestamos...</h2>
+        </Container>
+      );
     }
   }
 
@@ -184,23 +214,7 @@ export default class PrestamoList extends React.Component {
           </Modal>
         </Segment>
         <Segment>
-          <Table celled selectable>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
-                <Table.HeaderCell>Cliente</Table.HeaderCell>
-                <Table.HeaderCell>Cobrador</Table.HeaderCell>
-                <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
-                <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
-                <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
-                <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
-                <Table.HeaderCell>Porcentaje Pagado</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {this.renderPrestamos()}
-            </Table.Body>
-          </Table>
+          {this.renderPrestamos()}
         </Segment>
       </div>
     )

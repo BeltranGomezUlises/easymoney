@@ -7,6 +7,7 @@ import Clientes from './app_modules/Clientes/Clientes.jsx';
 import Cobradores from './app_modules/Cobradores/Cobradores.jsx';
 import Prestamos from './app_modules/Prestamos/Prestamos.jsx';
 import Login from './app_modules/Login.jsx';
+import Configuraciones from './app_modules/Configuraciones.jsx';
 
 const App =()=>(
     <HashRouter>
@@ -49,6 +50,7 @@ class MainContainer extends React.Component{
            <Menu.Item as={Link} to='/clientes'>Clientes</Menu.Item>
            <Menu.Item as={Link} to='/cobradores'>Cobradores</Menu.Item>
            <Menu.Item as={Link} to='/prestamos'>Prestamos</Menu.Item>
+           <Menu.Item position='right' as={Link} to='/configuraciones'>configuraciones</Menu.Item>
          </Sidebar>
           <Sidebar.Pusher >
                <div>
@@ -56,6 +58,7 @@ class MainContainer extends React.Component{
                  <Route path="/cobradores" component={Cobradores}/>
                  <Route path="/prestamos" component={Prestamos}/>
                  <Route path="/login" component={Login}/>
+                 <Route path="/configuraciones" component={Configuraciones}/>
                </div>
           </Sidebar.Pusher>
        </Sidebar.Pushable>
