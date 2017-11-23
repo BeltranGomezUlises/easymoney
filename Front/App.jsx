@@ -20,8 +20,8 @@ class MainContainer extends React.Component{
   constructor(props) {
     super(props);
     this.state = {menuVisible: true};
-    //localStorage.setItem('url', 'http://201.165.0.142:8383/EasyMoney/api/');
-    localStorage.setItem('url', 'http://localhost:8084/EasyMoney/api/');
+    localStorage.setItem('url', 'http://201.165.0.142:8383/EasyMoney/api/');
+    //localStorage.setItem('url', 'http://localhost:8084/EasyMoney/api/');
   }
 
 
