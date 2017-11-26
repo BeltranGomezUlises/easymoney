@@ -8,6 +8,8 @@
     <class>com.ub.easymoney.entities.admin.Usuario</class>
     <class>com.ub.easymoney.entities.negocio.Cobrador</class>
     <class>com.ub.easymoney.entities.admin.Config</class>
+    <class>com.ub.easymoney.entities.negocio.Movimiento</class>
+    <class>com.ub.easymoney.entities.negocio.EstadoCuenta</class>
     <properties>
       <!-- jdbc -->
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>

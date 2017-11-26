@@ -5,15 +5,13 @@
  */
 package com.ub.easymoney.managers.negocio;
 
-import com.ub.easymoney.daos.negocio.DaoAbono;
 import com.ub.easymoney.daos.negocio.DaoPrestamo;
-import com.ub.easymoney.entities.admin.Config;
 import com.ub.easymoney.entities.negocio.Abono;
 import com.ub.easymoney.entities.negocio.Multa;
 import com.ub.easymoney.entities.negocio.MultaPK;
 import com.ub.easymoney.entities.negocio.Prestamo;
-import com.ub.easymoney.managers.admin.ManagerConfig;
 import com.ub.easymoney.managers.commons.ManagerSQL;
+import com.ub.easymoney.models.ModeloPrestamoTotales;
 import com.ub.easymoney.utils.UtilsConfig;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -68,4 +66,17 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         return  p;//To change body of generated methods, choose Tools | Templates.
     }
 
+    public ModeloPrestamoTotales totalesPrestamo(int prestamoId) throws Exception{
+        ModeloPrestamoTotales mPrestamoTotales = new ModeloPrestamoTotales();        
+        
+        Prestamo prestamo = this.findOne(prestamoId);
+        List<Abono> abonos = prestamo.getAbonos();
+        mPrestamoTotales.setTotalAbonado(abonos.stream().filter( t -> t.getAbonado()).mapToInt(t -> t.getCantidad()).sum());
+        mPrestamoTotales.setTotalMultado(abonos.stream().filter( t -> t.getAbonado()).map( t -> t.getMulta()).mapToInt( t -> t.getMulta()).sum());
+        mPrestamoTotales.setTotalRecuperado(mPrestamoTotales.getTotalAbonado() + mPrestamoTotales.getTotalMultado());
+        mPrestamoTotales.setPorcentajePagado((int)((float)mPrestamoTotales.getTotalAbonado() / (float)prestamo.getCantidadPagar() * 100f));
+        
+        return mPrestamoTotales;
+    }
+    
 }

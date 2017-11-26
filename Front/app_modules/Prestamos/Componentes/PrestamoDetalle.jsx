@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Table, Header, Segment, Checkbox, Form, Button} from 'semantic-ui-react';
+import { Table, Loader, Header, Segment, Checkbox, Form, Button} from 'semantic-ui-react';
 
 export default class PrestamoDetalle extends Component{
 
@@ -8,6 +8,7 @@ export default class PrestamoDetalle extends Component{
       this.state={
         prestamo: this.props.prestamo,
         abonos:[],
+        totales: null,
         loading: false
       }
       this.actualizarPrestamo = this.actualizarPrestamo.bind(this);
@@ -26,6 +27,22 @@ export default class PrestamoDetalle extends Component{
       }).then((res)=> res.json())
       .then((response) =>{
         this.setState({abonos: response.data})
+      });
+      this.cargarTotales();
+    }
+
+    cargarTotales(){
+      fetch(localStorage.getItem('url') + 'prestamos/totales/' + this.props.prestamo.id,{
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin':'*',
+          'Authorization': localStorage.getItem('tokenSesion')
+        }
+      }).then((res)=> res.json())
+      .then((response) =>{
+        this.setState({totales: response.data})
       })
     }
 
@@ -45,7 +62,12 @@ export default class PrestamoDetalle extends Component{
         body: JSON.stringify(prestamo)
       }).then((res)=> res.json())
       .then((response) =>{
-        this.setState({loading: false});
+        if (response.meta.status == 'OK') {
+          this.setState({loading: false});
+          this.cargarTotales();
+        }else{
+          this.setState({loading: false});
+        }
       })
     }
 
@@ -125,7 +147,40 @@ export default class PrestamoDetalle extends Component{
             </Table.Row>
           )
         })
+      }else{
+        return(
+          <Table.Row>
+            <Table.Cell>
+              <div>
+                <Loader size='large'>Descargando...</Loader>
+              </div>
+            </Table.Cell>
+          </Table.Row>
+        );
       }
+    }
+
+    renderTotales(){
+      if (this.state.totales !== null) {
+        return(
+          <Table.Body>
+            <Table.Cell textAlign='center'>${this.state.totales.totalAbonado}</Table.Cell>
+            <Table.Cell textAlign='center'>${this.state.totales.totalMultado}</Table.Cell>
+            <Table.Cell textAlign='center'>${this.state.totales.totalRecuperado}</Table.Cell>
+            <Table.Cell textAlign='center'>%{this.state.totales.porcentajePagado}</Table.Cell>
+          </Table.Body>
+        );
+      }else{
+        return(
+          <Table.Body>
+            <Table.Cell textAlign='center'>$XXX</Table.Cell>
+            <Table.Cell textAlign='center'>$XXX</Table.Cell>
+            <Table.Cell textAlign='center'>$XXX</Table.Cell>
+            <Table.Cell textAlign='center'>%XXX</Table.Cell>
+          </Table.Body>
+        );
+      }
+
     }
 
     renderButton(){
@@ -192,12 +247,7 @@ export default class PrestamoDetalle extends Component{
                 <Table.HeaderCell textAlign='center'>Porcentaje Pagado</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
-            <Table.Body>
-              <Table.Cell textAlign='center'>$1000</Table.Cell>
-              <Table.Cell textAlign='center'>$120</Table.Cell>
-              <Table.Cell textAlign='center'>$1120</Table.Cell>
-              <Table.Cell textAlign='center'>%35</Table.Cell>
-            </Table.Body>
+            {this.renderTotales()}
           </Table>
           <Segment>
             {this.renderButton()}

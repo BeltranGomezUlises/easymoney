@@ -81,7 +81,7 @@ public class Accesos {
             config.setPorcentajeInteresPrestamo(20);
              
             managerConfig.persist(config);
-            
+                        
             List objects = new ArrayList();
             objects.add(admin);
             objects.add(config);

@@ -41,7 +41,9 @@ export default class Clientes extends React.Component{
   }
 
   agregarCliente(){
+    //1
     if (this.state.nuevoCliente.nombre) {
+        //2
         fetch(localStorage.getItem('url') + 'clientes',{
           method: 'POST',
           headers: {
@@ -55,7 +57,8 @@ export default class Clientes extends React.Component{
             direccion: this.state.nuevoCliente.direccion,
             telefono: this.state.nuevoCliente.telefono
           })
-        }).then((res)=> res.json())
+        })
+        .then((res)=> res.json())
         .then((response) =>{
           //agregar nuevoCliente a la lista actual
           let clientes = [...this.state.clientes, response.data];
@@ -68,13 +71,14 @@ export default class Clientes extends React.Component{
           this.handleCloseAgregar();
         })
     }else{
+      //3
       this.setState({modalOpenWarning:true});
     }
-
-
+    //4
   }
 
   cargarClientes(){
+    //1
       fetch(localStorage.getItem('url') + 'clientes',{
         method: 'GET',
         headers: {
@@ -85,18 +89,26 @@ export default class Clientes extends React.Component{
         }
       }).then((res)=> res.json())
       .then((response) =>{
+        //2
         if (response.data.length > 0) {
+          //3
           this.setState({clientes:response.data, conClientes:true});
         }else{
+          //4
           this.setState({conClientes:false});
         }
 
       })
+      //5
   }
 
+
   renderClientesCards(){
+    //1
     if (this.state.conClientes) {
+      //2
       if (this.state.clientes.length > 0) {
+        //3
         return(
           this.state.clientes.map((cliente) =>{
             return (
@@ -104,8 +116,9 @@ export default class Clientes extends React.Component{
               </ClienteCard>
             )
           })
-        )
+        );
       }else{
+        //4
         return (
           <div>
             <Dimmer active inverted>
@@ -113,9 +126,10 @@ export default class Clientes extends React.Component{
             </Dimmer>
             <Image src='/assets/images/descargandoClientes.png'/>
           </div>
-        )
+        );
       }
     }else{
+      //5
       return(
         <Container textAlign='center'>
             <h2>Sin Clientes...</h2>
