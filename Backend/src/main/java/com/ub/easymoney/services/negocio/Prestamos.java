@@ -7,19 +7,43 @@ package com.ub.easymoney.services.negocio;
 
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.negocio.ManagerPrestamo;
+import com.ub.easymoney.models.ModeloPrestamoTotales;
+import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
+import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
+import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.services.commos.ServiceFacade;
+import com.ub.easymoney.utils.UtilsService;
+import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
+import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 /**
  * servicios para registros de prestamos a clientes
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Path("/prestamos")
-public class Prestamos extends ServiceFacade<Prestamo, Integer>{
-    
+public class Prestamos extends ServiceFacade<Prestamo, Integer> {
+
     public Prestamos() {
         super(new ManagerPrestamo());
     }
-    
-    
+
+    @GET
+    @Path("/totales/{id}")
+    public Response<ModeloPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        Response<ModeloPrestamoTotales> r = new Response<>();
+        try {
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            UtilsService.setOkResponse(r, managerPrestamo.totalesPrestamo(id), "totales del prestamo");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(r);
+        } catch (Exception ex) {
+            setErrorResponse(r, ex);
+        }
+        return r;
+    }
 }

@@ -23,7 +23,6 @@ import com.ub.easymoney.models.commons.commons.enums.Status;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
-import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
 import static com.ub.easymoney.utils.UtilsService.setOkResponse;

@@ -6,8 +6,11 @@ import Notifications, {notify} from 'react-notify-toast';
 import Clientes from './app_modules/Clientes/Clientes.jsx';
 import Cobradores from './app_modules/Cobradores/Cobradores.jsx';
 import Prestamos from './app_modules/Prestamos/Prestamos.jsx';
+import Movimientos from './app_modules/Movimientos/Movimientos.jsx'
 import Login from './app_modules/Login.jsx';
 import Configuraciones from './app_modules/Configuraciones.jsx';
+
+import config from './config.json';
 
 const App =()=>(
     <HashRouter>
@@ -20,8 +23,7 @@ class MainContainer extends React.Component{
   constructor(props) {
     super(props);
     this.state = {menuVisible: true};
-    localStorage.setItem('url', 'http://201.165.0.142:8383/EasyMoney/api/');
-    //localStorage.setItem('url', 'http://localhost:8084/EasyMoney/api/');
+    localStorage.setItem('url', config.apiUrl );
   }
 
 
@@ -50,6 +52,7 @@ class MainContainer extends React.Component{
            <Menu.Item as={Link} to='/clientes'>Clientes</Menu.Item>
            <Menu.Item as={Link} to='/cobradores'>Cobradores</Menu.Item>
            <Menu.Item as={Link} to='/prestamos'>Prestamos</Menu.Item>
+           <Menu.Item as={Link} to='/movimientos'>Movimientos Ingresos y Egresos</Menu.Item>
            <Menu.Item position='right' as={Link} to='/configuraciones'>configuraciones</Menu.Item>
          </Sidebar>
           <Sidebar.Pusher >
@@ -57,6 +60,7 @@ class MainContainer extends React.Component{
                  <Route path="/clientes" component={Clientes}/>
                  <Route path="/cobradores" component={Cobradores}/>
                  <Route path="/prestamos" component={Prestamos}/>
+                 <Route path="/movimientos" component={Movimientos}/>
                  <Route path="/login" component={Login}/>
                  <Route path="/configuraciones" component={Configuraciones}/>
                </div>
