@@ -65,6 +65,7 @@ export default class PrestamoDetalle extends Component{
         if (response.meta.status == 'OK') {
           this.setState({loading: false});
           this.cargarTotales();
+          this.props.update();
         }else{
           this.setState({loading: false});
         }

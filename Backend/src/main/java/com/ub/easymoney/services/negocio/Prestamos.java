@@ -8,6 +8,7 @@ package com.ub.easymoney.services.negocio;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.negocio.ManagerPrestamo;
 import com.ub.easymoney.models.ModeloPrestamoTotales;
+import com.ub.easymoney.models.ModeloPrestamoTotalesGenerales;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
@@ -46,4 +47,22 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         }
         return r;
     }
+    
+    @GET
+    @Path("/totalesGenerales")
+    public Response<ModeloPrestamoTotalesGenerales> totalesGenerales(@HeaderParam("Authorization") String token){
+        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();        
+        try {
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            managerPrestamo.setToken(token);
+            r.setData(managerPrestamo.totalesPrestamosGenerales());            
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(r);
+        } catch (Exception ex) {
+            setErrorResponse(r, ex);
+        }
+        return r;
+    }
+    
+    
 }

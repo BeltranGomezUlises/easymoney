@@ -123,7 +123,6 @@ export default class Cobradores extends React.Component{
 
   renderCobradores(){
     return(
-
       <div>
         <Segment>
           <Modal
@@ -132,16 +131,8 @@ export default class Cobradores extends React.Component{
             open={this.state.modalOpenAgregar}>
             <Header content='Agregar cobrador' />
             <Modal.Content>
-              <CobradorForm getData={this.onCreateHandler}></CobradorForm>
+              <CobradorForm getData={this.onCreateHandler} agregarCobrador={this.agregarCobrador}></CobradorForm>
             </Modal.Content>
-            <Modal.Actions>
-              <Button color='green' onClick={this.agregarCobrador}>
-                Guardar
-              </Button>
-              <Button color='red' onClick={this.handleCloseAgregar}>
-                Cancelar
-              </Button>
-            </Modal.Actions>
           </Modal>
         </Segment>
         <Segment>

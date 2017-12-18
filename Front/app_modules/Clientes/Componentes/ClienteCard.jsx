@@ -116,18 +116,9 @@ export default class ClienteCard extends React.Component{
                  open={this.state.modalOpenEditar}>
                  <Header content='Editar cliente' />
                  <Modal.Content>
-                   <ClienteForm cliente={this.state.cliente} getData={this.onEditHandler}>
-
+                   <ClienteForm cliente={this.state.cliente} getData={this.onEditHandler} editarCliente={this.editarCliente}>
                    </ClienteForm>
-                 </Modal.Content>
-                 <Modal.Actions>
-                   <Button color='green' onClick={this.editarCliente}>
-                     Guardar
-                   </Button>
-                   <Button color='red' onClick={this.handleCloseEditar}>
-                     Cancelar
-                   </Button>
-                 </Modal.Actions>
+                 </Modal.Content>                 
                </Modal>
                <Modal
                  trigger={<Button basic color='red' onClick={this.handleOpenEliminar}>Eliminar</Button>}

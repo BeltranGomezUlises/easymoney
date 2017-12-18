@@ -3,14 +3,16 @@ import ReactDOM from 'react-dom';
 import { Header, Table, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
 import PrestamoForm from './PrestamoForm.jsx'
 import PrestamoDetalle from './PrestamoDetalle.jsx'
+import * as utils from '../../../utils.js';
 
 export default class PrestamoList extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
-      prestamos: [],
-      modalOpenAgregar: false,
+      prestamos:[],
+      totalesPrestamos:{},
+      modalOpenAgregar:false,
       conPrestamos:true,
       nuevoPrestamo:{
         cantidad:0,
@@ -29,10 +31,12 @@ export default class PrestamoList extends React.Component {
     this.handleOpenWarning = this.handleOpenWarning.bind(this);
     this.agregarPrestamo = this.agregarPrestamo.bind(this);
     this.onCreateHandler = this.onCreateHandler.bind(this);
+    this.cargarTotalesPrestamos = this.cargarTotalesPrestamos.bind(this);
   }
 
   componentWillMount(){
     this.cargarPrestamos();
+    this.cargarTotalesPrestamos();
   }
 
   handleCloseAgregar(){
@@ -71,6 +75,7 @@ export default class PrestamoList extends React.Component {
         .then((response) =>{
           this.handleCloseAgregar();
           this.cargarPrestamos();
+          this.cargarTotalesPrestamos();
         })
     }else{
       this.handleOpenWarning();
@@ -100,6 +105,23 @@ export default class PrestamoList extends React.Component {
       })
   }
 
+  cargarTotalesPrestamos(){
+    fetch(localStorage.getItem('url') + 'prestamos/totalesGenerales',{
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      }
+    }).then((res)=> res.json())
+    .then((response) =>{
+      utils.evalResponse(response, () => {
+        this.setState({totalesPrestamos: response.data});
+      });
+    })
+  }
+
   renderPrestamosList(){
     return this.state.prestamos.map((prestamo) =>{
       return(
@@ -113,7 +135,7 @@ export default class PrestamoList extends React.Component {
             }>
             <Modal.Header>Detalle Prestamo</Modal.Header>
             <Modal.Content>
-              <PrestamoDetalle prestamo={prestamo}>
+              <PrestamoDetalle prestamo={prestamo} update={this.cargarTotalesPrestamos}>
               </PrestamoDetalle>
             </Modal.Content>
           </Modal>
@@ -153,7 +175,7 @@ export default class PrestamoList extends React.Component {
               <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
               <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
               <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
-              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>              
+              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -177,6 +199,54 @@ export default class PrestamoList extends React.Component {
         </Container>
       );
     }
+  }
+
+  renderTotalesPrestamosList(){
+    let {totalesPrestamos} = this.state;
+    if(totalesPrestamos.totalPrestado !== undefined){
+      return(
+          <Table.Row>
+            <Table.Cell>
+              ${totalesPrestamos.totalPrestado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.totalAbonado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.totalMultado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.totalRecuperado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.capital}
+            </Table.Cell>
+            <Table.Cell>
+              %{totalesPrestamos.porcentajeCompletado}
+            </Table.Cell>
+          </Table.Row>
+      );
+    }
+  }
+
+  renderTotalesPrestamos(){
+    return(
+      <Table celled>
+        <Table.Header celled>
+          <Table.Row>
+            <Table.HeaderCell>Total Prestado</Table.HeaderCell>
+            <Table.HeaderCell>Total Abonado</Table.HeaderCell>
+            <Table.HeaderCell>Total Multado</Table.HeaderCell>
+            <Table.HeaderCell>Total Recuperado</Table.HeaderCell>
+            <Table.HeaderCell>Capital</Table.HeaderCell>
+            <Table.HeaderCell>Porcentaje Cobrado</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {this.renderTotalesPrestamosList()}
+        </Table.Body>
+      </Table>
+    );
   }
 
   render() {
@@ -210,7 +280,12 @@ export default class PrestamoList extends React.Component {
           </Modal>
         </Segment>
         <Segment>
-          {this.renderPrestamos()}
+          <div>
+            {this.renderPrestamos()}
+          </div>
+          <Segment>
+            {this.renderTotalesPrestamos()}
+          </Segment>
         </Segment>
       </div>
     )

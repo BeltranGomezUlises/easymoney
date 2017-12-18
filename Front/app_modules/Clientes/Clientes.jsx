@@ -41,9 +41,7 @@ export default class Clientes extends React.Component{
   }
 
   agregarCliente(){
-    //1
     if (this.state.nuevoCliente.nombre) {
-        //2
         fetch(localStorage.getItem('url') + 'clientes',{
           method: 'POST',
           headers: {
@@ -71,14 +69,11 @@ export default class Clientes extends React.Component{
           this.handleCloseAgregar();
         })
     }else{
-      //3
       this.setState({modalOpenWarning:true});
     }
-    //4
   }
 
   cargarClientes(){
-    //1
       fetch(localStorage.getItem('url') + 'clientes',{
         method: 'GET',
         headers: {
@@ -89,19 +84,13 @@ export default class Clientes extends React.Component{
         }
       }).then((res)=> res.json())
       .then((response) =>{
-        //2
         if (response.data.length > 0) {
-          //3
           this.setState({clientes:response.data, conClientes:true});
         }else{
-          //4
           this.setState({conClientes:false});
         }
-
       })
-      //5
   }
-
 
   renderClientesCards(){
     //1
@@ -148,16 +137,8 @@ export default class Clientes extends React.Component{
             open={this.state.modalOpenAgregar}>
             <Header content='Agregar cliente' />
             <Modal.Content>
-                <ClienteForm getData={this.onCreateHandler}></ClienteForm>
+                <ClienteForm getData={this.onCreateHandler} agregarCliente={this.agregarCliente}></ClienteForm>
             </Modal.Content>
-            <Modal.Actions>
-              <Button color='green' onClick={this.agregarCliente}>
-                Guardar
-              </Button>
-              <Button color='red' onClick={this.handleCloseAgregar}>
-                Cancelar
-              </Button>
-            </Modal.Actions>
           </Modal>
         </Segment>
         <Segment>

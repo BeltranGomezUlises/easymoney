@@ -5,6 +5,8 @@
  */
 package com.ub.easymoney.managers.negocio;
 
+import com.ub.easymoney.daos.negocio.DaoAbono;
+import com.ub.easymoney.daos.negocio.DaoMulta;
 import com.ub.easymoney.daos.negocio.DaoPrestamo;
 import com.ub.easymoney.entities.negocio.Abono;
 import com.ub.easymoney.entities.negocio.Multa;
@@ -12,12 +14,15 @@ import com.ub.easymoney.entities.negocio.MultaPK;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.commons.ManagerSQL;
 import com.ub.easymoney.models.ModeloPrestamoTotales;
+import com.ub.easymoney.models.ModeloPrestamoTotalesGenerales;
 import com.ub.easymoney.utils.UtilsConfig;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
+import org.jinq.tuples.Pair;
 
 /**
  *
@@ -77,6 +82,26 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         mPrestamoTotales.setPorcentajePagado((int)((float)mPrestamoTotales.getTotalAbonado() / (float)prestamo.getCantidadPagar() * 100f));
         
         return mPrestamoTotales;
+    }
+ 
+    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales() throws Exception{                
+        DaoAbono daoAbono = new DaoAbono();
+        DaoMulta daoMulta = new DaoMulta();
+        
+        List<Pair<Integer, Integer>> abonosMultas = daoAbono.stream()
+                .filter(a -> a.getAbonado())
+                .map(e -> new Pair<>(e.getCantidad(), e.getMulta().getMulta()))
+                .collect(toList());
+                          
+        int totalAbonado = abonosMultas.stream().mapToInt(e -> e.getOne()).sum();
+        int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();                
+        int totalPrestamo = this.stream().mapToInt( p -> p.getCantidad()).sum();
+        int totalAPagar = this.stream().mapToInt(  p -> p.getCantidadPagar()).sum();
+        int totalRecuperado = totalAbonado + totalMultado;
+        int capital = totalRecuperado - totalPrestamo;
+        float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar ) * 100f);
+
+        return new ModeloPrestamoTotalesGenerales(totalPrestamo, totalAbonado, totalMultado, totalRecuperado, capital, porcentajeAbonado);
     }
     
 }

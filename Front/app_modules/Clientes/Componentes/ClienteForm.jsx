@@ -5,20 +5,38 @@ export default class ClienteForm extends Component{
 
     constructor(props){
       super(props);
+      let cliente = {};
+      let text = '';
       if (props.cliente) {
-        this.state = {
-          cliente: props.cliente
-        }
+        cliente = props.cliente;
+        text = 'Actualizar';
       }else{
-        this.state={
-          cliente:{
-            nombre:'',
-            direccion:'',
-            telefono:''
-          }
+        cliente = {
+          nombre:'',
+          direccion:'',
+          telefono:''
         }
+        text = 'Agregar';
       }
+
+      this.state = {
+        cliente,
+        isLoading: false,
+        text
+      }
+
       this.updateName = this.updateName.bind(this);
+      this.handleSumbit = this.handleSumbit.bind(this);
+    }
+
+    handleSumbit(){
+      this.setState({isLoading: true});
+      if (this.state.text == 'Agregar') {
+          this.props.agregarCliente();
+      }else{
+        this.props.editarCliente();
+      }
+
     }
 
     updateName(e){
@@ -28,28 +46,34 @@ export default class ClienteForm extends Component{
       this.props.getData(cliente);
     }
 
-    renderInputName(){
-      if(this.state.cliente.nombre !== ''){
-        return(
-          <Input value={this.state.cliente.nombre} onChange={this.updateName}/>
-        )
+    renderButton(){
+      if (this.state.isLoading) {
+        <Button loading color='green' type='sumbit'>{this.state.text}</Button>
       }else{
         return(
-          <Input error placeholder='nombre de cliente requerido...' onChange={this.updateName}/>
+          <Button color='green' type='sumbit'>{this.state.text}</Button>
         )
       }
     }
 
     render(){
       return(
-        <Form>
+        <Form onSubmit={this.handleSumbit}>
           <Form.Field>
             <label>Nombre:</label>
-            {this.renderInputName()}
+            <input
+              required
+              placeholder='nombre del cliente'
+              value={this.state.cliente.nombre}
+              onChange={this.updateName}/>
           </Form.Field>
           <Form.Field>
             <label>Dirección:</label>
-            <Input placeholder='dirección del cliente' value={this.state.cliente.direccion} onChange={ (e) => {
+            <input
+              required
+              placeholder='dirección del cliente'
+              value={this.state.cliente.direccion}
+              onInput={ (e) => {
                 let {cliente} = this.state;
                 cliente.direccion = e.target.value;
                 this.setState({cliente});
@@ -58,13 +82,22 @@ export default class ClienteForm extends Component{
           </Form.Field>
           <Form.Field>
             <label>Teléfono:</label>
-            <Input placeholder='teléfono del cliente' value={this.state.cliente.telefono} onChange={ (e) => {
-                let {cliente} = this.state;
-                cliente.telefono = e.target.value;
-                this.setState({cliente});
-                this.props.getData(cliente);
+            <input
+               required
+               pattern="[0-9]*"
+               placeholder='teléfono del cliente'
+               value={this.state.cliente.telefono}
+               onInput={ (e) => {
+                 if (e.target.value.length <= 10) {
+                   const telefono = (e.target.validity.valid) ? e.target.value : this.state.cliente.telefono;
+                   let {cliente} = this.state;
+                   cliente.telefono = telefono;
+                   this.setState({cliente});
+                   this.props.getData(cliente);
+                 }
               }}/>
           </Form.Field>
+          {this.renderButton()}
         </Form>
       );
     }
