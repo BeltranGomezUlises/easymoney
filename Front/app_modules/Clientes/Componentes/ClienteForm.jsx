@@ -14,7 +14,8 @@ export default class ClienteForm extends Component{
         cliente = {
           nombre:'',
           direccion:'',
-          telefono:''
+          telefono:'',
+          apodo:''
         }
         text = 'Agregar';
       }
@@ -66,6 +67,18 @@ export default class ClienteForm extends Component{
               placeholder='nombre del cliente'
               value={this.state.cliente.nombre}
               onChange={this.updateName}/>
+          </Form.Field>
+          <Form.Field>
+            <label>Apodo:</label>
+            <input
+              placeholder='apodo del cliente'
+              value={this.state.cliente.apodo}
+              onInput={ (e) => {
+                let {cliente} = this.state;
+                cliente.apodo = e.target.value;
+                this.setState({cliente});
+                this.props.getData(cliente);
+              }}/>
           </Form.Field>
           <Form.Field>
             <label>Dirección:</label>

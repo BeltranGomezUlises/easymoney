@@ -15,6 +15,7 @@ import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.commons.ManagerSQL;
 import com.ub.easymoney.models.ModeloPrestamoTotales;
 import com.ub.easymoney.models.ModeloPrestamoTotalesGenerales;
+import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsConfig;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -102,6 +103,16 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar ) * 100f);
 
         return new ModeloPrestamoTotalesGenerales(totalPrestamo, totalAbonado, totalMultado, totalRecuperado, capital, porcentajeAbonado);
+    }
+
+    /**
+     * consulta todos los prestamos que cumplen con las propiedades del objeto filtro
+     * @param filtro objecto con las propiedaes a filtrar
+     * @return lista de prestamos filtrados
+     */
+    public List<Prestamo> findAll(FiltroPrestamo filtro) {
+        DaoPrestamo daoPrestamo = new DaoPrestamo();
+        return daoPrestamo.findAll(filtro);
     }
     
 }

@@ -12,12 +12,16 @@ import com.ub.easymoney.models.ModeloPrestamoTotalesGenerales;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
+import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.services.commos.ServiceFacade;
 import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
+import static com.ub.easymoney.utils.UtilsService.setOkResponse;
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
@@ -64,5 +68,19 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         return r;
     }
     
-    
+    @POST
+    @Path("/cargarPrestamos")
+    public Response<List<Prestamo>> listarFiltrados(@HeaderParam("Authorization") String token, FiltroPrestamo filtro){
+        Response response = new Response();
+        try {            
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            managerPrestamo.setToken(token);
+            setOkResponse(response, managerPrestamo.findAll(filtro), "Entidades encontradas");           
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(response);
+        } catch (Exception ex) {
+            setErrorResponse(response, ex);
+        }
+        return response;
+    }
 }

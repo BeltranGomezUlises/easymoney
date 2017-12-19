@@ -17,6 +17,7 @@ export default class MovimientoForm extends Component{
       }
     }
     this.state.isLoading = false;
+    this.state.tipoMovimiento = false; //false == movimiento positivc
     this.handleSumbit = this.handleSumbit.bind(this);
   }
 
@@ -31,6 +32,9 @@ export default class MovimientoForm extends Component{
 
   agregarMovimiento(){
     let {movimiento} = this.state;
+    if (this.state.tipoMovimiento) {
+      movimiento.cantidad *= -1;
+    }
     fetch(localStorage.getItem('url') + 'movimientos',{
       method: 'POST',
       headers: {
@@ -75,7 +79,9 @@ export default class MovimientoForm extends Component{
             value={this.state.movimiento.fecha}/>
         </Form.Field>
         <Form.Field>
-          <Checkbox label='Marcar como egreso'/>
+          <Checkbox label='Marcar como egreso' onChange={ (evt, data) => {
+            this.setState({tipoMovimiento: data.checked});
+          }}/>
         </Form.Field>
         <Form.Field>
           <label>Cantidad:</label>

@@ -114,6 +114,7 @@ public class Prestamo implements Serializable, IEntity<Integer> {
         this.fechaLimite = fechaLimite;
     }
 
+    @JsonIgnore
     public List<Abono> getAbonos() {
         return abonos;
     }

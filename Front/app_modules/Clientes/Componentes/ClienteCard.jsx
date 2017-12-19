@@ -57,12 +57,7 @@ export default class ClienteCard extends React.Component{
             'Access-Control-Allow-Origin':'*',
             'Authorization': localStorage.getItem('tokenSesion')
           },
-          body: JSON.stringify({
-            id: this.state.cliente.id,
-            nombre: this.state.cliente.nombre,
-            direccion: this.state.cliente.direccion,
-            telefono: this.state.cliente.telefono
-          })
+          body: JSON.stringify(this.state.cliente)
         }).then((res)=> res.json())
         .then((response) =>{
             this.setState({modalOpenEditar:false});
@@ -118,7 +113,7 @@ export default class ClienteCard extends React.Component{
                  <Modal.Content>
                    <ClienteForm cliente={this.state.cliente} getData={this.onEditHandler} editarCliente={this.editarCliente}>
                    </ClienteForm>
-                 </Modal.Content>                 
+                 </Modal.Content>
                </Modal>
                <Modal
                  trigger={<Button basic color='red' onClick={this.handleOpenEliminar}>Eliminar</Button>}
