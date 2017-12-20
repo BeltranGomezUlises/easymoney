@@ -77,8 +77,8 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         
         Prestamo prestamo = this.findOne(prestamoId);
         List<Abono> abonos = prestamo.getAbonos();
-        mPrestamoTotales.setTotalAbonado(abonos.stream().filter( t -> t.getAbonado()).mapToInt(t -> t.getCantidad()).sum());
-        mPrestamoTotales.setTotalMultado(abonos.stream().filter( t -> t.getAbonado()).map( t -> t.getMulta()).mapToInt( t -> t.getMulta()).sum());
+        mPrestamoTotales.setTotalAbonado(abonos.stream().filter( t -> t.isAbonado()).mapToInt(t -> t.getCantidad()).sum());
+        mPrestamoTotales.setTotalMultado(abonos.stream().filter( t -> t.isAbonado()).map( t -> t.getMulta()).mapToInt( t -> t.getMulta()).sum());
         mPrestamoTotales.setTotalRecuperado(mPrestamoTotales.getTotalAbonado() + mPrestamoTotales.getTotalMultado());
         mPrestamoTotales.setPorcentajePagado((int)((float)mPrestamoTotales.getTotalAbonado() / (float)prestamo.getCantidadPagar() * 100f));
         
@@ -90,7 +90,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         DaoMulta daoMulta = new DaoMulta();
         
         List<Pair<Integer, Integer>> abonosMultas = daoAbono.stream()
-                .filter(a -> a.getAbonado())
+                .filter(a -> a.isAbonado())
                 .map(e -> new Pair<>(e.getCantidad(), e.getMulta().getMulta()))
                 .collect(toList());
                           

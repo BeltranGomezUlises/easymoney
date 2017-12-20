@@ -19,3 +19,12 @@ export function evalResponse(response, callback){
       break;
   }
 }
+
+/*
+* devuelve el valor en utc de la fecha local en long de su representacion en cadena
+* ejemplo: de "12/12/2017" con GMT -7, regresa su valor en utc equivalente
+*/
+export function toUtcDate(dateString){
+  let date = new Date(dateString);
+  return date.getTime() + (date.getTimezoneOffset() * 60 * 1000);
+}

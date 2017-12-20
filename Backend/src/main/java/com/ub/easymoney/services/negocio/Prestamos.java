@@ -81,6 +81,6 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         } catch (Exception ex) {
             setErrorResponse(response, ex);
         }
-        return response;
+         return response;
     }
 }

@@ -29,7 +29,8 @@ export default class PrestamoList extends React.Component {
         fechaPrestamoFinal: '',
         fechaPrestamoInicial: '',
         fechaLimiteInicial: '',
-        fechaLimiteFinal: ''
+        fechaLimiteFinal: '',
+        acreditados: false
       }
     }
 
@@ -86,11 +87,11 @@ export default class PrestamoList extends React.Component {
 
   cargarPrestamos(){
     let {filtro} = this.state;
-
-    let fechaPrestamoFinal = filtro.fechaPrestamoFinal !== '' ? (new Date(filtro.fechaPrestamoFinal)).getTime() : '';
-    let fechaPrestamoInicial = filtro.fechaPrestamoInicial !== '' ? (new Date(filtro.fechaPrestamoInicial)).getTime() : '';
-    let fechaLimiteInicial = filtro.fechaLimiteInicial !== '' ? (new Date(filtro.fechaLimiteInicial)).toISOString() : '';
-    let fechaLimiteFinal = filtro.fechaLimiteFinal !== '' ? (new Date(filtro.fechaLimiteFinal)).toISOString() : '';
+    console.log(filtro)
+    let fechaPrestamoInicial = filtro.fechaPrestamoInicial !== '' ? utils.toUtcDate(filtro.fechaPrestamoInicial) : '';
+    let fechaPrestamoFinal = filtro.fechaPrestamoFinal !== '' ? utils.toUtcDate(filtro.fechaPrestamoFinal) + 86400000  : '';
+    let fechaLimiteInicial = filtro.fechaLimiteInicial !== '' ? utils.toUtcDate(filtro.fechaLimiteInicial) : '';
+    let fechaLimiteFinal = filtro.fechaLimiteFinal !== '' ? utils.toUtcDate(filtro.fechaLimiteFinal) + 86400000 : '';
 
     fetch(localStorage.getItem('url') + 'prestamos/cargarPrestamos',{
       method: 'POST',
@@ -106,7 +107,8 @@ export default class PrestamoList extends React.Component {
         fechaPrestamoInicial,
         fechaPrestamoFinal,
         fechaLimiteInicial,
-        fechaLimiteFinal
+        fechaLimiteFinal,
+        acreditados: filtro.acreditados
       })
     }).then((res)=> res.json())
     .then((response) =>{
@@ -364,6 +366,7 @@ export default class PrestamoList extends React.Component {
 
             <Form.Field>
               <Checkbox label='Prestamos 100% abonados'
+                value={this.state.filtro.acreditados}
                 onChange={ (evt, data) => {
                   let {filtro} = this.state;
                   filtro.acreditados = data.checked;

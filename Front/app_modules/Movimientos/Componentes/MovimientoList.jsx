@@ -12,13 +12,14 @@ export default class MovimientoList extends React.Component {
       movimientos: [],
       conMovimientos: true,
       modalOpenAgregar: false,
-      modalOpenWarning: false
+      modalOpenWarning: false,
+      conMovimientos: true
     }
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
   }
 
-  handleCloseAgregar(hasChanches){    
+  handleCloseAgregar(hasChanches){
     this.setState({modalOpenAgregar: false});
     if (hasChanches.hasChanches) {
         this.cargarMovimientos();
@@ -48,10 +49,10 @@ export default class MovimientoList extends React.Component {
           if (response.data.length > 0) {
             this.setState({
               movimientos: response.data,
-              conMovimiento:true
+              conMovimientos:true
             });
           }else{
-            this.setState({conMovimiento: false});
+            this.setState({conMovimientos: false});
           }
         })
       })
@@ -110,7 +111,7 @@ export default class MovimientoList extends React.Component {
     }else{
       return(
         <Container textAlign='center'>
-            <h2>Sin Prestamos...</h2>
+            <h2>Sin Movimientos...</h2>
         </Container>
       );
     }

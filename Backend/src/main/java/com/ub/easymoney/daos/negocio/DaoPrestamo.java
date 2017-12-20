@@ -13,8 +13,9 @@ import java.util.Date;
 import java.util.List;
 import org.jinq.jpa.JPAJinqStream;
 import static com.ub.easymoney.utils.UtilsValidations.isNotNullOrEmpty;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import static java.util.stream.Collectors.toList;
-import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 
 /**
  *
@@ -36,34 +37,44 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         String nombreCliente = filtro.getNombreCliente().toLowerCase();
         String nombreCobrador = filtro.getNombreCobrador().toLowerCase();
         
-        Date fechaPrestamoInical = filtro.getFechaPrestamoInicial();
+        Date fechaPrestamoInicial = filtro.getFechaPrestamoInicial();
         Date fechaPrestamoFinal = filtro.getFechaPrestamoFinal();
         
         Date fechaLimiteInicial = filtro.getFechaLimiteInicial();
         Date fechaLimiteFinal = filtro.getFechaLimiteFinal();
                 
         JPAJinqStream<Prestamo> stream = this.stream();
-        
+ 
         if (isNotNullOrEmpty(nombreCliente)) {
             stream = stream.where( t -> t.getCliente().getNombre().toLowerCase().contains(nombreCliente));
         }        
         if (isNotNullOrEmpty(nombreCobrador)) {
             stream = stream.where( t -> t.getCobrador().getNombre().toLowerCase().contains(nombreCobrador));
         }
-        if (fechaPrestamoInical != null) {
-            stream = stream.where( t -> t.getFecha().after(fechaPrestamoInical));
+        if (fechaPrestamoInicial != null) {
+            stream = stream.where( t -> !t.getFecha().before(fechaPrestamoInicial));
         }
         if (fechaPrestamoFinal != null) {
             stream = stream.where( t -> t.getFecha().before(fechaPrestamoFinal));
         }
         if (fechaLimiteInicial != null) {
-            stream = stream.where( t -> t.getFechaLimite().after(fechaLimiteInicial));
+            stream = stream.where( t -> !t.getFechaLimite().before(fechaLimiteInicial));
         }
         if (fechaLimiteFinal != null) {
             stream = stream.where( t -> t.getFechaLimite().before(fechaLimiteFinal));
         }
+        //filtrar los que esten acreditados en un 100%
+        List<Prestamo> prestamosFiltrados = stream.toList();
+        if (!filtro.isAcreditados()) {
+            prestamosFiltrados = prestamosFiltrados.stream()
+                    .filter( t -> {
+                        float totalAbonado = t.getAbonos().stream().filter( a -> a.isAbonado()).mapToInt( a -> a.getCantidad()).sum();
+                        float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
+                        return porcentajeAbonado < 100;                                
+                    }).collect(toList());
+        }
         
-        return stream.collect(toList());
+        return prestamosFiltrados;
         
     }
      
