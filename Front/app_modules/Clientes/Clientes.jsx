@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ClienteCard from './Componentes/ClienteCard.jsx'
 import ClienteForm from './Componentes/ClienteForm.jsx'
-import { Container, Segment, Card, Button, Icon, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
+import { Container, Segment, Card, Button, Form, Input, Image, Modal, Header, Dimmer, Loader, Divider} from 'semantic-ui-react';
 
 export default class Clientes extends React.Component{
 
@@ -13,7 +13,11 @@ export default class Clientes extends React.Component{
       modalOpenAgregar: false,
       modalOpenWarning: false,
       nuevoCliente:{},
-      conClientes: true
+      conClientes: true,
+      filtro:{
+        nombre:'',
+        apodo:''
+      }
     }
 
     this.removeCliente = this.removeCliente.bind(this);
@@ -41,9 +45,7 @@ export default class Clientes extends React.Component{
   }
 
   agregarCliente(){
-    //1
     if (this.state.nuevoCliente.nombre) {
-        //2
         fetch(localStorage.getItem('url') + 'clientes',{
           method: 'POST',
           headers: {
@@ -52,11 +54,7 @@ export default class Clientes extends React.Component{
             'Access-Control-Allow-Origin':'*',
             'Authorization': localStorage.getItem('tokenSesion')
           },
-          body:JSON.stringify({
-            nombre: this.state.nuevoCliente.nombre,
-            direccion: this.state.nuevoCliente.direccion,
-            telefono: this.state.nuevoCliente.telefono
-          })
+          body:JSON.stringify(this.state.nuevoCliente)
         })
         .then((res)=> res.json())
         .then((response) =>{
@@ -71,44 +69,40 @@ export default class Clientes extends React.Component{
           this.handleCloseAgregar();
         })
     }else{
-      //3
       this.setState({modalOpenWarning:true});
     }
-    //4
   }
 
   cargarClientes(){
-    //1
-      fetch(localStorage.getItem('url') + 'clientes',{
-        method: 'GET',
+      fetch(localStorage.getItem('url') + 'clientes/cargarClientes',{
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin':'*',
           'Authorization': localStorage.getItem('tokenSesion')
-        }
+        },
+        body: JSON.stringify(this.state.filtro)
       }).then((res)=> res.json())
       .then((response) =>{
-        //2
         if (response.data.length > 0) {
-          //3
           this.setState({clientes:response.data, conClientes:true});
         }else{
-          //4
           this.setState({conClientes:false});
         }
-
       })
-      //5
   }
 
+  removeCliente(cliente){
+    const clientesViejo = this.state.clientes.filter((c) =>{
+      return c.id != cliente.id
+    });
+    this.setState({clientes: clientesViejo});
+  }
 
   renderClientesCards(){
-    //1
     if (this.state.conClientes) {
-      //2
       if (this.state.clientes.length > 0) {
-        //3
         return(
           this.state.clientes.map((cliente) =>{
             return (
@@ -118,7 +112,6 @@ export default class Clientes extends React.Component{
           })
         );
       }else{
-        //4
         return (
           <div>
             <Dimmer active inverted>
@@ -129,7 +122,6 @@ export default class Clientes extends React.Component{
         );
       }
     }else{
-      //5
       return(
         <Container textAlign='center'>
             <h2>Sin Clientes...</h2>
@@ -148,17 +140,49 @@ export default class Clientes extends React.Component{
             open={this.state.modalOpenAgregar}>
             <Header content='Agregar cliente' />
             <Modal.Content>
-                <ClienteForm getData={this.onCreateHandler}></ClienteForm>
+                <ClienteForm getData={this.onCreateHandler} agregarCliente={this.agregarCliente}/>
             </Modal.Content>
-            <Modal.Actions>
-              <Button color='green' onClick={this.agregarCliente}>
-                Guardar
-              </Button>
-              <Button color='red' onClick={this.handleCloseAgregar}>
-                Cancelar
-              </Button>
-            </Modal.Actions>
           </Modal>
+          <Divider horizontal>Filtros</Divider>
+            <Form>
+              <Form.Group>
+                <Form.Field
+                   control={Input}
+                   label='Nombre Cliente:'
+                   type='text'
+                   placeholder='nombre de cliente...'
+                   value={this.state.filtro.nombre}
+                   onChange={ (evt) => {
+                     let {filtro} = this.state;
+                     filtro.nombre = evt.target.value;
+                     this.setState({filtro});
+                     this.cargarClientes();
+                   }}
+                />
+                <Form.Field
+                   control={Input}
+                   label='Apodo Cliente:'
+                   type='text'
+                   placeholder='apodo de cliente...'
+                   value={this.state.filtro.apodo}
+                   onChange={ (evt) => {
+                     let {filtro} = this.state;
+                     filtro.apodo = evt.target.value;
+                     this.setState({filtro});
+                     this.cargarClientes();
+                   }}
+                />
+              </Form.Group>
+              <Form.Field control={Button} primary onClick={ () => {
+                let filtro = {
+                  nombre:'',
+                  apodo:''
+                }
+                this.setState({filtro});
+                this.cargarClientes();
+              }}>Limpiar filtros</Form.Field>
+            </Form>
+
         </Segment>
         <Segment>
           <Card.Group>
@@ -167,13 +191,6 @@ export default class Clientes extends React.Component{
         </Segment>
       </div>
     )
-  }
-
-  removeCliente(cliente){
-    const clientesViejo = this.state.clientes.filter((c) =>{
-      return c.id != cliente.id
-    });
-    this.setState({clientes: clientesViejo});
   }
 
   componentWillMount() {

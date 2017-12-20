@@ -79,7 +79,7 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.cantidad = cantidad;
     }
 
-    public boolean getAbonado() {
+    public boolean isAbonado() {
         return abonado;
     }
 
@@ -133,5 +133,5 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
     public AbonoPK obtenerIdentificador() {
         return abonoPK;
     }
-    
+
 }

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { Input, Button, Form} from 'semantic-ui-react';
-
+import { Input, Button, Form, Checkbox } from 'semantic-ui-react';
+import * as utils from '../../../utils.js';
 export default class MovimientoForm extends Component{
 
   constructor(props){
@@ -16,12 +16,53 @@ export default class MovimientoForm extends Component{
         }
       }
     }
+    this.state.isLoading = false;
+    this.state.tipoMovimiento = false; //false == movimiento positivc
     this.handleSumbit = this.handleSumbit.bind(this);
   }
 
   handleSumbit(){
-    this.props.agregarMovimiento();
-    console.log('sumbit')
+    this.setState({isLoading: true});
+    if (this.props.movimiento) { //actualizar si se creó con un movimiento
+      this.actualizarMovimiento();
+    }else{ //agregar
+      this.agregarMovimiento();
+    }
+  }
+
+  agregarMovimiento(){
+    let {movimiento} = this.state;
+    if (this.state.tipoMovimiento) {
+      movimiento.cantidad *= -1;
+    }
+    fetch(localStorage.getItem('url') + 'movimientos',{
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      },
+      body:JSON.stringify(movimiento)
+    }).then((res)=> res.json())
+    .then((response) =>{
+      utils.evalResponse(response, () => {
+        this.setState({isLoading: false});
+        this.props.handleClose({hasChanches: true});
+      })
+    })
+  }
+
+  renderButton(){
+    if (this.state.isLoading) {
+      return(
+        <Button color='green' loading type='sumbit'>Agregar</Button>
+      );
+    }else{
+      return(
+        <Button color='green' type='sumbit'>Agregar</Button>
+      );
+    }
   }
 
   render(){
@@ -29,24 +70,26 @@ export default class MovimientoForm extends Component{
       <Form onSubmit={this.handleSumbit}>
         <Form.Field>
           <label pointing='right'>Fecha:</label>
-          <input type='date'
-            onInput={(evt) =>{
+          <input type='date' required onInput={(evt) =>{
                 const fecha = evt.target.value;
                 let {movimiento} = this.state;
                 movimiento.fecha = fecha;
                 this.setState({movimiento});
-                this.props.getData({movimiento});
             }}
             value={this.state.movimiento.fecha}/>
         </Form.Field>
         <Form.Field>
+          <Checkbox label='Marcar como egreso' onChange={ (evt, data) => {
+            this.setState({tipoMovimiento: data.checked});
+          }}/>
+        </Form.Field>
+        <Form.Field>
           <label>Cantidad:</label>
-            <input type="text" pattern="[0-9]*" required onInput={(evt)=>{
+          <input type="text" pattern="[0-9]*" required onInput={(evt)=>{
               if (evt.target.validity.valid) {
                 let {movimiento} = this.state;
                 movimiento.cantidad = evt.target.value;
                 this.setState({movimiento});
-                this.props.getData({movimiento});
               };
             }} value={this.state.movimiento.cantidad}/>
         </Form.Field>
@@ -56,12 +99,12 @@ export default class MovimientoForm extends Component{
               let {movimiento} = this.state;
               movimiento.descripcion = evt.target.value;
               this.setState({movimiento});
-              this.props.getData({movimiento});
             }}
             value={this.state.movimiento.descripcion}/>
         </Form.Field>
-        <Button color='green' type='sumbit'>Agregar</Button>
+        {this.renderButton()}
       </Form>
     )
   }
+
 }

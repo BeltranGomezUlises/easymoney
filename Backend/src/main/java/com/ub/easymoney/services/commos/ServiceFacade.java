@@ -69,8 +69,7 @@ public class ServiceFacade<T extends IEntity<K>, K> {
      * entidades de esta clase servicio
      */
     @GET    
-    public Response<List<T>> listar(@HeaderParam("Authorization") String token) {
-        
+    public Response<List<T>> listar(@HeaderParam("Authorization") String token) {        
         Response response = new Response();
         try {            
             this.manager.setToken(token);

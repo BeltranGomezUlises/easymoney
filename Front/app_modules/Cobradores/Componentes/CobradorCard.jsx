@@ -113,18 +113,9 @@ export default class CobradorCard extends React.Component{
                  open={this.state.modalOpenEditar}>
                  <Header content='Editar cobrador' />
                  <Modal.Content>
-                   <CobradorForm cobrador={this.state.cobrador} getData={this.onEditHandler}>
-
+                   <CobradorForm cobrador={this.state.cobrador} getData={this.onEditHandler} updateCobrador={this.editarCobrador}>
                    </CobradorForm>
-                 </Modal.Content>
-                 <Modal.Actions>
-                   <Button color='green' onClick={this.editarCobrador}>
-                     Guardar
-                   </Button>
-                   <Button color='red' onClick={this.handleCloseEditar}>
-                     Cancelar
-                   </Button>
-                 </Modal.Actions>
+                 </Modal.Content>                
                </Modal>
                <Modal
                  trigger={<Button basic color='red' onClick={this.handleOpenEliminar}>Eliminar</Button>}

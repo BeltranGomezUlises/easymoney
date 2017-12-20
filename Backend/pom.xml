@@ -34,7 +34,13 @@
         <dependency> 
             <groupId>com.sun.jersey</groupId> 
             <artifactId>jersey-json</artifactId> 
-            <version>1.19.4</version>             
+            <version>1.19.4</version>    
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-core-asl</artifactId>
+                </exclusion>                
+            </exclusions>         
         </dependency>          
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>

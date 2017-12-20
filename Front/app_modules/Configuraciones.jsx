@@ -92,11 +92,17 @@ export default class Clientes extends React.Component{
               <Form onSubmit={this.handleSumbit}>
                 <Form.Field>
                   <label>Días de los prestamos:</label>
-                  <input type='text' pattern="[0-9]*" placeholder='ingrese los días de plazo que se le asignarán a los prestamos' value={this.state.configuraciones.diasPrestamo} onInput={this.updateInputDiasPrestamo} />
+                  <input type='text' pattern="[0-9]*" 
+                    placeholder='ingrese los días de plazo que se le asignarán a los prestamos' 
+                    value={this.state.configuraciones.diasPrestamo} 
+                    onInput={this.updateInputDiasPrestamo} />
                 </Form.Field>
                 <Form.Field>
                   <label>Porcentaje de impuesto:</label>
-                  <input type='text' pattern="[0-9]*" placeholder='ingrese el porcentaje de impuesto que se le asinarán a los prestamos' value={this.state.configuraciones.porcentajeInteresPrestamo} onInput={this.updateInputPorcentajeInteresPrestamo}/>
+                  <input type='text' pattern="[0-9]*" 
+                    placeholder='ingrese el porcentaje de impuesto que se le asinarán a los prestamos' 
+                    value={this.state.configuraciones.porcentajeInteresPrestamo} 
+                    onInput={this.updateInputPorcentajeInteresPrestamo}/>
                 </Form.Field>
                 <Button primary type='sumbit'>Actualizar</Button>
               </Form>

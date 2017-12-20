@@ -10,7 +10,6 @@ import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,6 +46,8 @@ public class Cliente implements Serializable, IEntity<Integer> {
     @Size(max = 2147483647)
     @Column(name = "telefono")
     private String telefono;
+    @Column(name = "apodo")
+    private String apodo;
     @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
     private List<Prestamo> prestamoList;
 
@@ -92,6 +93,14 @@ public class Cliente implements Serializable, IEntity<Integer> {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getApodo() {
+        return apodo;
+    }
+
+    public void setApodo(String apodo) {
+        this.apodo = apodo;
     }
 
     @JsonIgnore

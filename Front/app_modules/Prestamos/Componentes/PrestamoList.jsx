@@ -1,16 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Header, Table, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
+import { Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
 import PrestamoForm from './PrestamoForm.jsx'
 import PrestamoDetalle from './PrestamoDetalle.jsx'
+import * as utils from '../../../utils.js';
 
 export default class PrestamoList extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
-      prestamos: [],
-      modalOpenAgregar: false,
+      prestamos:[],
+      totalesPrestamos:{},
+      modalOpenAgregar:false,
       conPrestamos:true,
       nuevoPrestamo:{
         cantidad:0,
@@ -20,19 +22,28 @@ export default class PrestamoList extends React.Component {
         cobrador:{
           id:0
         }
+      },
+      filtro:{
+        nombreCliente:'',
+        nombreCobrador:'',
+        fechaPrestamoFinal: '',
+        fechaPrestamoInicial: '',
+        fechaLimiteInicial: '',
+        fechaLimiteFinal: '',
+        acreditados: false
       }
     }
 
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
-    this.handleCloseWarning = this.handleCloseWarning.bind(this);
-    this.handleOpenWarning = this.handleOpenWarning.bind(this);
     this.agregarPrestamo = this.agregarPrestamo.bind(this);
     this.onCreateHandler = this.onCreateHandler.bind(this);
+    this.cargarTotalesPrestamos = this.cargarTotalesPrestamos.bind(this);
   }
 
   componentWillMount(){
     this.cargarPrestamos();
+    this.cargarTotalesPrestamos();
   }
 
   handleCloseAgregar(){
@@ -41,14 +52,6 @@ export default class PrestamoList extends React.Component {
 
   handleOpenAgregar(){
     this.setState({modalOpenAgregar: true});
-  }
-
-  handleCloseWarning(){
-    this.setState({modalOpenWarning: false});
-  }
-
-  handleOpenWarning(){
-    this.setState({modalOpenWarning: true});
   }
 
   agregarPrestamo(){
@@ -71,6 +74,7 @@ export default class PrestamoList extends React.Component {
         .then((response) =>{
           this.handleCloseAgregar();
           this.cargarPrestamos();
+          this.cargarTotalesPrestamos();
         })
     }else{
       this.handleOpenWarning();
@@ -82,22 +86,55 @@ export default class PrestamoList extends React.Component {
   }
 
   cargarPrestamos(){
-      fetch(localStorage.getItem('url') + 'prestamos',{
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin':'*',
-          'Authorization': localStorage.getItem('tokenSesion')
-        }
-      }).then((res)=> res.json())
-      .then((response) =>{
-        if (response.data.length > 0) {
-          this.setState({prestamos:response.data, conPrestamos:true});
-        }else{
-          this.setState({conPrestamos: false});
-        }
+    let {filtro} = this.state;
+    console.log(filtro)
+    let fechaPrestamoInicial = filtro.fechaPrestamoInicial !== '' ? utils.toUtcDate(filtro.fechaPrestamoInicial) : '';
+    let fechaPrestamoFinal = filtro.fechaPrestamoFinal !== '' ? utils.toUtcDate(filtro.fechaPrestamoFinal) + 86400000  : '';
+    let fechaLimiteInicial = filtro.fechaLimiteInicial !== '' ? utils.toUtcDate(filtro.fechaLimiteInicial) : '';
+    let fechaLimiteFinal = filtro.fechaLimiteFinal !== '' ? utils.toUtcDate(filtro.fechaLimiteFinal) + 86400000 : '';
+
+    fetch(localStorage.getItem('url') + 'prestamos/cargarPrestamos',{
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      },
+      body:JSON.stringify({
+        nombreCliente: filtro.nombreCliente,
+        nombreCobrador : filtro.nombreCobrador,
+        fechaPrestamoInicial,
+        fechaPrestamoFinal,
+        fechaLimiteInicial,
+        fechaLimiteFinal,
+        acreditados: filtro.acreditados
       })
+    }).then((res)=> res.json())
+    .then((response) =>{
+      if (response.data.length > 0) {
+        this.setState({prestamos:response.data, conPrestamos:true});
+      }else{
+        this.setState({conPrestamos: false});
+      }
+    })
+  }
+
+  cargarTotalesPrestamos(){
+    fetch(localStorage.getItem('url') + 'prestamos/totalesGenerales',{
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      }
+    }).then((res)=> res.json())
+    .then((response) =>{
+      utils.evalResponse(response, () => {
+        this.setState({totalesPrestamos: response.data});
+      });
+    })
   }
 
   renderPrestamosList(){
@@ -113,7 +150,7 @@ export default class PrestamoList extends React.Component {
             }>
             <Modal.Header>Detalle Prestamo</Modal.Header>
             <Modal.Content>
-              <PrestamoDetalle prestamo={prestamo}>
+              <PrestamoDetalle prestamo={prestamo} update={this.cargarTotalesPrestamos}>
               </PrestamoDetalle>
             </Modal.Content>
           </Modal>
@@ -153,7 +190,7 @@ export default class PrestamoList extends React.Component {
               <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
               <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
               <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
-              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>              
+              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
@@ -179,18 +216,57 @@ export default class PrestamoList extends React.Component {
     }
   }
 
+  renderTotalesPrestamosList(){
+    let {totalesPrestamos} = this.state;
+    if(totalesPrestamos.totalPrestado !== undefined){
+      return(
+          <Table.Row>
+            <Table.Cell>
+              ${totalesPrestamos.totalPrestado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.totalAbonado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.totalMultado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.totalRecuperado}
+            </Table.Cell>
+            <Table.Cell>
+              ${totalesPrestamos.capital}
+            </Table.Cell>
+            <Table.Cell>
+              %{totalesPrestamos.porcentajeCompletado}
+            </Table.Cell>
+          </Table.Row>
+      );
+    }
+  }
+
+  renderTotalesPrestamos(){
+    return(
+      <Table celled>
+        <Table.Header celled>
+          <Table.Row>
+            <Table.HeaderCell>Total Prestado</Table.HeaderCell>
+            <Table.HeaderCell>Total Abonado</Table.HeaderCell>
+            <Table.HeaderCell>Total Multado</Table.HeaderCell>
+            <Table.HeaderCell>Total Recuperado</Table.HeaderCell>
+            <Table.HeaderCell>Capital</Table.HeaderCell>
+            <Table.HeaderCell>Porcentaje Cobrado</Table.HeaderCell>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {this.renderTotalesPrestamosList()}
+        </Table.Body>
+      </Table>
+    );
+  }
+
   render() {
     return (
       <div>
-        <Modal open={this.state.modalOpenWarning} onClose={this.handleCloseWarning} closeOnRootNodeClick={false}>
-          <Modal.Content>
-            <h3>Es necesario colocar una cantidad al prestamo</h3>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button color='green' onClick={this.handleCloseWarning} inverted> Entendido </Button>
-          </Modal.Actions>
-        </Modal>
-
         <Segment>
           <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
             onClose={this.handleCloseAgregar}
@@ -208,9 +284,119 @@ export default class PrestamoList extends React.Component {
               </Button>
             </Modal.Actions>
           </Modal>
+
+          <Divider horizontal>Filtros</Divider>
+          <Form>
+            <Form.Group>
+              <Form.Field
+                 control={Input}
+                 label='Nombre Cliente:'
+                 type='text'
+                 placeholder='nombre de cliente...'
+                 value={this.state.filtro.nombreCliente}
+                 onChange={ (evt) => {
+                   let {filtro} = this.state;
+                   filtro.nombreCliente = evt.target.value;
+                   this.setState({filtro});
+                   this.cargarPrestamos();
+                 }}/>
+              <Form.Field
+                 control={Input}
+                 label='Nombre Cobrador:'
+                 type='text'
+                 placeholder='Nombre de Cobrador...'
+                 value={this.state.filtro.nombreCobrador}
+                 onChange={ (evt) => {
+                   let {filtro} = this.state;
+                   filtro.nombreCobrador = evt.target.value;
+                   this.setState({filtro});
+                   this.cargarPrestamos();
+                 }}/>
+
+              <Form.Field>
+                <label>Prestamos despues de:</label>
+                <input
+                  type={'date'}
+                  value={this.state.filtro.fechaPrestamoInicial}
+                  onChange={(evt) => {
+                    let {filtro} = this.state;
+                    filtro.fechaPrestamoInicial = evt.target.value;
+                    this.setState({filtro});
+                    this.cargarPrestamos();
+                  }}/>
+              </Form.Field>
+              <Form.Field>
+                <label>Prestamos antes de:</label>
+                <input
+                  type={'date'}
+                  value={this.state.filtro.fechaPrestamoFinal}
+                  onChange={(evt) => {
+                    let {filtro} = this.state;
+                    filtro.fechaPrestamoFinal = evt.target.value;
+                    this.setState({filtro});
+                    this.cargarPrestamos();
+                  }}/>
+              </Form.Field>
+
+              <Form.Field>
+                <label>Fecha limite pago despues de:</label>
+                <input
+                  type={'date'}
+                  value={this.state.filtro.fechaLimiteInicial}
+                  onChange={(evt) => {
+                    let {filtro} = this.state;
+                    filtro.fechaLimiteInicial = evt.target.value;
+                    this.setState({filtro});
+                    this.cargarPrestamos();
+                  }}/>
+              </Form.Field >
+              <Form.Field>
+                <label>Fecha limite pago antes de:</label>
+                <input
+                  type={'date'}
+                  value={this.state.filtro.fechaLimiteFinal}
+                  onChange={(evt) => {
+                    let {filtro} = this.state;
+                    filtro.fechaLimiteFinal = evt.target.value;
+                    this.setState({filtro});
+                    this.cargarPrestamos();
+                  }}/>
+              </Form.Field >
+           </Form.Group>
+
+            <Form.Field>
+              <Checkbox label='Prestamos 100% abonados'
+                value={this.state.filtro.acreditados}
+                onChange={ (evt, data) => {
+                  let {filtro} = this.state;
+                  filtro.acreditados = data.checked;
+                  this.setState({filtro});
+                  this.cargarPrestamos();
+                }}
+                checked={this.state.filtro.acreditados} />
+            </Form.Field>
+            <Form.Field control={Button} primary onClick={ () => {
+              let filtro = {
+                nombreCliente:'',
+                nombreCobrador:'',
+                fechaPrestamoFinal:'',
+                fechaPrestamoInicial: '',
+                fechaLimiteInicial: '',
+                fechaLimiteFinal: ''
+              }
+              this.setState({filtro});
+              this.cargarClientes();
+            }}>Limpiar filtros</Form.Field>
+          </Form>
+
         </Segment>
         <Segment>
-          {this.renderPrestamos()}
+          <div>
+            {this.renderPrestamos()}
+          </div>
+          <Segment>
+            {this.renderTotalesPrestamos()}
+          </Segment>
         </Segment>
       </div>
     )

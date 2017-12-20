@@ -1,34 +1,41 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Header, Table, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
+import MovimientoForm from './MovimientoForm.jsx'
+import * as utils from '../../../utils.js';
 
 export default class MovimientoList extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
-      Movimientos: [],
-      conMovimientos:true,
-      nuevoMovimiento:{
-        cantidad:0,
-        cliente:{
-          id:0
-        },
-        cobrador:{
-          id:0
-        }
-      }
+      movimientos: [],
+      conMovimientos: true,
+      modalOpenAgregar: false,
+      modalOpenWarning: false,
+      conMovimientos: true
     }
+    this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
+    this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
+  }
+
+  handleCloseAgregar(hasChanches){
+    this.setState({modalOpenAgregar: false});
+    if (hasChanches.hasChanches) {
+        this.cargarMovimientos();
+    }
+  }
+
+  handleOpenAgregar(){
+    this.setState({modalOpenAgregar: true});
   }
 
   componentWillMount(){
     this.cargarMovimientos();
   }
 
-
-
   cargarMovimientos(){
-      fetch(localStorage.getItem('url') + 'ingresosegresos',{
+      fetch(localStorage.getItem('url') + 'movimientos',{
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -38,28 +45,36 @@ export default class MovimientoList extends React.Component {
         }
       }).then((res)=> res.json())
       .then((response) =>{
-        if (response.data.length > 0) {
-          this.setState({Movimientos:response.data, conMovimiento:true});
-        }else{
-          this.setState({conMovimiento: false});
-        }
+        utils.evalResponse(response, ()=>{
+          if (response.data.length > 0) {
+            this.setState({
+              movimientos: response.data,
+              conMovimientos:true
+            });
+          }else{
+            this.setState({conMovimientos: false});
+          }
+        })
       })
   }
 
   renderMovimientoList(){
-    return this.state.Movimientos.map((ie) =>{
+    return this.state.movimientos.map((ie) =>{
       return(
         <Table.Row key={ie.id}>
-          <Table.Cell style={{cursor: 'pointer'}}>
+          <Table.Cell>
             <Header textAlign='center'>
               {ie.id}
             </Header>
           </Table.Cell>
           <Table.Cell>
-            {ie.descripcion}
+            {new Date(ie.fecha).toLocaleDateString()}
           </Table.Cell>
           <Table.Cell>
             {ie.cantidad}
+          </Table.Cell>
+          <Table.Cell>
+            {ie.descripcion}
           </Table.Cell>
         </Table.Row>
       )
@@ -68,13 +83,14 @@ export default class MovimientoList extends React.Component {
 
   renderMovimientos(){
     if (this.state.conMovimientos) {
-      if (this.state.Movimientos.length > 0) {
+      if (this.state.movimientos.length > 0) {
         return(
           <Table celled selectable>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
-              <Table.HeaderCell>$ cantidad</Table.HeaderCell>
+              <Table.HeaderCell>fecha</Table.HeaderCell>
+                <Table.HeaderCell>$ cantidad</Table.HeaderCell>
               <Table.HeaderCell>descripcion</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
@@ -95,7 +111,7 @@ export default class MovimientoList extends React.Component {
     }else{
       return(
         <Container textAlign='center'>
-            <h2>Sin Prestamos...</h2>
+            <h2>Sin Movimientos...</h2>
         </Container>
       );
     }
@@ -103,9 +119,22 @@ export default class MovimientoList extends React.Component {
 
   render() {
     return (
+      <div>
+      <Segment>
+        <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
+          onClose={this.handleCloseAgregar}
+          open={this.state.modalOpenAgregar}>
+          <Header content='Agregar Ingreso o Egreso' />
+          <Modal.Content>
+            <MovimientoForm handleClose={this.handleCloseAgregar}/>
+          </Modal.Content>
+        </Modal>
+      </Segment>
         <Segment>
           {this.renderMovimientos()}
         </Segment>
+      </div>
     )
   }
+
 }
