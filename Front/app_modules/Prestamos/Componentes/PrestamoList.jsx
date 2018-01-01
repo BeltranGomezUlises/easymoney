@@ -31,7 +31,8 @@ export default class PrestamoList extends React.Component {
         fechaLimiteInicial: '',
         fechaLimiteFinal: '',
         acreditados: false
-      }
+      },
+      buscando:false
     }
 
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
@@ -87,7 +88,6 @@ export default class PrestamoList extends React.Component {
 
   cargarPrestamos(){
     let {filtro} = this.state;
-    console.log(filtro)
     let fechaPrestamoInicial = filtro.fechaPrestamoInicial !== '' ? utils.toUtcDate(filtro.fechaPrestamoInicial) : '';
     let fechaPrestamoFinal = filtro.fechaPrestamoFinal !== '' ? utils.toUtcDate(filtro.fechaPrestamoFinal) + 86400000  : '';
     let fechaLimiteInicial = filtro.fechaLimiteInicial !== '' ? utils.toUtcDate(filtro.fechaLimiteInicial) : '';
@@ -113,9 +113,16 @@ export default class PrestamoList extends React.Component {
     }).then((res)=> res.json())
     .then((response) =>{
       if (response.data.length > 0) {
-        this.setState({prestamos:response.data, conPrestamos:true});
+        this.setState({
+          prestamos:response.data,
+          conPrestamos:true,
+          buscando: false
+        });
       }else{
-        this.setState({conPrestamos: false});
+        this.setState({
+          conPrestamos: false,
+          buscando: false
+        });
       }
     })
   }
@@ -264,6 +271,126 @@ export default class PrestamoList extends React.Component {
     );
   }
 
+  renderFiltros(){
+    return(
+      <Form>
+        <Form.Group>
+          <Form.Field
+             control={Input}
+             label='Nombre Cliente:'
+             type='text'
+             placeholder='nombre de cliente...'
+             value={this.state.filtro.nombreCliente}
+             onChange={ (evt) => {
+               let {filtro} = this.state;
+               filtro.nombreCliente = evt.target.value;
+               this.setState({filtro});
+             }}/>
+          <Form.Field
+             control={Input}
+             label='Nombre Cobrador:'
+             type='text'
+             placeholder='Nombre de Cobrador...'
+             value={this.state.filtro.nombreCobrador}
+             onChange={ (evt) => {
+               let {filtro} = this.state;
+               filtro.nombreCobrador = evt.target.value;
+               this.setState({filtro});
+             }}/>
+
+          <Form.Field>
+            <label>Prestamos despues de:</label>
+            <input
+              type={'date'}
+              value={this.state.filtro.fechaPrestamoInicial}
+              onChange={(evt) => {
+                let {filtro} = this.state;
+                filtro.fechaPrestamoInicial = evt.target.value;
+                this.setState({filtro});
+              }}/>
+          </Form.Field>
+          <Form.Field>
+            <label>Prestamos antes de:</label>
+            <input
+              type={'date'}
+              value={this.state.filtro.fechaPrestamoFinal}
+              onChange={(evt) => {
+                let {filtro} = this.state;
+                filtro.fechaPrestamoFinal = evt.target.value;
+                this.setState({filtro});
+              }}/>
+          </Form.Field>
+
+          <Form.Field>
+            <label>Fecha limite pago despues de:</label>
+            <input
+              type={'date'}
+              value={this.state.filtro.fechaLimiteInicial}
+              onChange={(evt) => {
+                let {filtro} = this.state;
+                filtro.fechaLimiteInicial = evt.target.value;
+                this.setState({filtro});
+              }}/>
+          </Form.Field >
+          <Form.Field>
+            <label>Fecha limite pago antes de:</label>
+            <input
+              type={'date'}
+              value={this.state.filtro.fechaLimiteFinal}
+              onChange={(evt) => {
+                let {filtro} = this.state;
+                filtro.fechaLimiteFinal = evt.target.value;
+                this.setState({filtro});
+              }}/>
+          </Form.Field >
+       </Form.Group>
+
+        <Form.Field>
+          <Checkbox label='Prestamos 100% abonados'
+            value={this.state.filtro.acreditados}
+            onChange={ (evt, data) => {
+              let {filtro} = this.state;
+              filtro.acreditados = data.checked;
+              this.setState({filtro});
+            }}
+            checked={this.state.filtro.acreditados} />
+        </Form.Field>
+
+
+        <Form.Field>
+          {this.renderButtonBuscar()}
+        </Form.Field>
+
+        <Form.Field control={Button} secundary onClick={ () => {
+          let filtro = {
+            nombreCliente:'',
+            nombreCobrador:'',
+            fechaPrestamoFinal:'',
+            fechaPrestamoInicial: '',
+            fechaLimiteInicial: '',
+            fechaLimiteFinal: ''
+          }
+          this.setState({filtro});
+        }}>Limpiar filtros</Form.Field>
+      </Form>
+    );
+  }
+
+  renderButtonBuscar(){
+    if (this.state.buscando) {
+      return(
+        <Button primary loading>Buscar</Button>
+      );
+    }else{
+      return(
+        <Button primary type='submit' onClick={()=>{          
+            this.setState({buscando:true})
+            this.cargarPrestamos()
+        }}>Buscar</Button>
+      );
+    }
+  }
+
   render() {
     return (
       <div>
@@ -286,109 +413,7 @@ export default class PrestamoList extends React.Component {
           </Modal>
 
           <Divider horizontal>Filtros</Divider>
-          <Form>
-            <Form.Group>
-              <Form.Field
-                 control={Input}
-                 label='Nombre Cliente:'
-                 type='text'
-                 placeholder='nombre de cliente...'
-                 value={this.state.filtro.nombreCliente}
-                 onChange={ (evt) => {
-                   let {filtro} = this.state;
-                   filtro.nombreCliente = evt.target.value;
-                   this.setState({filtro});
-                   this.cargarPrestamos();
-                 }}/>
-              <Form.Field
-                 control={Input}
-                 label='Nombre Cobrador:'
-                 type='text'
-                 placeholder='Nombre de Cobrador...'
-                 value={this.state.filtro.nombreCobrador}
-                 onChange={ (evt) => {
-                   let {filtro} = this.state;
-                   filtro.nombreCobrador = evt.target.value;
-                   this.setState({filtro});
-                   this.cargarPrestamos();
-                 }}/>
-
-              <Form.Field>
-                <label>Prestamos despues de:</label>
-                <input
-                  type={'date'}
-                  value={this.state.filtro.fechaPrestamoInicial}
-                  onChange={(evt) => {
-                    let {filtro} = this.state;
-                    filtro.fechaPrestamoInicial = evt.target.value;
-                    this.setState({filtro});
-                    this.cargarPrestamos();
-                  }}/>
-              </Form.Field>
-              <Form.Field>
-                <label>Prestamos antes de:</label>
-                <input
-                  type={'date'}
-                  value={this.state.filtro.fechaPrestamoFinal}
-                  onChange={(evt) => {
-                    let {filtro} = this.state;
-                    filtro.fechaPrestamoFinal = evt.target.value;
-                    this.setState({filtro});
-                    this.cargarPrestamos();
-                  }}/>
-              </Form.Field>
-
-              <Form.Field>
-                <label>Fecha limite pago despues de:</label>
-                <input
-                  type={'date'}
-                  value={this.state.filtro.fechaLimiteInicial}
-                  onChange={(evt) => {
-                    let {filtro} = this.state;
-                    filtro.fechaLimiteInicial = evt.target.value;
-                    this.setState({filtro});
-                    this.cargarPrestamos();
-                  }}/>
-              </Form.Field >
-              <Form.Field>
-                <label>Fecha limite pago antes de:</label>
-                <input
-                  type={'date'}
-                  value={this.state.filtro.fechaLimiteFinal}
-                  onChange={(evt) => {
-                    let {filtro} = this.state;
-                    filtro.fechaLimiteFinal = evt.target.value;
-                    this.setState({filtro});
-                    this.cargarPrestamos();
-                  }}/>
-              </Form.Field >
-           </Form.Group>
-
-            <Form.Field>
-              <Checkbox label='Prestamos 100% abonados'
-                value={this.state.filtro.acreditados}
-                onChange={ (evt, data) => {
-                  let {filtro} = this.state;
-                  filtro.acreditados = data.checked;
-                  this.setState({filtro});
-                  this.cargarPrestamos();
-                }}
-                checked={this.state.filtro.acreditados} />
-            </Form.Field>
-            <Form.Field control={Button} primary onClick={ () => {
-              let filtro = {
-                nombreCliente:'',
-                nombreCobrador:'',
-                fechaPrestamoFinal:'',
-                fechaPrestamoInicial: '',
-                fechaLimiteInicial: '',
-                fechaLimiteFinal: ''
-              }
-              this.setState({filtro});
-              this.cargarClientes();
-            }}>Limpiar filtros</Form.Field>
-          </Form>
-
+          {this.renderFiltros()}
         </Segment>
         <Segment>
           <div>

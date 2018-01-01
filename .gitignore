@@ -17,6 +17,9 @@
 *.zip
 *.tar.gz
 *.rar
+*.apk
+*.ap_
+
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -25,3 +28,26 @@ hs_err_pid*
 Front/node_modules
 
 /Backend/target/
+/Movil/bin/
+/Movil/gen/
+/Movil/out/
+/Movil/.gradle/
+/Movil/build/
+/Movil/local.properties
+/Movil/proguard/
+/Movil/*.log
+/Movil/.navigation/
+/Movil/captures/
+/Movil/*.iml
+/Movil/.idea/workspace.xml
+/Movil/.idea/tasks.xml
+/Movil/.idea/gradle.xml
+/Movil/.idea/dictionaries
+/Movil/.idea/libraries
+/Movil/.externalNativeBuild
+/Movil/google-services.json
+/Movil/freeline.py
+/Movil/freeline/
+/Movil/freeline_project_description.json
+
+

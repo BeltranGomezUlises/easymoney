@@ -8,15 +8,21 @@ package com.ub.easymoney.daos.admin;
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
 import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.utils.UtilsDB;
+import java.util.List;
+import static java.util.stream.Collectors.toList;
 
 /**
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class DaoUsuario extends DaoSQLFacade<Usuario, Integer>{
-  
-    public DaoUsuario(){
+public class DaoUsuario extends DaoSQLFacade<Usuario, Integer> {
+
+    public DaoUsuario() {
         super(UtilsDB.getEMFactoryCG(), Usuario.class, Integer.class);
     }
-  
+
+    public List<Usuario> usuariosCobradores() {
+        return this.stream().where(u -> u.getTipo() == false).collect(toList());
+    }
+
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CobradorCard from './Componentes/CobradorCard.jsx';
 import CobradorForm from './Componentes/CobradorForm.jsx';
-import { Segment, Container, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
+import { Segment, Container, Divider, Form, Input, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
 
 export default class Cobradores extends React.Component{
 
@@ -10,10 +10,14 @@ export default class Cobradores extends React.Component{
     super(props)
     this.state = {
       cobradores: [],
+      cobradoresRes:[],
       modalOpenAgregar: false,
       modalOpenWarning: false,
       nuevoCobrador: {},
-      conCobradores: true
+      conCobradores: true,
+      filtro: {
+        nombre: ''
+      }
      }
 
     this.removeCobrador = this.removeCobrador.bind(this);
@@ -23,7 +27,6 @@ export default class Cobradores extends React.Component{
     this.agregarCobrador = this.agregarCobrador.bind(this);
     this.handleCloseWarning = this.handleCloseWarning.bind(this);
   }
-
 
   handleCloseWarning(){
     this.setState({modalOpenWarning: false});
@@ -84,11 +87,23 @@ export default class Cobradores extends React.Component{
       }).then((res)=> res.json())
       .then((response) =>{
         if (response.data.length > 0) {
-            this.setState({cobradores:response.data, conCobradores: true});
+            this.setState({
+              cobradores:response.data,
+              cobradoresRes:response.data,
+              conCobradores: true
+            });
         }else{
           this.setState({conCobradores:false});
         }
       })
+  }
+
+  filtrar(){
+    const {nombre} = this.state.filtro;
+    let filtrado = this.state.cobradoresRes.filter( (cobrador) => cobrador.nombre.toLowerCase().includes(nombre.toLowerCase()));
+    this.setState({
+      cobradores: filtrado
+    })
   }
 
   renderCobradoresCards(){
@@ -121,6 +136,28 @@ export default class Cobradores extends React.Component{
     }
   }
 
+  renderFiltros(){
+    return (
+      <Form>
+        <Form.Group>
+          <Form.Field
+             control={Input}
+             label='Nombre Cobrador:'
+             type='text'
+             placeholder='nombre de cobrador...'
+             value={this.state.filtro.nombre}
+             onChange={ (evt) => {
+               let {filtro} = this.state;
+               filtro.nombre = evt.target.value;
+               this.setState({filtro});
+               this.filtrar();
+             }}
+          />
+        </Form.Group>
+      </Form>
+    );
+  }
+
   renderCobradores(){
     return(
       <div>
@@ -134,6 +171,8 @@ export default class Cobradores extends React.Component{
               <CobradorForm getData={this.onCreateHandler} agregarCobrador={this.agregarCobrador}></CobradorForm>
             </Modal.Content>
           </Modal>
+          <Divider horizontal>Filtros</Divider>
+          {this.renderFiltros()}
         </Segment>
         <Segment>
            <Card.Group>
@@ -161,15 +200,7 @@ export default class Cobradores extends React.Component{
           <Segment textAlign='center'>
             <h2>COBRADORES</h2>
           </Segment>
-          <Modal open={this.state.modalOpenWarning} onClose={this.handleCloseWarning} closeOnRootNodeClick={false}>
-            <Modal.Content>
-              <h3>Es necesario llenar el nombre del cobrador</h3>
-            </Modal.Content>
-            <Modal.Actions>
-              <Button color='green' onClick={this.handleCloseWarning} inverted> Entendido </Button>
-            </Modal.Actions>
-          </Modal>
-            {this.renderCobradores()}
+          {this.renderCobradores()}
       </div>
     );
   }

@@ -26,7 +26,7 @@ public class UserException extends Exception {
         super(message);
     }
 
-    public static class UsuarioYaExistente extends UserException {
+    public static class UsuarioYaExistente extends EntidadYaExistenteException {
 
         public UsuarioYaExistente(String message) {
             super(message);

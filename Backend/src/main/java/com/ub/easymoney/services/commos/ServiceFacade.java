@@ -20,9 +20,11 @@ import com.ub.easymoney.daos.exceptions.ForeignKeyException;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import com.ub.easymoney.managers.commons.ManagerFacade;
 import com.ub.easymoney.models.commons.commons.enums.Status;
+import com.ub.easymoney.models.commons.exceptions.EntidadYaExistenteException;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
+import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
 import static com.ub.easymoney.utils.UtilsService.setOkResponse;
@@ -122,7 +124,9 @@ public class ServiceFacade<T extends IEntity<K>, K> {
             response.setMessage("Entidad persistida");
         } catch (TokenExpiradoException | TokenInvalidoException ex) {
             setInvalidTokenResponse(response);
-        } catch (Exception e) {
+        }catch(EntidadYaExistenteException e) {
+            UtilsService.setWarningResponse(response, e.getMessage(), "La entidad ya existe en el sistema");
+        }catch (Exception e) {
             setErrorResponse(response, e);
         }
         return response;
