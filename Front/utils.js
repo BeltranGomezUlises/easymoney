@@ -7,7 +7,9 @@ import {notify} from 'react-notify-toast';
 export function evalResponse(response, callback){
   switch(response.meta.status){
     case 'OK':
-      callback();
+      if (callback){
+        callback();
+      }      
       break;
     case 'WARNING':
       notify.show(response.meta.message, 'warning', 6000);

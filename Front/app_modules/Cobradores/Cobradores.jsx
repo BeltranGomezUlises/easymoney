@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import CobradorCard from './Componentes/CobradorCard.jsx';
 import CobradorForm from './Componentes/CobradorForm.jsx';
 import { Segment, Container, Divider, Form, Input, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
-
+import * as utils from '../../utils.js';
 export default class Cobradores extends React.Component{
 
   constructor(props) {
@@ -46,7 +46,7 @@ export default class Cobradores extends React.Component{
 
   agregarCobrador(){
     if (this.state.nuevoCobrador.nombre){
-      fetch(localStorage.getItem('url') + 'cobradores',{
+      fetch(localStorage.getItem('url') + 'usuarios',{
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -56,17 +56,19 @@ export default class Cobradores extends React.Component{
           },
           body:JSON.stringify({
             nombre: this.state.nuevoCobrador.nombre,
-            direccion: this.state.nuevoCobrador.direccion
+            nombreCompleto: this.state.nuevoCobrador.nombreCompleto
         })
       }).then((res)=> res.json())
       .then((response) =>{
-        //agregar nuevocobrador a la lista actual
-        let cobradores = [...this.state.cobradores, response.data];
-        //limpiar nuevo cobrador
-        this.setState({
-          cobradores,
-          nuevocobrador:{},
-          conCobradores: true
+        utils.evalResponse(response, () => { 
+          //agregar nuevocobrador a la lista actual
+          let cobradores = [...this.state.cobradores, response.data];
+          //limpiar nuevo cobrador
+          this.setState({
+            cobradores,
+            nuevocobrador:{},
+            conCobradores: true
+          });
         });
         this.handleCloseAgregar();
       })
@@ -76,7 +78,7 @@ export default class Cobradores extends React.Component{
   }
 
   cargarCobradores(){
-      fetch(localStorage.getItem('url') + 'cobradores',{
+      fetch(localStorage.getItem('url') + 'usuarios/usuariosCobradores',{
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -142,7 +144,7 @@ export default class Cobradores extends React.Component{
         <Form.Group>
           <Form.Field
              control={Input}
-             label='Nombre Cobrador:'
+             label='Nombre de usuario de cobrador:'
              type='text'
              placeholder='nombre de cobrador...'
              value={this.state.filtro.nombre}

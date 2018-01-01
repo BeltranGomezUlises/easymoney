@@ -39,16 +39,15 @@ public class ManagerUsuario extends ManagerSQL<Usuario, Integer> {
 
     @Override
     public void update(Usuario entity) throws Exception {
+        int usuarioId = entity.getId();
         String nombreUsuario = entity.getNombre();
-        if (!this.dao.stream().where(u -> u.getNombre().equals(nombreUsuario)).findAny().isPresent()) {            
-            super.update(entity); //To change body of generated methods, choose Tools | Templates.
-        }else{
+        if (!this.dao.stream().where(u -> u.getNombre().equals(nombreUsuario) && u.getId() != usuarioId).findAny().isPresent()) {
+            super.update(entity);
+        } else {
             throw new UserException.UsuarioYaExistente("Usuario ya existente en el sistema");
-        }        
+        }
     }
 
-    
-    
     @Override
     public Usuario persist(Usuario entity) throws Exception {
         String nombreUsuario = entity.getNombre();

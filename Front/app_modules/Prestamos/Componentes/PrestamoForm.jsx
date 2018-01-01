@@ -76,7 +76,7 @@ export default class PrestamoForm extends Component{
     }
 
     cargarCobradores(){
-        fetch(localStorage.getItem('url') + 'cobradores',{
+        fetch(localStorage.getItem('url') + 'usuarios/usuariosCobradores',{
           method: 'GET',
           headers: {
             'Accept': 'application/json',

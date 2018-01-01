@@ -150,6 +150,8 @@ public class ServiceFacade<T extends IEntity<K>, K> {
             response.setMessage("Entidad actualizada");          
         } catch (TokenExpiradoException | TokenInvalidoException ex) {
             setInvalidTokenResponse(response);
+        } catch(EntidadYaExistenteException e) {
+            UtilsService.setWarningResponse(response, e.getMessage(), "La entidad ya existe en el sistema");
         } catch (Exception e) {
             setErrorResponse(response, e);
         }

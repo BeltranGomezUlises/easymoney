@@ -48,9 +48,9 @@ export default class CobradorCard extends React.Component{
     this.setState({cobrador});
   }
 
-  editarCobrador(){
+  editarCobrador(){    
     if (this.state.cobrador.nombre !== '') {
-        fetch(localStorage.getItem('url') + 'cobradores',{
+        fetch(localStorage.getItem('url') + 'usuarios',{
           method: 'PUT',
           headers: {
             'Accept': 'application/json',
@@ -58,13 +58,10 @@ export default class CobradorCard extends React.Component{
             'Access-Control-Allow-Origin':'*',
             'Authorization': localStorage.getItem('tokenSesion')
           },
-          body: JSON.stringify({
-            id: this.state.cobrador.id,
-            nombre: this.state.cobrador.nombre,
-            direccion: this.state.cobrador.direccion
-          })
+          body: JSON.stringify(this.state.cobrador)
         }).then((res)=> res.json())
         .then((response) =>{
+            utils.evalResponse(response);
             this.setState({modalOpenEditar:false});
         })
     }else{
@@ -73,7 +70,7 @@ export default class CobradorCard extends React.Component{
   }
 
   eliminarCobrador(){
-      fetch(localStorage.getItem('url') + 'cobradores',{
+      fetch(localStorage.getItem('url') + 'usuarios',{
         method: 'DELETE',
         headers: {
           'Accept': 'application/json',
@@ -102,7 +99,7 @@ export default class CobradorCard extends React.Component{
                {this.state.cobrador.nombre}
              </Card.Header>
              <Card.Description>
-               {this.state.cobrador.direccion}
+               {this.state.cobrador.nombreCompleto}
              </Card.Description>
           </Card.Content>
           <Card.Content extra>
@@ -115,7 +112,7 @@ export default class CobradorCard extends React.Component{
                  <Modal.Content>
                    <CobradorForm cobrador={this.state.cobrador} getData={this.onEditHandler} updateCobrador={this.editarCobrador}>
                    </CobradorForm>
-                 </Modal.Content>                
+                 </Modal.Content>
                </Modal>
                <Modal
                  trigger={<Button basic color='red' onClick={this.handleOpenEliminar}>Eliminar</Button>}
