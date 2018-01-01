@@ -1,0 +1,6 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item name="ic_cerrar" type="drawable">@android:drawable/ic_delete</item>
+    <item name="ic_cobros" type="drawable">@android:drawable/ic_menu_agenda</item>
+
+</resources>

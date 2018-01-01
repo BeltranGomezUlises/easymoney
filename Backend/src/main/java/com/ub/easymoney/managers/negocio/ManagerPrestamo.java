@@ -114,5 +114,10 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         DaoPrestamo daoPrestamo = new DaoPrestamo();
         return daoPrestamo.findAll(filtro);
     }
+
+    public List<Prestamo> prestamosDelCobrador(final int cobradorId) {
+        DaoPrestamo daoPrestamo = new DaoPrestamo();
+        return daoPrestamo.prestamosDelCobrador(cobradorId);
+    }
     
 }

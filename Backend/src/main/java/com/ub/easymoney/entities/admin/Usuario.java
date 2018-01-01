@@ -5,9 +5,11 @@
  */
 package com.ub.easymoney.entities.admin;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,8 +18,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -27,6 +30,20 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "usuario")
 public class Usuario implements Serializable, IEntity<Integer> {
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2147483647)
+    @Column(name = "nombre_completo")
+    private String nombreCompleto;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cobrador", fetch = FetchType.LAZY)
+    private List<Prestamo> prestamoList;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "tipo")
+    private boolean tipo;
     
     private static final long serialVersionUID = 1L;
     @Id
@@ -100,6 +117,31 @@ public class Usuario implements Serializable, IEntity<Integer> {
     @Override
     public Integer obtenerIdentificador() {
         return id;
+    }
+
+    public boolean getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(boolean tipo) {
+        this.tipo = tipo;
+    }
+
+    @JsonIgnore
+    public List<Prestamo> getPrestamoList() {
+        return prestamoList;
+    }
+
+    public void setPrestamoList(List<Prestamo> prestamoList) {
+        this.prestamoList = prestamoList;
+    }
+
+    public String getNombreCompleto() {
+        return nombreCompleto;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
     }
 
 }
