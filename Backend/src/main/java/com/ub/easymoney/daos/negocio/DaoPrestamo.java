@@ -76,6 +76,6 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
     }
      
     public List<Prestamo> prestamosDelCobrador(final int cobradorId){                
-        return this.stream().where( p -> p.getCobrador().getId() == cobradorId).collect(toList());                        
+        return this.stream().where( p -> p.getCobrador().getId().equals(cobradorId)).collect(toList());                        
     }
 }

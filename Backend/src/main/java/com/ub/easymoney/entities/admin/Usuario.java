@@ -25,26 +25,13 @@ import javax.validation.constraints.Size;
 
 /**
  * usuario del sistema, el que utiliza la plataforma
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Entity
 @Table(name = "usuario")
 public class Usuario implements Serializable, IEntity<Integer> {
 
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 2147483647)
-    @Column(name = "nombre_completo")
-    private String nombreCompleto;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cobrador", fetch = FetchType.LAZY)
-    private List<Prestamo> prestamoList;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "tipo")
-    private boolean tipo;
-    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +44,17 @@ public class Usuario implements Serializable, IEntity<Integer> {
     @Size(max = 2147483647)
     @Column(name = "contra")
     private String contra;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2147483647)
+    @Column(name = "nombre_completo")
+    private String nombreCompleto;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cobrador", fetch = FetchType.LAZY)
+    private List<Prestamo> prestamoList;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "tipo")
+    private boolean tipo;
 
     public Usuario() {
     }
@@ -64,7 +62,7 @@ public class Usuario implements Serializable, IEntity<Integer> {
     public Usuario(Integer id) {
         this.id = id;
     }
-   
+
     public Integer getId() {
         return id;
     }

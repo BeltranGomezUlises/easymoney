@@ -86,7 +86,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
     
     @GET
     @Path("/prestamosPorCobrar/{cobradorId}")
-    public Response<List<Prestamo>> prestamosConCobroParaHoy(@HeaderParam("Authorization") final String token, @HeaderParam("cobradorId") final int cobradorId){
+    public Response<List<Prestamo>> prestamosConCobroParaHoy(@HeaderParam("Authorization") final String token, @PathParam("cobradorId") final int cobradorId){
         Response<List<Prestamo>> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();

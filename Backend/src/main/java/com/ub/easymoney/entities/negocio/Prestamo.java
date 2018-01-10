@@ -6,6 +6,7 @@
 package com.ub.easymoney.entities.negocio;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
@@ -35,10 +36,6 @@ import javax.validation.constraints.NotNull;
 @Table(name = "prestamo")
 public class Prestamo implements Serializable, IEntity<Integer> {
 
-    @JoinColumn(name = "cobrador", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Usuario cobrador;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,11 +61,14 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @Temporal(TemporalType.DATE)
     private Date fechaLimite;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "prestamo1", fetch = FetchType.LAZY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Abono> abonos;
     @JoinColumn(name = "cliente_id", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Cliente cliente;
-    
+    @JoinColumn(name = "cobrador", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario cobrador;
 
     public Prestamo() {
     }
@@ -153,7 +153,7 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @Override
     public Integer obtenerIdentificador() {
         return id;
-    } 
+    }
 
     public Cliente getCliente() {
         return cliente;

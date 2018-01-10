@@ -18,8 +18,10 @@
       <property name="javax.persistence.jdbc.password" value="2424"/>
       <!--<property name="javax.persistence.jdbc.password" value="postgres.90Y9B8yh$123"/>-->
       <!-- eclipse link -->
+      <!--
       <property name="eclipselink.ddl-generation" value="create-tables"/>
       <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+      -->
     </properties>
   </persistence-unit>
 </persistence>
