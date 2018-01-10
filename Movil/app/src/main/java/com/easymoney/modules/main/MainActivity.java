@@ -3,32 +3,55 @@ package com.easymoney.modules.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.easymoney.R;
+import com.easymoney.data.repositories.PrestamoRepository;
+import com.easymoney.entities.Prestamo;
+import com.easymoney.models.services.Status;
 import com.easymoney.modules.login.LoginActivity;
+import com.easymoney.utils.activities.UtilsPreferences;
+import com.easymoney.utils.schedulers.SchedulerProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+
+    private ListView listaPrestamos;
+    private PrestamoAdapter adapterPrestamo;
+    private PrestamoRepository prestamoRepository;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //navigation view
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -37,6 +60,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         txtNombreUsuario.setText(getIntent().getStringExtra("userName"));
         txtTipoUsuario.setText(getIntent().getStringExtra("userType"));
+
+        //crear la lista de prestamos
+        listaPrestamos = findViewById(R.id.prestamoList);
+        adapterPrestamo = new PrestamoAdapter(new ArrayList<>());
+        listaPrestamos.setAdapter(adapterPrestamo);
+
+        prestamoRepository = new PrestamoRepository();
+        prestamoRepository.prestamosPorCobrar(getIntent().getIntExtra("userId", -1))
+                .subscribeOn(SchedulerProvider.ioT())
+                .observeOn(SchedulerProvider.uiT())
+                .subscribe(r -> {
+                    System.out.println(r);
+                     switch (r.getMeta().getStatus()){
+                         case OK:
+                             adapterPrestamo.replaceData(r.getData());
+                             break;
+                         case WARNING:
+                             Snackbar.make(findViewById(R.id.mainContentLayout),r.getMeta().getMessage(),Snackbar.LENGTH_SHORT).show();
+                             break;
+                         case ERROR:
+                             break;
+                         default:
+                             break;
+                     }
+                }, ex -> {
+                    ex.printStackTrace();
+                });
     }
 
     @Override
@@ -49,44 +99,76 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
-
         if (id == R.id.cobros) {
-
         } else if (id == R.id.cerrarSesion) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finishAffinity();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private static class PrestamoAdapter extends BaseAdapter {
+
+        private List<Prestamo> prestamos;
+
+        private TextView tvNombre;
+        private TextView tvDireccion;
+        private TextView tvTelefono;
+
+        public PrestamoAdapter(List<Prestamo> prestamos) {
+            this.prestamos = prestamos;
+        }
+
+        public void replaceData(List<Prestamo> prestamos) {
+            this.prestamos = prestamos;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return prestamos.size();
+        }
+
+        @Override
+        public Prestamo getItem(int i) {
+            return prestamos.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            View rowView = view;
+            if (rowView == null) {
+                LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+                rowView = inflater.inflate(R.layout.adapter_prestamo, viewGroup, false);
+            }
+
+            final Prestamo prestamo = getItem(i);
+            tvNombre = rowView.findViewById(R.id.tvNombre);
+            tvDireccion = rowView.findViewById(R.id.tvDireccion);
+            tvTelefono = rowView.findViewById(R.id.tvTelefono);
+
+            tvNombre.setText(prestamo.getCliente().getNombre());
+            tvDireccion.setText(prestamo.getCliente().getDireccion());
+            tvTelefono.setText(prestamo.getCliente().getTelefono());
+
+            rowView.setOnClickListener(v -> {
+                System.out.println("selecionado: " + i);
+            });
+
+            return rowView;
+        }
     }
 }

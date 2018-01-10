@@ -13,7 +13,7 @@ public interface LoginContract {
 
         void showLoading(boolean active);
 
-        void showMain(String userName, String userType);
+        void showMain(int userId, String userName, String userType);
     }
 
     interface Presenter extends BasePresenter<View> {

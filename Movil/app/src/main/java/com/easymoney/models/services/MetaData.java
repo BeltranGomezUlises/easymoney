@@ -4,13 +4,13 @@ package com.easymoney.models.services;
  * Created by ulises on 30/12/17.
  */
 
-public class MetaData {
+public class MetaData<T> {
 
     private String message;
     private Status status;
     private String devMessage;
 
-    private Object metaData;
+    private T metaData;
 
     public MetaData() {
         this.status = Status.OK;
@@ -32,19 +32,19 @@ public class MetaData {
         this.devMessage = devMessage;
     }
 
-    public MetaData(Object metaData, String message) {
+    public MetaData(T metaData, String message) {
         this.message = message;
         this.status = Status.OK;
         this.metaData = metaData;
     }
 
-    public MetaData(Object metaData, Status status, String devMessage) {
+    public MetaData(T metaData, Status status, String devMessage) {
         this.metaData = metaData;
         this.status = status;
         this.devMessage = devMessage;
     }
 
-    public MetaData(Object metaData, String message, Status status, String devMessage) {
+    public MetaData(T metaData, String message, Status status, String devMessage) {
         this.metaData = metaData;
         this.message = message;
         this.status = status;
@@ -63,7 +63,7 @@ public class MetaData {
         this.devMessage = devMessage;
     }
 
-    public void setMetaData(Object metaData) {
+    public void setMetaData(T metaData) {
         this.metaData = metaData;
     }
 
@@ -79,7 +79,7 @@ public class MetaData {
         return devMessage;
     }
 
-    public Object getMetaData() {
+    public T getMetaData() {
         return metaData;
     }
 

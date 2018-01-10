@@ -1,6 +1,7 @@
 package com.easymoney.modules.login;
 
 import com.easymoney.data.repositories.LoginRepository;
+import com.easymoney.utils.activities.UtilsPreferences;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 
@@ -26,14 +27,16 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void attemptLogin(final String user, final String pass) {
         //fragment.showLoading(false);
+        mCompositeDisposable.clear();
         mCompositeDisposable.add(repository.login(user, pass)
                 .observeOn(SchedulerProvider.getInstance().ui())
                 .subscribeOn(SchedulerProvider.getInstance().io())
                 .subscribe( (t) -> {
-                    System.out.println(t);
+                    fragment.showLoading(false);
                     switch (t.getMeta().getStatus()){
                         case OK:
-                            fragment.showMain(t.getData().getNombre(), t.getData().isTipo() ? "Administrador" : "Cobrador");
+                            UtilsPreferences.saveToken(t.getMeta().getMetaData().toString());
+                            fragment.showMain(t.getData().getId(), t.getData().getNombre(), t.getData().isTipo() ? "Administrador" : "Cobrador");
                             break;
                         case WARNING:
                             fragment.showMessage(t.getMeta().getMessage());
@@ -41,7 +44,6 @@ public class LoginPresenter implements LoginContract.Presenter {
                         case ERROR:
                             default:
                     }
-                    fragment.showLoading(false);
                 }, (err) -> {
                     fragment.showLoading(false);
                     fragment.showMessage("Existió un error de comunicación");

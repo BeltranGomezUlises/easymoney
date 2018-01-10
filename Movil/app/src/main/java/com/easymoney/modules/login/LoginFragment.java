@@ -74,8 +74,9 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     }
 
     @Override
-    public void showMain(String userName, String userType) {
+    public void showMain(final int userId, final String userName, final String userType) {
         Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.putExtra("userId", userId);
         intent.putExtra("userName", userName);
         intent.putExtra("userType", userType);
         startActivity(intent);

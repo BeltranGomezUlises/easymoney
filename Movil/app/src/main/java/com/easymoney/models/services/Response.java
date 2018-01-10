@@ -4,10 +4,10 @@ package com.easymoney.models.services;
  * Created by ulises on 30/12/17.
  */
 
-public class Response<T> {
+public class Response<T, K> {
 
     private T data;
-    private MetaData meta;
+    private MetaData<K> meta;
 
     public Response() {
         meta = new MetaData();
@@ -65,7 +65,7 @@ public class Response<T> {
         this.meta.setStatus(estatus);
     }
 
-    public void setMetaData(Object metaData){
+    public void setMetaData(K metaData){
         this.meta.setMetaData(metaData);
     }
 
