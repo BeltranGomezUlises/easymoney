@@ -1,16 +1,15 @@
 package com.easymoney.modules.login;
 
 import com.easymoney.data.repositories.LoginRepository;
-import com.easymoney.utils.activities.UtilsPreferences;
+import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
-
 import io.reactivex.disposables.CompositeDisposable;
+import okhttp3.internal.Util;
 
 /**
  * Created by ulises on 30/12/17.
  */
-
 public class LoginPresenter implements LoginContract.Presenter {
 
     private LoginFragment fragment;
@@ -26,7 +25,6 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void attemptLogin(final String user, final String pass) {
-        //fragment.showLoading(false);
         mCompositeDisposable.clear();
         mCompositeDisposable.add(repository.login(user, pass)
                 .observeOn(SchedulerProvider.getInstance().ui())
@@ -36,6 +34,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     switch (t.getMeta().getStatus()){
                         case OK:
                             UtilsPreferences.saveToken(t.getMeta().getMetaData().toString());
+                            UtilsPreferences.saveLogedUserId(t.getData().getId());
                             fragment.showMain(t.getData().getId(), t.getData().getNombre(), t.getData().isTipo() ? "Administrador" : "Cobrador");
                             break;
                         case WARNING:

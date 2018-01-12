@@ -1,51 +1,73 @@
 package com.easymoney.data.repositories;
 
-import android.app.Application;
-
 import com.easymoney.data.dataSources.PrestamoDataSource;
 import com.easymoney.entities.Prestamo;
-import com.easymoney.models.services.Response;
-import com.easymoney.utils.activities.UtilsPreferences;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
-
-import static com.easymoney.utils.services.UtilsWS.webServices;
 
 /**
  * Created by ulises on 7/01/18.
  */
 
 public class PrestamoRepository implements PrestamoDataSource {
+
+    private static PrestamoRepository INSTANCE;
+    private PrestamoDataSource.PrestamoLocalDataSource localDataSource;
+    private PrestamoDataSource.PrestamoRemoteDataSource remoteDataSource;
+    private boolean isDirty = true;
+
+    /**
+     * prevenir instancias
+     */
+    private PrestamoRepository() {
+        this.localDataSource = new PrestamoLocalDataSource();
+        this.remoteDataSource = new PrestamoRemoteDataSource();
+    }
+
+    /**
+     * singleton de PrestamoRepository
+     * @return intancia de PrestamoRepository
+     */
+    public static PrestamoRepository getINSTANCE(){
+        if (INSTANCE == null){
+            INSTANCE = new PrestamoRepository();
+        }
+        return INSTANCE;
+    }
+
     @Override
-    public List<Prestamo> findAll() {
+    public Flowable<List<Prestamo>> findAll() {
+        if (isDirty){
+            return getAndSaveRemotePrestamos();
+        }else{
+            return localDataSource.findAll();
+        }
+    }
+
+    @Override
+    public Flowable<Prestamo> findById(Integer id) {
         return null;
     }
 
     @Override
-    public Prestamo findById(Integer id) {
+    public Flowable<Prestamo> persist(Prestamo entity) {
         return null;
     }
 
     @Override
-    public Prestamo persist(Prestamo entity) {
+    public Flowable<List<Prestamo>> persist(List<Prestamo> entities) {
         return null;
     }
 
     @Override
-    public List<Prestamo> persist(Prestamo... entities) {
+    public Flowable<Prestamo> update(Prestamo prestamo) {
         return null;
     }
 
     @Override
-    public Prestamo update(Prestamo prestamo) {
-        return null;
-    }
-
-    @Override
-    public List<Prestamo> update(Prestamo... entity) {
+    public Flowable<List<Prestamo>> update(List<Prestamo> entity) {
         return null;
     }
 
@@ -55,17 +77,27 @@ public class PrestamoRepository implements PrestamoDataSource {
     }
 
     @Override
-    public void delete(Prestamo... entities) {
+    public void delete(List<Prestamo> entities) {
 
     }
 
+    /**
+     * elimina los registros locales de prestamos
+     */
     @Override
-    public Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(int cobradorId) {
-        return webServices().prestamosPorCobrar(UtilsPreferences.loadToken(), cobradorId);
+    public void deleteAll() {
+        localDataSource.deleteAll();
     }
 
-    @Override
-    public Flowable<Prestamo> actualizarPrestamo(Prestamo p) {
-        return null;
+    private Flowable<List<Prestamo>> getAndSaveRemotePrestamos() {
+        localDataSource.deleteAll();
+        return remoteDataSource
+                .findAll()
+                .flatMap(prestamos -> Flowable.fromIterable(prestamos).doOnNext(prestamo -> localDataSource.persist(prestamo)))
+                .toList().toFlowable()
+                .doOnComplete(() -> {
+                    isDirty = false;
+                });
     }
+
 }

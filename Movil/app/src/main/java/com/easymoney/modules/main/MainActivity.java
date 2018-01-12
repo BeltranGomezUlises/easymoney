@@ -3,7 +3,6 @@ package com.easymoney.modules.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,9 +19,8 @@ import android.widget.TextView;
 import com.easymoney.R;
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Prestamo;
-import com.easymoney.models.services.Status;
 import com.easymoney.modules.login.LoginActivity;
-import com.easymoney.utils.activities.UtilsPreferences;
+import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.ArrayList;
@@ -30,11 +28,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-
     private ListView listaPrestamos;
     private PrestamoAdapter adapterPrestamo;
     private PrestamoRepository prestamoRepository;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,27 +62,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         adapterPrestamo = new PrestamoAdapter(new ArrayList<>());
         listaPrestamos.setAdapter(adapterPrestamo);
 
-        prestamoRepository = new PrestamoRepository();
-        prestamoRepository.prestamosPorCobrar(getIntent().getIntExtra("userId", -1))
+        prestamoRepository = PrestamoRepository.getINSTANCE();
+        prestamoRepository.findAll()
                 .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT())
-                .subscribe(r -> {
-                    System.out.println(r);
-                     switch (r.getMeta().getStatus()){
-                         case OK:
-                             adapterPrestamo.replaceData(r.getData());
-                             break;
-                         case WARNING:
-                             Snackbar.make(findViewById(R.id.mainContentLayout),r.getMeta().getMessage(),Snackbar.LENGTH_SHORT).show();
-                             break;
-                         case ERROR:
-                             break;
-                         default:
-                             break;
-                     }
-                }, ex -> {
-                    ex.printStackTrace();
-                });
+                .subscribe(
+                        prestamos -> adapterPrestamo.replaceData(prestamos),
+                        ex -> ex.printStackTrace()
+                );
     }
 
     @Override
@@ -99,12 +82,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.cobros) {
+
         } else if (id == R.id.cerrarSesion) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -122,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         private TextView tvNombre;
         private TextView tvDireccion;
         private TextView tvTelefono;
+        private TextView tvFechaPrestamo;
 
         public PrestamoAdapter(List<Prestamo> prestamos) {
             this.prestamos = prestamos;
@@ -159,14 +143,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tvNombre = rowView.findViewById(R.id.tvNombre);
             tvDireccion = rowView.findViewById(R.id.tvDireccion);
             tvTelefono = rowView.findViewById(R.id.tvTelefono);
+            tvFechaPrestamo = rowView.findViewById(R.id.tvFechaPrestamo);
 
             tvNombre.setText(prestamo.getCliente().getNombre());
             tvDireccion.setText(prestamo.getCliente().getDireccion());
             tvTelefono.setText(prestamo.getCliente().getTelefono());
-
-            rowView.setOnClickListener(v -> {
-                System.out.println("selecionado: " + i);
-            });
+            tvFechaPrestamo.setText(UtilsDate.format_D_MM_YYYY(prestamo.getFecha()));
 
             return rowView;
         }

@@ -1,4 +1,4 @@
-package com.easymoney.utils.activities;
+package com.easymoney.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,6 +16,7 @@ public class UtilsPreferences {
     }
 
     private static final String TOKEN = "token";
+    private static final String LOGED_ID = "loged_id";
 
     public static void saveToken(final String token){
         SharedPreferences settings = mContext.getSharedPreferences(TOKEN, 0);
@@ -28,4 +29,17 @@ public class UtilsPreferences {
         SharedPreferences settings = mContext.getSharedPreferences(TOKEN, 0);
         return settings.getString(TOKEN, "");
     }
+
+    public static void saveLogedUserId(final int id){
+        SharedPreferences settings = mContext.getSharedPreferences(LOGED_ID, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(LOGED_ID, id);
+        editor.commit();
+    }
+
+    public static int loadLogedUserId(){
+        SharedPreferences settings = mContext.getSharedPreferences(LOGED_ID, 0);
+        return settings.getInt(LOGED_ID, 0);
+    }
+
 }

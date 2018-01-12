@@ -2,21 +2,23 @@ package com.easymoney.data.dataSources;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 /**
  * Created by ulises on 7/01/18.
  */
 public interface DataSource<T, K> {
 
-    List<T> findAll();
-    T findById(K id);
+    Flowable<List<T>> findAll();
+    Flowable<T> findById(K id);
 
-    T persist(T entity);
-    List<T> persist(T... entities);
+    Flowable<T> persist(T entity);
+    Flowable<List<T>> persist(List<T> entities);
 
-    T update(T t);
-    List<T> update(T... entity);
+    Flowable<T> update(T t);
+    Flowable<List<T>> update(List<T> entity);
 
     void delete(T entity);
-    void delete (T... entities);
-
+    void delete(List<T> entities);
+    void deleteAll();
 }

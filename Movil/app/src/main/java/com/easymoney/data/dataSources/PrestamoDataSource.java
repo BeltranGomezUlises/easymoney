@@ -1,50 +1,52 @@
 package com.easymoney.data.dataSources;
 
 import com.easymoney.entities.Prestamo;
-import com.easymoney.models.services.Response;
+import com.easymoney.utils.UtilsPreferences;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
+
+import static com.easymoney.utils.UtilsPreferences.loadLogedUserId;
+import static com.easymoney.utils.UtilsPreferences.loadToken;
+import static com.easymoney.utils.services.UtilsWS.webServices;
 
 /**
  * Created by ulises on 7/01/18.
  */
 public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
 
-    Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(int cobradorId);
-
-    Flowable<Prestamo> actualizarPrestamo(Prestamo p);
-
     class PrestamoRemoteDataSource implements PrestamoDataSource {
 
         @Override
-        public List<Prestamo> findAll() {
+        public Flowable<List<Prestamo>> findAll() {
+            return webServices().prestamosPorCobrar(loadToken(), loadLogedUserId())
+                    .flatMap( r -> Flowable.fromIterable(r.getData()))
+                    .toList().toFlowable();
+        }
+
+        @Override
+        public Flowable<Prestamo> findById(Integer id) {
             return null;
         }
 
         @Override
-        public Prestamo findById(Integer id) {
+        public Flowable<Prestamo> persist(Prestamo entity) {
             return null;
         }
 
         @Override
-        public Prestamo persist(Prestamo entity) {
+        public Flowable<List<Prestamo>> persist(List<Prestamo> entities) {
             return null;
         }
 
         @Override
-        public List<Prestamo> persist(Prestamo... entities) {
+        public Flowable<Prestamo> update(Prestamo prestamo) {
             return null;
         }
 
         @Override
-        public Prestamo update(Prestamo prestamo) {
-            return null;
-        }
-
-        @Override
-        public List<Prestamo> update(Prestamo... entity) {
+        public Flowable<List<Prestamo>> update(List<Prestamo> entity) {
             return null;
         }
 
@@ -54,51 +56,46 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
         }
 
         @Override
-        public void delete(Prestamo... entities) {
+        public void delete(List<Prestamo> entities) {
 
-        }
-
-
-        @Override
-        public Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(int cobradorId) {
-            return null;
         }
 
         @Override
-        public Flowable<Prestamo> actualizarPrestamo(Prestamo p) {
-            return null;
+        public void deleteAll() {
+
         }
+
     }
 
-    class PrestamoLocalDataSource implements PrestamoDataSource{
+    class PrestamoLocalDataSource implements PrestamoDataSource {
 
         @Override
-        public List<Prestamo> findAll() {
+        public Flowable<List<Prestamo>> findAll() {
             return null;
         }
 
         @Override
-        public Prestamo findById(Integer id) {
+        public Flowable<Prestamo> findById(Integer id) {
             return null;
         }
 
         @Override
-        public Prestamo persist(Prestamo entity) {
+        public Flowable<Prestamo> persist(Prestamo entity) {
             return null;
         }
 
         @Override
-        public List<Prestamo> persist(Prestamo... entities) {
+        public Flowable<List<Prestamo>> persist(List<Prestamo> entities) {
             return null;
         }
 
         @Override
-        public Prestamo update(Prestamo prestamo) {
+        public Flowable<Prestamo> update(Prestamo prestamo) {
             return null;
         }
 
         @Override
-        public List<Prestamo> update(Prestamo... entity) {
+        public Flowable<List<Prestamo>> update(List<Prestamo> entity) {
             return null;
         }
 
@@ -108,20 +105,15 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
         }
 
         @Override
-        public void delete(Prestamo... entities) {
+        public void delete(List<Prestamo> entities) {
 
-        }
-
-
-        @Override
-        public Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(int cobradorId) {
-            return null;
         }
 
         @Override
-        public Flowable<Prestamo> actualizarPrestamo(Prestamo p) {
-            return null;
+        public void deleteAll() {
+
         }
+
     }
 
 }
