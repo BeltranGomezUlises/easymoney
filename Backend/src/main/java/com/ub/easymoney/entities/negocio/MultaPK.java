@@ -65,7 +65,6 @@ public class MultaPK implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof MultaPK)) {
             return false;
         }
@@ -73,10 +72,7 @@ public class MultaPK implements Serializable {
         if (this.prestamo != other.prestamo) {
             return false;
         }
-        if ((this.fecha == null && other.fecha != null) || (this.fecha != null && !this.fecha.equals(other.fecha))) {
-            return false;
-        }
-        return true;
+        return this.fecha.equals(other.fecha);
     }
 
     @Override

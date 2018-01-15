@@ -6,9 +6,17 @@
 package com.ub.easymoney.services.admin;
 
 import com.ub.easymoney.entities.admin.Config;
+import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.managers.admin.ManagerConfig;
+import com.ub.easymoney.managers.admin.ManagerUsuario;
+import com.ub.easymoney.models.commons.reponses.Response;
+import com.ub.easymoney.utils.UtilsSecurity;
+import com.ub.easymoney.utils.UtilsService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static java.util.stream.Collectors.toList;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -52,5 +60,41 @@ public class Configs{
             throw ex;
         }
     }
+    
+    @GET
+    @Path("/reset")
+    public Response<List> resetConfig(){
+        Response<List> r = new Response();
+        
+        List res = new ArrayList();
+        try {            
+            ManagerConfig manager = new ManagerConfig();            
+            Config conf = new Config();
+            conf.setContraDefault("1234");
+            conf.setDiasPrestamo(30);
+            conf.setPorcentajeInteresPrestamo(20);
+            manager.deleteAll(manager.findAll().stream().map( c -> c.getId()).collect(toList()));
+            manager.persist(conf);
+            res.add(conf);
+            
+            ManagerUsuario managerUsuario = new ManagerUsuario();
+            managerUsuario.deleteAll(managerUsuario.findAll().stream().map( u -> u.getId()).collect(toList()));
+            
+            Usuario u = new Usuario();
+            u.setNombre("admin");
+            u.setContra("easymoney");
+            u.setNombreCompleto("administrador del sistema");
+            u.setTipo(true);
+            
+            managerUsuario.persist(u);
+            
+            res.add(u);
+            
+            UtilsService.setOkResponse(r, res, "configuraciones y usuario predeterminado", "configuracion default asignada");
+        } catch (Exception ex) {
+            Logger.getLogger(Configs.class.getName()).log(Level.SEVERE, null, ex);            
+        }
+        return r;
+    }       
     
 }

@@ -13,8 +13,6 @@ import java.util.Date;
 import java.util.List;
 import org.jinq.jpa.JPAJinqStream;
 import static com.ub.easymoney.utils.UtilsValidations.isNotNullOrEmpty;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -32,7 +30,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      * @param filtro objecto con las propiedades a filtrar
      * @return  lista de prestamos filtrados
      */
-    public List<Prestamo> findAll(FiltroPrestamo filtro) {
+    public List<Prestamo> findAll(final FiltroPrestamo filtro) {
         
         String nombreCliente = filtro.getNombreCliente().toLowerCase();
         String nombreCobrador = filtro.getNombreCobrador().toLowerCase();
@@ -74,8 +72,10 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
                     }).collect(toList());
         }
         
-        return prestamosFiltrados;
-        
+        return prestamosFiltrados;        
     }
      
+    public List<Prestamo> prestamosDelCobrador(final int cobradorId){                
+        return this.stream().where( p -> p.getCobrador().getId().equals(cobradorId)).collect(toList());                        
+    }
 }

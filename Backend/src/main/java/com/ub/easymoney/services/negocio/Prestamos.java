@@ -39,7 +39,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
 
     @GET
     @Path("/totales/{id}")
-    public Response<ModeloPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+    public Response<ModeloPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") final String token, @PathParam("id")final int id) {
         Response<ModeloPrestamoTotales> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -54,7 +54,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
     
     @GET
     @Path("/totalesGenerales")
-    public Response<ModeloPrestamoTotalesGenerales> totalesGenerales(@HeaderParam("Authorization") String token){
+    public Response<ModeloPrestamoTotalesGenerales> totalesGenerales(@HeaderParam("Authorization") final String token){
         Response<ModeloPrestamoTotalesGenerales> r = new Response<>();        
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -70,7 +70,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
     
     @POST
     @Path("/cargarPrestamos")
-    public Response<List<Prestamo>> listarFiltrados(@HeaderParam("Authorization") String token, FiltroPrestamo filtro){
+    public Response<List<Prestamo>> listarFiltrados(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro){
         Response response = new Response();
         try {            
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -82,5 +82,21 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             setErrorResponse(response, ex);
         }
          return response;
+    }
+    
+    @GET
+    @Path("/prestamosPorCobrar/{cobradorId}")
+    public Response<List<Prestamo>> prestamosConCobroParaHoy(@HeaderParam("Authorization") final String token, @PathParam("cobradorId") final int cobradorId){
+        Response<List<Prestamo>> r = new Response<>();
+        try {
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            managerPrestamo.setToken(token);
+            setOkResponse(r, managerPrestamo.prestamosDelCobrador(cobradorId), "prestamos del cobrador");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(r);
+        } catch (Exception ex) {
+            setErrorResponse(r, ex);
+        }
+        return r;
     }
 }

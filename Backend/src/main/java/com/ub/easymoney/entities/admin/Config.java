@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -23,6 +24,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "config")
 public class Config implements Serializable, IEntity {
+
+    @Size(max = 2147483647)
+    @Column(name = "contra_default")
+    private String contraDefault;
 
     private static final long serialVersionUID = 1L;
     @Basic(optional = false)
@@ -104,6 +109,14 @@ public class Config implements Serializable, IEntity {
     @Override
     public Object obtenerIdentificador() {
         return id;
+    }
+
+    public String getContraDefault() {
+        return contraDefault;
+    }
+
+    public void setContraDefault(String contraDefault) {
+        this.contraDefault = contraDefault;
     }
     
 }

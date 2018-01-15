@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">EasyMoney</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Nombre usuario</string>
+    <string name="prompt_password">Contraseña</string>
+    <string name="action_sign_in">Iniciar sesion</string>
+    <string name="action_sign_in_short">Iniciar</string>
+    <string name="error_invalid_email">Nombre de usuario inválido</string>
+    <string name="error_invalid_password">Contraseña inválida</string>
+    <string name="error_incorrect_password">Contraseña incorrecta</string>
+    <string name="error_field_required">Campo requerido</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Abrir panel navegación</string>
+    <string name="navigation_drawer_close">Cerrar panel navegación</string>
+
+    <string name="action_settings">Configuraciones</string>
+
+</resources>

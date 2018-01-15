@@ -39,7 +39,7 @@ export default class CobradorForm extends Component{
       if (this.state.text == 'Agregar') {
           this.props.agregarCobrador();
       }else{
-        this.props.updateCobrador();
+          this.props.updateCobrador();
       }
     }
 
@@ -59,22 +59,23 @@ export default class CobradorForm extends Component{
       return(
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
-            <label>Nombre:</label>
+            <label>Nombre usuario:</label>
             <input
               required
-              placeholder='Nombre del cobrador'
+              placeholder='Nombre de usuario del sistema...'
               value={this.state.cobrador.nombre}
               onChange={this.updateName}/>
           </Form.Field>
           <Form.Field>
-            <label>Dirección:</label>
+            <label>Nombre completo del cobrador:</label>
             <input
-                placeholder='Dirección del cobrador'
-                value={this.state.cobrador.direccion} onChange={ (e) => {
-                let {cobrador} = this.state;
-                cobrador.direccion = e.target.value;
-                this.setState({cobrador});
-                this.props.getData(cobrador);
+                placeholder='Nombre y apellidos del cobrador...'
+                value={this.state.cobrador.nombreCompleto}
+                onChange={ (e) => {
+                  let {cobrador} = this.state;
+                  cobrador.nombreCompleto = e.target.value;
+                  this.setState({cobrador});
+                  this.props.getData(cobrador);
               }}/>
           </Form.Field>
           {this.renderButton()}

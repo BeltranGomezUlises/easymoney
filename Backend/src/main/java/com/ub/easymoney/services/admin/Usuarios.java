@@ -7,8 +7,15 @@ package com.ub.easymoney.services.admin;
 
 import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.managers.admin.ManagerUsuario;
+import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
+import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
+import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.services.commos.ServiceFacade;
+import static com.ub.easymoney.utils.UtilsService.*;
+import java.util.List;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -26,4 +33,19 @@ public class Usuarios extends ServiceFacade<Usuario, Integer>{
         super(new ManagerUsuario());
     }
                     
+    @GET
+    @Path("/usuariosCobradores")
+    public Response<List<Usuario>> usuariosCobradores(@HeaderParam("Authorization") String token){
+        Response<List<Usuario>> res = new Response();
+        try {
+            ManagerUsuario managerUsuario = new ManagerUsuario();
+            managerUsuario.setToken(token);
+            setOkResponse(res, managerUsuario.usuariosCobradores(), "usuarios cobradores");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(res);
+        } catch(Exception e ){
+            setErrorResponse(res, e);
+        }
+        return res;
+    }
 }

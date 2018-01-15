@@ -14,6 +14,7 @@ export default class Clientes extends React.Component{
 
     this.updateInputDiasPrestamo = this.updateInputDiasPrestamo.bind(this);
     this.updateInputPorcentajeInteresPrestamo = this.updateInputPorcentajeInteresPrestamo.bind(this);
+    this.updateInputContraDefault = this.updateInputContraDefault.bind(this);
     this.handleSumbit = this.handleSumbit.bind(this);
   }
 
@@ -26,26 +27,28 @@ export default class Clientes extends React.Component{
   }
 
   updateInputDiasPrestamo(evt){
-    if (evt.target.value.length <= 2) {
-      const diasPrestamo = (evt.target.validity.valid) ? evt.target.value : this.state.configuraciones.diasPrestamo;
+      const diasPrestamo = evt.target.value;
       let {configuraciones} = this.state;
       configuraciones.diasPrestamo = diasPrestamo;
       this.setState({configuraciones})
-    }
   }
 
   updateInputPorcentajeInteresPrestamo(evt){
-    if (evt.target.value.length <= 2) {
-      const porcentajeInteresPrestamo = (evt.target.validity.valid) ? evt.target.value : this.state.configuraciones.porcentajeInteresPrestamo;
+      const porcentajeInteresPrestamo = evt.target.value;
       let {configuraciones} = this.state;
       configuraciones.porcentajeInteresPrestamo = porcentajeInteresPrestamo;
       this.setState({configuraciones})
-    }
+  }
+
+  updateInputContraDefault(evt){
+      const contraDefault = evt.target.value;
+      let {configuraciones} = this.state;
+      configuraciones.contraDefault = contraDefault;
+      this.setState({configuraciones});
   }
 
   actualizarConfigs(){
     this.setState({loading: true});
-
     fetch(localStorage.getItem('url') + 'configs',{
       method: 'PUT',
       headers: {
@@ -54,11 +57,7 @@ export default class Clientes extends React.Component{
         'Access-Control-Allow-Origin':'*',
         'Authorization': localStorage.getItem('tokenSesion')
       },
-      body:JSON.stringify({
-        id: this.state.configuraciones.id,
-        diasPrestamo: this.state.configuraciones.diasPrestamo,
-        porcentajeInteresPrestamo: this.state.configuraciones.porcentajeInteresPrestamo
-      })
+      body:JSON.stringify(this.state.configuraciones)
     }).then((res)=> res.json())
     .then((response) =>{
       this.setState({loading: false});
@@ -81,6 +80,14 @@ export default class Clientes extends React.Component{
       })
   }
 
+  renderButton(){
+    if (this.state.loading) {
+      return <Button primary loading>Actualizar</Button>
+    }else{
+      return <Button primary type='sumbit'>Actualizar</Button>    
+    }
+  }
+
   render(){
     return(
       <div style={{'padding':'10px'}}>
@@ -92,19 +99,29 @@ export default class Clientes extends React.Component{
               <Form onSubmit={this.handleSumbit}>
                 <Form.Field>
                   <label>Días de los prestamos:</label>
-                  <input type='text' pattern="[0-9]*" 
-                    placeholder='ingrese los días de plazo que se le asignarán a los prestamos' 
-                    value={this.state.configuraciones.diasPrestamo} 
+                  <input type='number' min='1' step='1' max='99'
+                    required
+                    placeholder='ingrese los días de plazo que se le asignarán a los prestamos'
+                    value={this.state.configuraciones.diasPrestamo}
                     onInput={this.updateInputDiasPrestamo} />
                 </Form.Field>
                 <Form.Field>
                   <label>Porcentaje de impuesto:</label>
-                  <input type='text' pattern="[0-9]*" 
-                    placeholder='ingrese el porcentaje de impuesto que se le asinarán a los prestamos' 
-                    value={this.state.configuraciones.porcentajeInteresPrestamo} 
+                  <input type='number' min='1' step='1' max='1000'
+                    required
+                    placeholder='ingrese el porcentaje de impuesto que se le asinarán a los prestamos'
+                    value={this.state.configuraciones.porcentajeInteresPrestamo}
                     onInput={this.updateInputPorcentajeInteresPrestamo}/>
                 </Form.Field>
-                <Button primary type='sumbit'>Actualizar</Button>
+                <Form.Field>
+                  <label>Contraseña default cobrador:</label>
+                  <input type='text'
+                    required
+                    placeholder='Ingrese la contraseña default para los usuarios cobradores'
+                    value={this.state.configuraciones.contraDefault}
+                    onInput={this.updateInputContraDefault} />
+                </Form.Field>
+                {this.renderButton()}
               </Form>
           </Segment>
         </Container>
