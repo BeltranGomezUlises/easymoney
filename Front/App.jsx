@@ -28,7 +28,8 @@ class MainContainer extends React.Component{
 
 
   renderMainContent(){
-    if (localStorage.getItem('tokenSesion') === '' || localStorage.getItem('tokenSesion') === undefined) {
+    console.log(localStorage.getItem('tokenSesion'));
+    if (localStorage.getItem('tokenSesion') === '' || localStorage.getItem('tokenSesion') === null) {
       return(
         <Login></Login>
       );
