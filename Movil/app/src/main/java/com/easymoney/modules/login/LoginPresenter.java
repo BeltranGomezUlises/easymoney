@@ -34,7 +34,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     switch (t.getMeta().getStatus()){
                         case OK:
                             UtilsPreferences.saveToken(t.getMeta().getMetaData().toString());
-                            UtilsPreferences.saveLogedUserId(t.getData().getId());
+                            UtilsPreferences.saveLogedUser(t.getData());
                             fragment.showMain(t.getData().getId(), t.getData().getNombre(), t.getData().isTipo() ? "Administrador" : "Cobrador");
                             break;
                         case WARNING:

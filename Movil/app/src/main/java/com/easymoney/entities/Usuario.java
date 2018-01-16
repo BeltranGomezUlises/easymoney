@@ -1,5 +1,6 @@
 package com.easymoney.entities;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,8 +8,7 @@ import java.util.List;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class Usuario {
-
+public class Usuario implements Serializable {
 
     private Integer id;
     private String nombre;
@@ -67,7 +67,7 @@ public class Usuario {
     }
 
 
-    public boolean getTipo() {
+    public boolean isTipo() {
         return tipo;
     }
 

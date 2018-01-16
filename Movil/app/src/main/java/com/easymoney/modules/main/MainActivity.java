@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.easymoney.R;
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.modules.cambiarContra.CambiarContraActivity;
+import com.easymoney.modules.detallePrestamo.DetallePrestamoActivity;
 import com.easymoney.modules.login.LoginActivity;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.schedulers.SchedulerProvider;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Prestamos");
         setSupportActionBar(toolbar);
 
         //drawer layout
@@ -61,8 +64,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listaPrestamos = findViewById(R.id.prestamoList);
         adapterPrestamo = new PrestamoAdapter(new ArrayList<>());
         listaPrestamos.setAdapter(adapterPrestamo);
-
+        listaPrestamos.setOnItemClickListener((adapterView, view, i, l) ->{
+            Prestamo p = (Prestamo) adapterView.getItemAtPosition(i);
+            Intent intent = new Intent(MainActivity.this, DetallePrestamoActivity.class);
+            intent.putExtra("Prestamo", p);
+            startActivity(intent);
+        } );
         prestamoRepository = PrestamoRepository.getINSTANCE();
+        prestamoRepository.forceRemoteUpdate();
         prestamoRepository.findAll()
                 .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT())
@@ -92,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finishAffinity();
+        } else if (id == R.id.cambiarContra){
+            Intent intent = new Intent(MainActivity.this, CambiarContraActivity.class);
+            startActivity(intent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

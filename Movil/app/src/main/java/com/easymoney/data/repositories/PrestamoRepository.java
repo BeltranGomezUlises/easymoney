@@ -2,10 +2,15 @@ package com.easymoney.data.repositories;
 
 import com.easymoney.data.dataSources.PrestamoDataSource;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.models.ModelPrestamoTotales;
+import com.easymoney.models.services.Response;
+import com.easymoney.utils.UtilsPreferences;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
+
+import static com.easymoney.utils.services.UtilsWS.webServices;
 
 /**
  * Created by ulises on 7/01/18.
@@ -28,10 +33,11 @@ public class PrestamoRepository implements PrestamoDataSource {
 
     /**
      * singleton de PrestamoRepository
+     *
      * @return intancia de PrestamoRepository
      */
-    public static PrestamoRepository getINSTANCE(){
-        if (INSTANCE == null){
+    public static PrestamoRepository getINSTANCE() {
+        if (INSTANCE == null) {
             INSTANCE = new PrestamoRepository();
         }
         return INSTANCE;
@@ -39,11 +45,7 @@ public class PrestamoRepository implements PrestamoDataSource {
 
     @Override
     public Flowable<List<Prestamo>> findAll() {
-        if (isDirty){
-            return getAndSaveRemotePrestamos();
-        }else{
-            return localDataSource.findAll();
-        }
+        return getAndSaveRemotePrestamos();
     }
 
     @Override
@@ -89,6 +91,15 @@ public class PrestamoRepository implements PrestamoDataSource {
         localDataSource.deleteAll();
     }
 
+    /**
+     * devuelve los datos totales de un prestamo
+     * @param prestamoId identificador del prestamo
+     * @return Response con el modelo de totales de un prestamo
+     */
+    public Flowable<Response<ModelPrestamoTotales, Object>> totalesPrestamo(int prestamoId){
+        return webServices().totalesDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
+    }
+
     private Flowable<List<Prestamo>> getAndSaveRemotePrestamos() {
         localDataSource.deleteAll();
         return remoteDataSource
@@ -98,6 +109,13 @@ public class PrestamoRepository implements PrestamoDataSource {
                 .doOnComplete(() -> {
                     isDirty = false;
                 });
+    }
+
+    /**
+     * forza a la siguiente consulta de los prestamos a ser remota para garantizar el ultimo estado o cambio de usuario
+     */
+    public void forceRemoteUpdate() {
+        this.isDirty = true;
     }
 
 }

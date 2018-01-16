@@ -33,14 +33,12 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     private LoginPresenter presenter;
     private EditText mEmailView;
     private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
     ProgressDialog dialog;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.login_frag, container, false);
+        View root = inflater.inflate(R.layout.fragment_login, container, false);
 
         // Set up the login form.
         mEmailView = root.findViewById(R.id.email);
@@ -55,9 +53,6 @@ public class LoginFragment extends Fragment implements LoginContract.View {
 
         Button btnLogin = root.findViewById(R.id.email_sign_in_button);
         btnLogin.setOnClickListener(view -> attemptLogin());
-
-        mLoginFormView = root.findViewById(R.id.login_form);
-        mProgressView = root.findViewById(R.id.login_progress);
 
         return root;
     }
@@ -118,35 +113,6 @@ public class LoginFragment extends Fragment implements LoginContract.View {
             showLoading(true);
             presenter.attemptLogin(email, password);
         }
-    }
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        });
-
-        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-        mProgressView.animate().setDuration(shortAnimTime).alpha(
-                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
-        });
     }
 
     public void showMessage(String mesage) {

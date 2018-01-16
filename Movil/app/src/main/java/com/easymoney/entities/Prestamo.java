@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class Prestamo{
+public class Prestamo implements Serializable{
 
 
     private Integer id;

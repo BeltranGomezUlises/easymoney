@@ -5,11 +5,14 @@
  */
 package com.ub.easymoney.managers.admin;
 
+import com.sun.jersey.api.ParamException;
 import com.ub.easymoney.daos.admin.DaoConfig;
 import com.ub.easymoney.daos.admin.DaoUsuario;
 import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.managers.commons.ManagerSQL;
+import com.ub.easymoney.models.ModelCambiarContra;
 import com.ub.easymoney.models.ModelLogin;
+import com.ub.easymoney.models.commons.exceptions.ParametroInvalidoException;
 import com.ub.easymoney.models.commons.exceptions.UserException;
 import com.ub.easymoney.models.commons.exceptions.UsuarioInexistenteException;
 import com.ub.easymoney.utils.UtilsSecurity;
@@ -66,5 +69,17 @@ public class ManagerUsuario extends ManagerSQL<Usuario, Integer> {
         DaoUsuario daoUsuario = new DaoUsuario();
         return daoUsuario.usuariosCobradores();
     }
+    
+    public Usuario cambiarContraseña(ModelCambiarContra modelCambiarContra) throws ParametroInvalidoException, Exception{
+        Usuario u = this.dao.findOne(modelCambiarContra.getUsuarioId());
+        if (UtilsSecurity.decifrarMD5(u.getContra()).equals(modelCambiarContra.getContraActual())) {
+            u.setContra(UtilsSecurity.cifrarMD5(modelCambiarContra.getNuevaContra()));
+            this.update(u);
+        }else{
+            throw new ParametroInvalidoException("Credenciales inválidas");
+        }                
+        return u;
+    }
+    
 
 }

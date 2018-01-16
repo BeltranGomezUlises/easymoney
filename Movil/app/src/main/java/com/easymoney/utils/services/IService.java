@@ -1,7 +1,11 @@
 package com.easymoney.utils.services;
 
 
+import com.easymoney.entities.Abono;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.entities.Usuario;
+import com.easymoney.models.ModelCambiarContra;
+import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
 
@@ -20,15 +24,41 @@ import retrofit2.http.Path;
  */
 public interface IService {
 
+    /**
+     * endpoint de los servicios
+     */
+//    String END_POINT = "http://201.165.0.142:8383/em/api/";
+    String END_POINT = "http://192.168.1.66:8084/EasyMoney/api/";
 
-//    String END_POINT = "http://201.165.0.142:8383/EasyMoney/api/";
-        String END_POINT = "http://192.168.1.70:8084/EasyMoney/api/";
-
+    /**
+     * Inicio de sesion
+     * @param request modelo de inicio de sesion
+     * @return usuario logeado
+     */
     @POST("accesos/login")
-    Flowable<Response<Login.Response, String>> login(@Body Login.Request request);
+    Flowable<Response<Usuario, String>> login(@Body Login.Request request);
 
+    /**
+     * Obtiene los prestamos que le corresponden al cobrador y le faltan cobrar
+     * @param token token de sesion
+     * @param cobradorId identificador del cobrador
+     * @return respuesta con la lista de prestamos
+     */
     @GET("prestamos/prestamosPorCobrar/{cobradorId}")
     Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(@Header("Authorization")String token, @Path("cobradorId") int cobradorId);
 
+    @GET("prestamos/totales/{prestamoId}")
+    Flowable<Response<ModelPrestamoTotales, Object>> totalesDelPrestamo(@Header("Authorization")String token, @Path("prestamoId") int prestamoId);
 
+    @GET("abonos/prestamo/{prestamoId}")
+    Flowable<Response<List<Abono>, Object>> abonosDelPrestamo(@Header("Authorization")String token, @Path("prestamoId") int prestamoId);
+
+    /**
+     * Cambia la contraseña del usuario
+     * @param token token de sesion
+     * @param cambiarContra modelo de cambio de contraseña
+     * @return respuesta con el usuario actualizado
+     */
+    @POST("usuarios/cambiarContra")
+    Flowable<Response<Usuario, Object>> cambiarContra(@Header("Authorization") String token, @Body ModelCambiarContra cambiarContra);
 }

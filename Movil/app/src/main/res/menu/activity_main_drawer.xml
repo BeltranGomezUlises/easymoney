@@ -13,8 +13,13 @@
     <item android:title="Cuenta">
         <menu>
             <item
+                android:id="@+id/cambiarContra"
+                android:icon="@drawable/ic_social_person"
+                android:title="Cambiar Contraseña" />
+
+            <item
                 android:id="@+id/cerrarSesion"
-                android:icon="@drawable/ic_cerrar"
+                android:icon="@drawable/ic_exit"
                 android:title="Salir" />
         </menu>
     </item>

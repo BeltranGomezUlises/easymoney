@@ -1,11 +1,12 @@
 package com.easymoney.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class Multa {
+public class Multa implements Serializable {
 
 
     protected MultaPK multaPK;

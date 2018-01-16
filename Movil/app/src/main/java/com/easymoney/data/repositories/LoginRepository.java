@@ -1,5 +1,6 @@
 package com.easymoney.data.repositories;
 
+import com.easymoney.entities.Usuario;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.services.UtilsWS;
@@ -14,7 +15,7 @@ import static com.easymoney.utils.services.UtilsWS.webServices;
 
 public class LoginRepository {
 
-    public Flowable<Response<Login.Response, String>> login(String user, String pass){
+    public Flowable<Response<Usuario, String>> login(String user, String pass){
         Login.Request request = new Login.Request();
         request.setPass(pass);
         request.setUser(user);

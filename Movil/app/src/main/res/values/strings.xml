@@ -17,4 +17,11 @@
 
     <string name="action_settings">Configuraciones</string>
 
+    <string name="tvContraActual">Contraseña actual</string>
+    <string name="tvContraNueva">Nueva contraseña</string>
+    <string name="tvContraNuevaConfirmacion">Confirmar nueva contraseña</string>
+    <string name="btnCambiarContra">Cambiar contraseña</string>
+    <string name="title_activity_detalle_prestamo">DetallePrestamo</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
 </resources>

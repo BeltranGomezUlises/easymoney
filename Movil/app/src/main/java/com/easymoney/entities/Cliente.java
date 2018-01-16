@@ -1,10 +1,12 @@
 package com.easymoney.entities;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class Cliente  {
+public class Cliente implements Serializable {
 
     private Integer id;
     private String nombre;
