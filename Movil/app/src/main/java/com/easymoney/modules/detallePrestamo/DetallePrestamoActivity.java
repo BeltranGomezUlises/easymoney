@@ -74,6 +74,7 @@ public class DetallePrestamoActivity extends AppCompatActivity {
 
         private ConsultaFragment consultaFragment;
 
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -82,18 +83,17 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    if (consultaFragment == null) {
-                        return ConsultaFragment.getInstance(presenter);
-                    }
-                    return consultaFragment;
-
-                default: return null;
+                    return ConsultaFragment.getInstance(presenter);
+                case 1:
+                    return AbonoFragment.getInstance(presenter);
+                default:
+                    return null;
             }
         }
 
         @Override
         public int getCount() {
-            return 1;
+            return 2;
         }
     }
 

@@ -1,11 +1,16 @@
 package com.easymoney.modules.detallePrestamo;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by ulises on 15/01/2018.
@@ -15,6 +20,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     private final PrestamoRepository repository = PrestamoRepository.getINSTANCE();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private ConsultaFragment consultaFragment;
+    private AbonoFragment abonoFragment;
     private Prestamo prestamo;
     private ModelPrestamoTotales prestamoTotales;
 
@@ -46,15 +52,34 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 }));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void cargarAbonosPrestamo() {
-
+        repository.abonosPrestamo(prestamo.getId())
+                .observeOn(SchedulerProvider.uiT())
+                .subscribeOn(SchedulerProvider.ioT())
+                .subscribe( r -> {
+                    switch (r.getMeta().getStatus()){
+                        case OK:
+                            abonoFragment.replaceData(r.getData().stream().filter( a -> a.isAbonado()).collect(toList()));
+                            break;
+                        case WARNING:
+                            break;
+                        case ERROR:
+                            break;
+                        default:
+                    }
+                }, ex -> {
+                   ex.printStackTrace();
+                });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void subscribe() {
         this.llenarDatosGenerales();
         this.cargarTotalesPrestamo();
+        this.cargarAbonosPrestamo();
     }
 
     @Override
@@ -72,6 +97,22 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
     public void setConsultaFragment(ConsultaFragment consultaFragment) {
         this.consultaFragment = consultaFragment;
+    }
+
+    public AbonoFragment getAbonoFragment() {
+        return abonoFragment;
+    }
+
+    public void setAbonoFragment(AbonoFragment abonoFragment) {
+        this.abonoFragment = abonoFragment;
+    }
+
+    public ModelPrestamoTotales getPrestamoTotales() {
+        return prestamoTotales;
+    }
+
+    public void setPrestamoTotales(ModelPrestamoTotales prestamoTotales) {
+        this.prestamoTotales = prestamoTotales;
     }
 
     public Prestamo getPrestamo() {

@@ -1,6 +1,7 @@
 package com.easymoney.data.repositories;
 
 import com.easymoney.data.dataSources.PrestamoDataSource;
+import com.easymoney.entities.Abono;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Response;
@@ -98,6 +99,10 @@ public class PrestamoRepository implements PrestamoDataSource {
      */
     public Flowable<Response<ModelPrestamoTotales, Object>> totalesPrestamo(int prestamoId){
         return webServices().totalesDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
+    }
+
+    public Flowable<Response<List<Abono>, Object>> abonosPrestamo(int prestamoId){
+        return webServices().abonosDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
     }
 
     private Flowable<List<Prestamo>> getAndSaveRemotePrestamos() {
