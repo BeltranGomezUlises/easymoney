@@ -30,6 +30,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private TextView tvInfo;
     private ListView listaPrestamos;
     private PrestamoAdapter adapterPrestamo;
     private PrestamoRepository prestamoRepository;
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         txtNombreUsuario.setText(getIntent().getStringExtra("userName"));
         txtTipoUsuario.setText(getIntent().getStringExtra("userType"));
 
+        tvInfo = findViewById(R.id.tvInfo);
+        tvInfo.setText("Cargando prestamos...");
+
         //crear la lista de prestamos
         listaPrestamos = findViewById(R.id.prestamoList);
         adapterPrestamo = new PrestamoAdapter(new ArrayList<>());
@@ -76,7 +80,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT())
                 .subscribe(
-                        prestamos -> adapterPrestamo.replaceData(prestamos),
+                        prestamos -> {
+                            if (!prestamos.isEmpty()){
+                                tvInfo.setVisibility(View.GONE);
+                                adapterPrestamo.replaceData(prestamos);
+                            }else{
+                                tvInfo.setText("Sin préstamos por cobrar");
+                            }
+                            },
                         ex -> ex.printStackTrace()
                 );
     }

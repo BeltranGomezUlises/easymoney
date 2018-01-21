@@ -27,8 +27,8 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-//    String END_POINT = "http://201.165.0.142:8383/em/api/";
-    String END_POINT = "http://10.243.93.229:8084/EasyMoney/api/";
+    String END_POINT = "http://201.165.0.142:8383/em/api/";
+//    String END_POINT = "http://10.243.93.229:8084/EasyMoney/api/";
 
     /**
      * Inicio de sesion

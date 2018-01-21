@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
@@ -52,18 +53,27 @@ public class DetallePrestamoActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener((view) -> {
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).show();
+            this.lanzarModalCobro();
         });
+        fab.setVisibility(View.GONE);
+        presenter.setFab(fab);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                presenter.unsubscribe();
                 this.finish();
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        presenter.unsubscribe();
+        super.onBackPressed();
     }
 
     /**
@@ -97,5 +107,9 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         }
     }
 
+    private void lanzarModalCobro(){
+        CobroDialogFragment newFragment = new CobroDialogFragment(presenter);
+        newFragment.show(getFragmentManager(), "cobro");
+    }
 
 }
