@@ -66,7 +66,7 @@ public class PrestamoRepository implements PrestamoDataSource {
 
     @Override
     public Flowable<Prestamo> update(Prestamo prestamo) {
-        return null;
+        return remoteDataSource.update(prestamo);
     }
 
     @Override

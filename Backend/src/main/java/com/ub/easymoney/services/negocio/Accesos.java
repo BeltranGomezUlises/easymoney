@@ -11,12 +11,15 @@ import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.managers.admin.ManagerConfig;
 import com.ub.easymoney.managers.admin.ManagerUsuario;
 import com.ub.easymoney.models.ModelLogin;
+import com.ub.easymoney.models.ModelLoginResponse;
 import com.ub.easymoney.models.commons.exceptions.UsuarioInexistenteException;
 import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.utils.UtilsJWT;
 import static com.ub.easymoney.utils.UtilsService.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static java.util.stream.Collectors.toList;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -41,16 +44,24 @@ public class Accesos {
      */
     @Path("/login")
     @POST
-    public Response<Usuario> login(ModelLogin modelLogin) {
-        Response r = new Response();
+    public Response<ModelLoginResponse> login(ModelLogin modelLogin) {
+        Response<ModelLoginResponse> r = new Response();
         try {            
-            ManagerUsuario managerUsuario = new ManagerUsuario();
-            Usuario u = managerUsuario.login(modelLogin);            
-            setOkResponse(r, u, UtilsJWT.generateSessionToken(u.obtenerIdentificador() + ""), "Bienvenido " + modelLogin.getUser(), "Token de sesion necesario para los siguientes servicios en la cabecera Authorizaiton");            
+            ManagerUsuario managerUsuario = new ManagerUsuario();            
+            Usuario u = managerUsuario.login(modelLogin);        
+            
+            ManagerConfig managerConfig = new ManagerConfig();
+            Config conf = managerConfig.findFirst();
+            
+            ModelLoginResponse modelLoginResponse = new ModelLoginResponse(u, conf);
+            
+            setOkResponse(r, modelLoginResponse, UtilsJWT.generateSessionToken(u.obtenerIdentificador() + ""), "Bienvenido " + modelLogin.getUser(), "Token de sesion necesario para los siguientes servicios en la cabecera Authorizaiton");            
         } catch (JsonProcessingException e) {
             setErrorResponse(r, e);
         } catch (UsuarioInexistenteException e) {
             setWarningResponse(r, e.getMessage(), "verifique usuario");
+        } catch (Exception ex) {
+            Logger.getLogger(Accesos.class.getName()).log(Level.SEVERE, null, ex);
         }
         return r;
     }

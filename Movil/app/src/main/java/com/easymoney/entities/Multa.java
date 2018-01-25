@@ -63,4 +63,18 @@ public class Multa implements Serializable {
         this.abono = abono;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Multa multa = (Multa) o;
+
+        return multaPK.equals(multa.multaPK);
+    }
+
+    @Override
+    public int hashCode() {
+        return multaPK.hashCode();
+    }
 }

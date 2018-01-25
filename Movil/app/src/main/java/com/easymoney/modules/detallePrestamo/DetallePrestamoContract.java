@@ -6,7 +6,6 @@ import com.easymoney.utils.baseClases.BaseView;
 /**
  * Created by ulises on 15/01/2018.
  */
-
 public interface DetallePrestamoContract {
 
     interface View extends BaseView<Presenter> {

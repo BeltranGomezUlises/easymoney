@@ -9,6 +9,7 @@ import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Abono;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
+import com.easymoney.models.ModelTotalAPagar;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.Calendar;
@@ -24,7 +25,6 @@ import static java.util.stream.Collectors.toList;
  * Created by ulises on 15/01/2018.
  */
 public class DetallePrestamoPresenter implements DetallePrestamoContract.Presenter {
-
 
     private final PrestamoRepository repository = PrestamoRepository.getINSTANCE();
     private FloatingActionButton fab;
@@ -72,9 +72,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                         .subscribe(r -> {
                             switch (r.getMeta().getStatus()) {
                                 case OK:
-                                    prestamo.setAbonos(r.getData());
-                                    abonoFragment.replaceData(r.getData().stream().filter(a -> a.isAbonado()).collect(toList()));
-                                    this.fab.setVisibility(View.VISIBLE);
+                                    proccessAbonos(r.getData());
                                     break;
                                 case WARNING:
                                     break;
@@ -149,26 +147,84 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         this.consultaFragment.llenarDatosGenerales(prestamo);
     }
 
-    public int cantidadAAbonar() {
-        return prestamo.getCantidadPagar() / prestamo.getAbonos().size();
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public int multaAPagar() {
+    public ModelTotalAPagar calcularTotalesPagar() {
+        int abonoAPagar = 0;
         int multaAPagar = 0;
         Calendar cal = new GregorianCalendar();
-        cal.setTime(new Date());
-        int actualDay = cal.get(Calendar.DAY_OF_YEAR);
-        List<Abono> abonos = prestamo.getAbonos().stream().sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha())).collect(toList());
-        for (int i = 1; i < abonos.size(); i++) {
-            cal.setTime(abonos.get(i).getAbonoPK().getFecha());
-            if (cal.get(Calendar.DAY_OF_YEAR) == actualDay) {
-                if (!abonos.get(i - 1).isAbonado()){
-                    multaAPagar = 20;
-                }
+        Date fechaActual = new Date();
+        cal.setTime(fechaActual);
+        int diaActual = cal.get((Calendar.DAY_OF_YEAR));
+        List<Abono> abonos = prestamo.getAbonos().stream()
+                .filter(a -> !a.isAbonado() && a.getAbonoPK().getFecha().compareTo(fechaActual) <= 0)
+                .sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()))
+                .collect(toList());
+        for (Abono abono : abonos) {
+            cal.setTime(abono.getAbonoPK().getFecha());
+            //si llegamos al dia de hoy solo sumar lo que corresponde pagar al dia
+            if (cal.get(Calendar.DAY_OF_YEAR) == diaActual) {
+                abonoAPagar += abono.getCantidad();
                 break;
+            } else {
+                abonoAPagar += abono.getCantidad();
+                multaAPagar += 20;
             }
         }
-        return multaAPagar;
+        return new ModelTotalAPagar(abonoAPagar, multaAPagar);
+    }
+
+
+    /**
+     * distribuye el abono del cliente en los abonos, tomando en cuenta la prioridad del las multas si le corresponde y la antiguedad del abono
+     *
+     * @param abono cantidad de dinero a abonar por el cliente, intresado en el dialog
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void abonarAlPrestamo(int abono) {
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(new Date());
+        int diaActual = cal.get((Calendar.DAY_OF_YEAR));
+        //distribui pago con prioridad en multa y abonos anteriores e ir cubirendo la cantidad del abono
+        List<Abono> abonos = prestamo.getAbonos().stream()
+                .filter(a -> !a.isAbonado())
+                .sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()))
+                .collect(toList());
+        for (Abono abonoActual : abonos) {
+            cal.setTime(abonoActual.getAbonoPK().getFecha());
+            if (cal.get(Calendar.DAY_OF_YEAR) < diaActual){
+                if (abono > 20){
+                    abonoActual.getMulta().setMulta(20);
+                    abono -= 20;
+                }else{
+                    abonoActual.getMulta().setMulta(abono);
+                    break; //se acabo el abono
+                }
+                if (abono > abonoActual.getCantidad()){
+                    abonoActual.setAbonado(true);
+                }else{
+
+                }
+
+
+            }
+            abonoActual.getAbonoPK().getFecha();
+        }
+        //mandar a actualizar
+
+        //cerrar la pantalla de detalle
+    }
+
+    /**
+     * Realiza el comportamiento de inicializar y asignar la actividad con los abonos proporcionados
+     * @param abonos abonos del prestamo con los cuales trabajar
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void proccessAbonos(List<Abono> abonos) {
+        prestamo.setAbonos(abonos);
+        abonoFragment.replaceData(abonos.stream().filter(a -> a.isAbonado()).collect(toList()));
+        Date fechaActual = new Date();
+        if (abonos.stream().anyMatch(a -> a.isAbonado() == false && a.getAbonoPK().getFecha().compareTo(fechaActual) <= 0)) {
+            this.fab.setVisibility(View.VISIBLE);
+        }
     }
 }

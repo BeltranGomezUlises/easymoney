@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.easymoney.entities.Usuario;
+import com.easymoney.models.services.Login;
 
 /**
  * Created by ulises on 9/01/18.
@@ -17,6 +18,12 @@ public class UtilsPreferences {
     private static final String USUARIO_NOMBRE = "usuario_nombre";
     private static final String USUARIO_NOMBRE_COMPLETO = "usuario_nombre_completo";
     private static final String USUARIO_TIPO = "usuario_tipo";
+    private static final String CONFIG = "config";
+    private static final String CONFIG_DIAS_PRESTAMO = "configDiasPrestamo";
+    private static final String CONFIG_PORCENTAJE_MULTA_DIARIA = "configPorcentajeMultaDiaria";
+    private static final String CONFIG_ID = "configId";
+
+
     private static Context mContext;
 
     public static void setContext(final Context context) {
@@ -47,7 +54,6 @@ public class UtilsPreferences {
 
     public static Usuario loadLogedUser() {
         SharedPreferences settings = mContext.getSharedPreferences(USUARIO, 0);
-        SharedPreferences.Editor editor = settings.edit();
         int id = settings.getInt(USUARIO_ID, 0);
         if (id != 0) {
             Usuario u = new Usuario(id);
@@ -59,5 +65,27 @@ public class UtilsPreferences {
         return null;
     }
 
+
+    public static void saveConfigs(Login.Response.Config config) {
+        SharedPreferences settings = mContext.getSharedPreferences(CONFIG, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(CONFIG_ID, config.getId());
+        editor.putInt(CONFIG_DIAS_PRESTAMO, config.getDiasPrestamo());
+        editor.putInt(CONFIG_PORCENTAJE_MULTA_DIARIA, config.getPorcentajeInteresPrestamo());
+        editor.commit();
+    }
+
+    public static Login.Response.Config loadConfig(){
+        SharedPreferences settings = mContext.getSharedPreferences(CONFIG, 0);
+        int id = settings.getInt(CONFIG_ID, 0);
+        if (id != 0) {
+            Login.Response.Config config = new Login.Response.Config();
+            config.setId(id);
+            config.setDiasPrestamo(settings.getInt(CONFIG_DIAS_PRESTAMO, 30));
+            config.setPorcentajeInteresPrestamo(settings.getInt(CONFIG_PORCENTAJE_MULTA_DIARIA, 20));
+            return config;
+        }
+        return null;
+    }
 
 }

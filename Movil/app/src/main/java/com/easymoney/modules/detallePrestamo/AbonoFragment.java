@@ -1,7 +1,5 @@
 package com.easymoney.modules.detallePrestamo;
 
-
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,8 +20,6 @@ import java.util.List;
 /**
  * Created by ulises on 16/01/2018.
  */
-
-
 public class AbonoFragment extends Fragment {
 
     private DetallePrestamoPresenter presenter;
@@ -45,8 +41,6 @@ public class AbonoFragment extends Fragment {
         listView = rootView.findViewById(R.id.abonoList);
         abonoAdapter = new AbonoAdapter(new ArrayList<>());
         listView.setAdapter(abonoAdapter);
-
-
 
         return rootView;
     }

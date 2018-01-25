@@ -42,7 +42,8 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
 
         @Override
         public Flowable<Prestamo> update(Prestamo prestamo) {
-            return null;
+            return webServices().actualizarPrestamo(UtilsPreferences.loadToken(), prestamo)
+                    .map( r -> r.getData());
         }
 
         @Override

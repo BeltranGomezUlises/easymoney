@@ -1,9 +1,10 @@
 package com.easymoney.modules.detallePrestamo;
 
-
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,7 +22,6 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 /**
  * Created by ulises on 15/01/2018.
  */
-
 public class ConsultaFragment extends Fragment implements DetallePrestamoContract.View {
 
     private DetallePrestamoPresenter presenter;
@@ -47,6 +47,7 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         return instance;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

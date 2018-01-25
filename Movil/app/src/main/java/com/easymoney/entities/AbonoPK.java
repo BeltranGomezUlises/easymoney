@@ -36,4 +36,22 @@ public class AbonoPK implements Serializable {
         this.fecha = fecha;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbonoPK abonoPK = (AbonoPK) o;
+
+        if (prestamo != abonoPK.prestamo) return false;
+        return fecha.equals(abonoPK.fecha);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = prestamo;
+        result = 31 * result + fecha.hashCode();
+        return result;
+    }
 }

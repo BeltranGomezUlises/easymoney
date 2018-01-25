@@ -36,4 +36,22 @@ public class MultaPK implements Serializable {
         this.fecha = fecha;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MultaPK multaPK = (MultaPK) o;
+
+        if (prestamo != multaPK.prestamo) return false;
+        return fecha.equals(multaPK.fecha);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = prestamo;
+        result = 31 * result + fecha.hashCode();
+        return result;
+    }
 }

@@ -2,7 +2,6 @@ package com.easymoney.modules.detallePrestamo;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -41,12 +40,11 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
         presenter = new DetallePrestamoPresenter(prestamo);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create the adapter that will return a fragment for each of the three
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -74,6 +72,11 @@ public class DetallePrestamoActivity extends AppCompatActivity {
     public void onBackPressed() {
         presenter.unsubscribe();
         super.onBackPressed();
+    }
+
+    private void lanzarModalCobro() {
+        CobroDialogFragment newFragment = new CobroDialogFragment(presenter);
+        newFragment.show(getFragmentManager(), "cobro");
     }
 
     /**
@@ -105,11 +108,6 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         public int getCount() {
             return 2;
         }
-    }
-
-    private void lanzarModalCobro(){
-        CobroDialogFragment newFragment = new CobroDialogFragment(presenter);
-        newFragment.show(getFragmentManager(), "cobro");
     }
 
 }

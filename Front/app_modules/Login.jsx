@@ -38,9 +38,13 @@ export default class Login extends React.Component{
     }).then((res) => res.json())
     .then((response) => {
       if (response.meta.status == 'OK') {
-        localStorage.setItem('tokenSesion', response.meta.metaData);
-        let ruta = window.location.href.split('#');
-        window.location.href = ruta[0] + '#/prestamos';
+        if (response.data.usuario.tipo === true) {
+          localStorage.setItem('tokenSesion', response.meta.metaData);
+          let ruta = window.location.href.split('#');
+          window.location.href = ruta[0] + '#/prestamos';
+        } else{
+          this.setState({message: 'No tiene permisos de entrar al sistema de administración', loading: false});
+        }
       }else{
         if (response.meta.status == 'WARNING') {
           this.setState({message: response.meta.message, loading: false});
