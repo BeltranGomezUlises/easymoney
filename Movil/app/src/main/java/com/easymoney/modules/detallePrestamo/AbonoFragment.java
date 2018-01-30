@@ -1,7 +1,11 @@
 package com.easymoney.modules.detallePrestamo;
 
+import android.app.ProgressDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +21,20 @@ import com.easymoney.utils.UtilsDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.support.design.widget.Snackbar.LENGTH_LONG;
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by ulises on 16/01/2018.
  */
-public class AbonoFragment extends Fragment {
+public class AbonoFragment extends Fragment implements DetallePrestamoContract.View{
 
-    private DetallePrestamoPresenter presenter;
     ListView listView;
     AbonoAdapter abonoAdapter;
+    private DetallePrestamoPresenter presenter;
+    private ProgressDialog dialog;
 
-    public static AbonoFragment getInstance(DetallePrestamoPresenter presenter){
+    public static AbonoFragment getInstance(DetallePrestamoPresenter presenter) {
         AbonoFragment fragment = new AbonoFragment();
         presenter.setAbonoFragment(fragment);
         fragment.setPresenter(presenter);
@@ -49,15 +57,33 @@ public class AbonoFragment extends Fragment {
         return presenter;
     }
 
-    public void setPresenter(DetallePrestamoPresenter presenter) {
-        this.presenter = presenter;
+
+    @Override
+    public void showLoading(boolean active) {
+        if (active){
+            dialog = ProgressDialog.show(getActivity(), "Cargando","Por favor espere...", true);
+        }else{
+            if (dialog != null){
+                dialog.cancel();
+            }
+        }
     }
 
-    public void replaceData(List<Abono> abonos){
-        abonoAdapter.replaceData(abonos);
+    public void showMessage(String message) {
+        Snackbar.make(this.getView(), message, LENGTH_LONG).show();
     }
 
-    private static class AbonoAdapter extends BaseAdapter{
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void replaceData(List<Abono> abonos) {
+        abonoAdapter.replaceData(abonos.stream().filter(a -> a.isAbonado()).collect(toList()));
+    }
+
+    @Override
+    public void setPresenter(DetallePrestamoContract.Presenter presenter) {
+        this.presenter = (DetallePrestamoPresenter) presenter;
+    }
+
+    private static class AbonoAdapter extends BaseAdapter {
 
         private List<Abono> abonos;
         private TextView tvFecha;
@@ -69,7 +95,7 @@ public class AbonoFragment extends Fragment {
             this.abonos = abonos;
         }
 
-        public void replaceData(List<Abono> abonos){
+        protected void replaceData(List<Abono> abonos) {
             this.abonos = abonos;
             this.notifyDataSetChanged();
         }

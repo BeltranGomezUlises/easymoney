@@ -150,7 +150,7 @@ export default class Clientes extends React.Component{
                    control={Input}
                    label='Nombre Cliente:'
                    type='text'
-                   placeholder='nombre de cliente...'
+                   placeholder='Nombre de cliente'
                    value={this.state.filtro.nombre}
                    onChange={ (evt) => {
                      let {filtro} = this.state;
@@ -163,7 +163,7 @@ export default class Clientes extends React.Component{
                    control={Input}
                    label='Apodo Cliente:'
                    type='text'
-                   placeholder='apodo de cliente...'
+                   placeholder='Apodo de cliente'
                    value={this.state.filtro.apodo}
                    onChange={ (evt) => {
                      let {filtro} = this.state;

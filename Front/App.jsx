@@ -52,9 +52,9 @@ class MainContainer extends React.Component{
          <Sidebar width='thin' as={Menu} animation="uncover" visible={this.state.menuVisible} icon="labeled" vertical inline inverted>
            <Menu.Item as={Link} to='/clientes'>Clientes</Menu.Item>
            <Menu.Item as={Link} to='/cobradores'>Cobradores</Menu.Item>
-           <Menu.Item as={Link} to='/prestamos'>Prestamos</Menu.Item>
+           <Menu.Item as={Link} to='/prestamos'>Préstamos</Menu.Item>
            <Menu.Item as={Link} to='/movimientos'>Movimientos Ingresos y Egresos</Menu.Item>
-           <Menu.Item position='right' as={Link} to='/configuraciones'>configuraciones</Menu.Item>
+           <Menu.Item position='right' as={Link} to='/configuraciones'>Configuraciones</Menu.Item>
          </Sidebar>
           <Sidebar.Pusher >
                <div>

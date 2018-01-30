@@ -10,7 +10,9 @@ public interface DetallePrestamoContract {
 
     interface View extends BaseView<Presenter> {
 
-        void showLoading(boolean val);
+        void showLoading(boolean active);
+
+        void showMessage(String message);
 
     }
 
@@ -19,6 +21,9 @@ public interface DetallePrestamoContract {
         void cargarTotalesPrestamo();
 
         void cargarAbonosPrestamo();
+
+        void showLoading(boolean active);
+
 
     }
 

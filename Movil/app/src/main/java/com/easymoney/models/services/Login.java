@@ -1,6 +1,7 @@
 package com.easymoney.models.services;
 
 import com.easymoney.entities.Usuario;
+import com.easymoney.models.Config;
 
 /**
  * Created by ulises on 30/12/17.
@@ -65,39 +66,5 @@ public class Login {
         public void setConfig(Config config) {
             this.config = config;
         }
-
-        public static class Config {
-            private int diasPrestamo;
-            private int porcentajeInteresPrestamo;
-            private Integer id;
-
-            public Config() {
-            }
-
-            public int getDiasPrestamo() {
-                return diasPrestamo;
-            }
-
-            public void setDiasPrestamo(int diasPrestamo) {
-                this.diasPrestamo = diasPrestamo;
-            }
-
-            public int getPorcentajeInteresPrestamo() {
-                return porcentajeInteresPrestamo;
-            }
-
-            public void setPorcentajeInteresPrestamo(int porcentajeInteresPrestamo) {
-                this.porcentajeInteresPrestamo = porcentajeInteresPrestamo;
-            }
-
-            public Integer getId() {
-                return id;
-            }
-
-            public void setId(Integer id) {
-                this.id = id;
-            }
-        }
     }
-
 }

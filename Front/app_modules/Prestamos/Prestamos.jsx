@@ -13,7 +13,7 @@ export default class Prestamos extends React.Component{
     return(
       <div style={{'padding':'10px'}}>
           <Segment textAlign='center'>
-            <h2>PRESTAMOS</h2>
+            <h2>PRÉSTAMOS</h2>
           </Segment>
           <PrestamoList>
           </PrestamoList>

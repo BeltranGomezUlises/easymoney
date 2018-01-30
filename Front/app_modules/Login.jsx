@@ -97,11 +97,11 @@ export default class Login extends React.Component{
               <Form onSubmit={this.handleSumbit}>
                 <Form.Field>
                   <label>Usuario:</label>
-                  <input type='text' placeholder='ingrese el usuario...:'onChange={this.handleUserChange} />
+                  <input type='text' placeholder='Ingrese el usuario...:'onChange={this.handleUserChange} />
                 </Form.Field>
                 <Form.Field>
                   <label>Contraseña:</label>
-                  <input type='password' placeholder='ingrese la contraseña...' onChange={this.handlePassChange}/>
+                  <input type='password' placeholder='Ingrese la contraseña...' onChange={this.handlePassChange}/>
                 </Form.Field>
                 {this.renderButton()}
               </Form>

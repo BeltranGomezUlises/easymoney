@@ -79,7 +79,8 @@ public class CobroDialogFragment extends DialogFragment {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void abonar() {
         final int abono = Integer.parseInt(txtAbonar.getText().toString());
-        presenter.abonarAlPrestamo(abono);
+        final String multaDes = txtDescripcion.getText().toString();
+        presenter.abonarAlPrestamo(abono, multaDes);
     }
 
     private boolean validateIns() {

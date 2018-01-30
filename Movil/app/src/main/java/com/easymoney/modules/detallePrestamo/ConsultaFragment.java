@@ -1,6 +1,7 @@
 package com.easymoney.modules.detallePrestamo;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,6 +35,7 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
     private TextView tvTotalRecuperado;
     private TextView tvTotalMultado;
     private TextView tvTotalPorcentaje;
+    private ProgressDialog dialog;
 
     @SuppressLint("ValidFragment")
     private ConsultaFragment() {
@@ -69,8 +71,14 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
     }
 
     @Override
-    public void showLoading(boolean val) {
-
+    public void showLoading(boolean active) {
+        if (active){
+            dialog = ProgressDialog.show(getActivity(), "Cargando","Por favor espere...", true);
+        }else{
+            if (dialog != null){
+                dialog.cancel();
+            }
+        }
     }
 
     public void showMessage(String message) {
