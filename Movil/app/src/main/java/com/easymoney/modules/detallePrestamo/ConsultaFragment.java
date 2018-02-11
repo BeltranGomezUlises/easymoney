@@ -35,6 +35,7 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
     private TextView tvTotalRecuperado;
     private TextView tvTotalMultado;
     private TextView tvTotalPorcentaje;
+    private TextView tvTotalPorPagar;
     private ProgressDialog dialog;
 
     @SuppressLint("ValidFragment")
@@ -64,6 +65,7 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         tvTotalMultado = rootView.findViewById(R.id.tvTotalMultado);
         tvTotalRecuperado = rootView.findViewById(R.id.tvTotalRecuperado);
         tvTotalPorcentaje = rootView.findViewById(R.id.tvTotalPorcentaje);
+        tvTotalPorPagar = rootView.findViewById(R.id.tvTotalporPagar);
 
         this.presenter.subscribe();
 
@@ -102,6 +104,7 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         tvTotalAbonado.setText("$" + data.getTotalAbonado());
         tvTotalMultado.setText("$" + data.getTotalMultado());
         tvTotalRecuperado.setText("$" + data.getTotalRecuperado());
-        tvTotalPorcentaje.setText("%" + data.getPorcentajePagado());
+        tvTotalPorcentaje.setText(data.getPorcentajePagado() + "%");
+        tvTotalPorPagar.setText("$" + data.getPorPagar());
     }
 }

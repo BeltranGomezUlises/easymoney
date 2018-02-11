@@ -44,7 +44,7 @@ public class AbonoFragment extends Fragment implements DetallePrestamoContract.V
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_abonos, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_detalle_prestamo_abonos, container, false);
 
         listView = rootView.findViewById(R.id.abonoList);
         abonoAdapter = new AbonoAdapter(new ArrayList<>());

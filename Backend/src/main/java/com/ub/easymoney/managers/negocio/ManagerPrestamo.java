@@ -39,22 +39,22 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     public Prestamo persist(Prestamo entity) throws Exception {
         int cantImpuesto = entity.getCantidad();
         cantImpuesto *= ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f);
-        
+
         entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
         entity.setFecha(new Date());
-        
+
         GregorianCalendar cal = new GregorianCalendar();
         Date d = cal.getTime(); //guardamos la fecha actual
-        
+
         cal.add(Calendar.DAY_OF_MONTH, UtilsConfig.getDiasPlazoPrestamo());
-        entity.setFechaLimite(cal.getTime());               
-                       
+        entity.setFechaLimite(cal.getTime());
+
         Prestamo p = super.persist(entity);
-        
+
         ManagerAbono managerAbono = new ManagerAbono();
         List<Abono> listaAbonos = new ArrayList<>();
         Abono abono;
-        
+
         cal.setTime(d);
         cal.add(Calendar.DAY_OF_MONTH, 1); //primer dia de abono es el dia siguiente del prestamo
         int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
@@ -62,51 +62,52 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
             abono = new Abono(p.getId(), cal.getTime());
             abono.setCantidad(p.getCantidadPagar() / diasPlazo);
             abono.setAbonado(false);
-            abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));            
+            abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));
             listaAbonos.add(abono);
-            cal.add(Calendar.DAY_OF_MONTH, 1); 
-        }                        
-        entity.setAbonos(listaAbonos);        
-        super.update(entity);                
-        
-        return  p;//To change body of generated methods, choose Tools | Templates.
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        entity.setAbonos(listaAbonos);
+        super.update(entity);
+
+        return p;//To change body of generated methods, choose Tools | Templates.
     }
 
-    public ModeloPrestamoTotales totalesPrestamo(int prestamoId) throws Exception{
-        ModeloPrestamoTotales mPrestamoTotales = new ModeloPrestamoTotales();        
-        
+    public ModeloPrestamoTotales totalesPrestamo(int prestamoId) throws Exception {
+        ModeloPrestamoTotales mPrestamoTotales = new ModeloPrestamoTotales();
+
         Prestamo prestamo = this.findOne(prestamoId);
         List<Abono> abonos = prestamo.getAbonos();
-        mPrestamoTotales.setTotalAbonado(abonos.stream().filter( t -> t.isAbonado()).mapToInt(t -> t.getCantidad()).sum());
-        mPrestamoTotales.setTotalMultado(abonos.stream().filter( t -> t.isAbonado()).map( t -> t.getMulta()).mapToInt( t -> t.getMulta()).sum());
+        mPrestamoTotales.setTotalAbonado(abonos.stream().filter(t -> t.isAbonado()).mapToInt(t -> t.getCantidad()).sum());
+        mPrestamoTotales.setTotalMultado(abonos.stream().filter(t -> t.isAbonado()).map(t -> t.getMulta()).mapToInt(t -> t.getMulta()).sum());
         mPrestamoTotales.setTotalRecuperado(mPrestamoTotales.getTotalAbonado() + mPrestamoTotales.getTotalMultado());
-        mPrestamoTotales.setPorcentajePagado((int)((float)mPrestamoTotales.getTotalAbonado() / (float)prestamo.getCantidadPagar() * 100f));
-        
+        mPrestamoTotales.setPorcentajePagado((int) ((float) mPrestamoTotales.getTotalAbonado() / (float) prestamo.getCantidadPagar() * 100f));
+        mPrestamoTotales.setPorPagar(prestamo.getCantidadPagar() - mPrestamoTotales.getTotalAbonado());
         return mPrestamoTotales;
     }
- 
-    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales() throws Exception{                
+
+    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales() throws Exception {
         DaoAbono daoAbono = new DaoAbono();
         DaoMulta daoMulta = new DaoMulta();
-        
+
         List<Pair<Integer, Integer>> abonosMultas = daoAbono.stream()
                 .filter(a -> a.isAbonado())
                 .map(e -> new Pair<>(e.getCantidad(), e.getMulta().getMulta()))
                 .collect(toList());
-                          
+
         int totalAbonado = abonosMultas.stream().mapToInt(e -> e.getOne()).sum();
-        int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();                
-        int totalPrestamo = this.stream().mapToInt( p -> p.getCantidad()).sum();
-        int totalAPagar = this.stream().mapToInt(  p -> p.getCantidadPagar()).sum();
+        int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();
+        int totalPrestamo = this.stream().mapToInt(p -> p.getCantidad()).sum();
+        int totalAPagar = this.stream().mapToInt(p -> p.getCantidadPagar()).sum();
         int totalRecuperado = totalAbonado + totalMultado;
         int capital = totalRecuperado - totalPrestamo;
-        float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar ) * 100f);
+        float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar) * 100f);
 
         return new ModeloPrestamoTotalesGenerales(totalPrestamo, totalAbonado, totalMultado, totalRecuperado, capital, porcentajeAbonado);
     }
 
     /**
      * consulta todos los prestamos que cumplen con las propiedades del objeto filtro
+     *
      * @param filtro objecto con las propiedaes a filtrar
      * @return lista de prestamos filtrados
      */
@@ -119,5 +120,5 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         DaoPrestamo daoPrestamo = new DaoPrestamo();
         return daoPrestamo.prestamosDelCobrador(cobradorId);
     }
-    
+
 }

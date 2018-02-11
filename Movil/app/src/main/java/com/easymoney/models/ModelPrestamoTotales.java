@@ -10,6 +10,7 @@ public class ModelPrestamoTotales {
     private int totalMultado;
     private int totalRecuperado;
     private int porcentajePagado;
+    private int porPagar;
 
     public ModelPrestamoTotales() {
     }
@@ -19,6 +20,14 @@ public class ModelPrestamoTotales {
         this.totalMultado = totalMultado;
         this.totalRecuperado = totalRecuperado;
         this.porcentajePagado = porcentajePagado;
+    }
+
+    public int getPorPagar() {
+        return porPagar;
+    }
+
+    public void setPorPagar(int porPagar) {
+        this.porPagar = porPagar;
     }
 
     public int getTotalAbonado() {
