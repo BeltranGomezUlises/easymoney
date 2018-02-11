@@ -7,6 +7,7 @@ package com.ub.easymoney.models;
 
 /**
  * modelo para obtener en el detalle del prestamo, cuando queremos sacar los totales de un prestamo en particular
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 public class ModeloPrestamoTotales {
@@ -15,6 +16,7 @@ public class ModeloPrestamoTotales {
     private int totalMultado;
     private int totalRecuperado;
     private int porcentajePagado;
+    private int porPagar;
 
     public ModeloPrestamoTotales() {
     }
@@ -24,6 +26,22 @@ public class ModeloPrestamoTotales {
         this.totalMultado = totalMultado;
         this.totalRecuperado = totalRecuperado;
         this.porcentajePagado = porcentajePagado;
+    }
+
+    public ModeloPrestamoTotales(int totalAbonado, int totalMultado, int totalRecuperado, int porcentajePagado, int porPagar) {
+        this.totalAbonado = totalAbonado;
+        this.totalMultado = totalMultado;
+        this.totalRecuperado = totalRecuperado;
+        this.porcentajePagado = porcentajePagado;
+        this.porPagar = porPagar;
+    }
+
+    public int getPorPagar() {
+        return porPagar;
+    }
+
+    public void setPorPagar(int porPagar) {
+        this.porPagar = porPagar;
     }
 
     public int getTotalAbonado() {

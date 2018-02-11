@@ -25,6 +25,15 @@ import javax.validation.constraints.Size;
 @Table(name = "config")
 public class Config implements Serializable, IEntity {
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "cantidad_multa_mes")
+    private int cantidadMultaMes;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "cantidad_multa_diaria")
+    private int cantidadMultaDiaria;
+
     @Size(max = 2147483647)
     @Column(name = "contra_default")
     private String contraDefault;
@@ -117,6 +126,22 @@ public class Config implements Serializable, IEntity {
 
     public void setContraDefault(String contraDefault) {
         this.contraDefault = contraDefault;
+    }
+
+    public int getCantidadMultaMes() {
+        return cantidadMultaMes;
+    }
+
+    public void setCantidadMultaMes(int cantidadMultaMes) {
+        this.cantidadMultaMes = cantidadMultaMes;
+    }
+
+    public int getCantidadMultaDiaria() {
+        return cantidadMultaDiaria;
+    }
+
+    public void setCantidadMultaDiaria(int cantidadMultaDiaria) {
+        this.cantidadMultaDiaria = cantidadMultaDiaria;
     }
     
 }

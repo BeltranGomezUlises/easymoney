@@ -168,7 +168,7 @@ export default class PrestamoDetalle extends Component{
             <Table.Cell textAlign='center'>${this.state.totales.totalAbonado}</Table.Cell>
             <Table.Cell textAlign='center'>${this.state.totales.totalMultado}</Table.Cell>
             <Table.Cell textAlign='center'>${this.state.totales.totalRecuperado}</Table.Cell>
-            <Table.Cell textAlign='center'>%{this.state.totales.porcentajePagado}</Table.Cell>
+            <Table.Cell textAlign='center'>{this.state.totales.porcentajePagado}%</Table.Cell>
           </Table.Body>
         );
       }else{
@@ -177,7 +177,7 @@ export default class PrestamoDetalle extends Component{
             <Table.Cell textAlign='center'>$XXX</Table.Cell>
             <Table.Cell textAlign='center'>$XXX</Table.Cell>
             <Table.Cell textAlign='center'>$XXX</Table.Cell>
-            <Table.Cell textAlign='center'>%XXX</Table.Cell>
+            <Table.Cell textAlign='center'>XXX%</Table.Cell>
           </Table.Body>
         );
       }

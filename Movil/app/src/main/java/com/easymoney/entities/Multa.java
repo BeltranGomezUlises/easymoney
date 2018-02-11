@@ -1,11 +1,12 @@
 package com.easymoney.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class Multa {
+public class Multa implements Serializable {
 
 
     protected MultaPK multaPK;
@@ -62,4 +63,18 @@ public class Multa {
         this.abono = abono;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Multa multa = (Multa) o;
+
+        return multaPK.equals(multa.multaPK);
+    }
+
+    @Override
+    public int hashCode() {
+        return multaPK.hashCode();
+    }
 }

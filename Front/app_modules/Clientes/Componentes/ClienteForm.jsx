@@ -64,14 +64,14 @@ export default class ClienteForm extends Component{
             <label>Nombre:</label>
             <input
               required
-              placeholder='nombre del cliente'
+              placeholder='Nombre del cliente'
               value={this.state.cliente.nombre}
               onChange={this.updateName}/>
           </Form.Field>
           <Form.Field>
             <label>Apodo:</label>
             <input
-              placeholder='apodo del cliente'
+              placeholder='Apodo del cliente'
               value={this.state.cliente.apodo}
               onInput={ (e) => {
                 let {cliente} = this.state;
@@ -84,7 +84,7 @@ export default class ClienteForm extends Component{
             <label>Dirección:</label>
             <input
               required
-              placeholder='dirección del cliente'
+              placeholder='Dirección del cliente'
               value={this.state.cliente.direccion}
               onInput={ (e) => {
                 let {cliente} = this.state;
@@ -98,7 +98,7 @@ export default class ClienteForm extends Component{
             <input
                required
                pattern="[0-9]*"
-               placeholder='teléfono del cliente'
+               placeholder='Teléfono del cliente'
                value={this.state.cliente.telefono}
                onInput={ (e) => {
                  if (e.target.value.length <= 10) {

@@ -244,7 +244,7 @@ export default class PrestamoList extends React.Component {
               ${totalesPrestamos.capital}
             </Table.Cell>
             <Table.Cell>
-              %{totalesPrestamos.porcentajeCompletado}
+              {totalesPrestamos.porcentajeCompletado}%
             </Table.Cell>
           </Table.Row>
       );
@@ -279,7 +279,7 @@ export default class PrestamoList extends React.Component {
              control={Input}
              label='Nombre Cliente:'
              type='text'
-             placeholder='nombre de cliente...'
+             placeholder='Nombre de cliente'
              value={this.state.filtro.nombreCliente}
              onChange={ (evt) => {
                let {filtro} = this.state;
@@ -290,7 +290,7 @@ export default class PrestamoList extends React.Component {
              control={Input}
              label='Nombre Cobrador:'
              type='text'
-             placeholder='Nombre de Cobrador...'
+             placeholder='Nombre de cobrador'
              value={this.state.filtro.nombreCobrador}
              onChange={ (evt) => {
                let {filtro} = this.state;
@@ -346,7 +346,7 @@ export default class PrestamoList extends React.Component {
        </Form.Group>
 
         <Form.Field>
-          <Checkbox label='Prestamos 100% abonados'
+          <Checkbox label='Préstamos 100% abonados'
             value={this.state.filtro.acreditados}
             onChange={ (evt, data) => {
               let {filtro} = this.state;
@@ -383,7 +383,7 @@ export default class PrestamoList extends React.Component {
       );
     }else{
       return(
-        <Button primary type='submit' onClick={()=>{          
+        <Button primary type='submit' onClick={()=>{
             this.setState({buscando:true})
             this.cargarPrestamos()
         }}>Buscar</Button>

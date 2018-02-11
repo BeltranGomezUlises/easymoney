@@ -7,15 +7,12 @@ package com.ub.easymoney.daos.commons;
 
 import com.ub.easymoney.daos.exceptions.ForeignKeyException;
 import com.ub.easymoney.entities.commons.commons.IEntity;
-import com.ub.easymoney.entities.negocio.Abono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static java.util.stream.Collectors.toList;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;

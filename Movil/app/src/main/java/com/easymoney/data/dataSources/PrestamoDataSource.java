@@ -7,7 +7,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 
-import static com.easymoney.utils.UtilsPreferences.loadLogedUserId;
+import static com.easymoney.utils.UtilsPreferences.loadLogedUser;
 import static com.easymoney.utils.UtilsPreferences.loadToken;
 import static com.easymoney.utils.services.UtilsWS.webServices;
 
@@ -20,7 +20,7 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
 
         @Override
         public Flowable<List<Prestamo>> findAll() {
-            return webServices().prestamosPorCobrar(loadToken(), loadLogedUserId())
+            return webServices().prestamosPorCobrar(loadToken(), loadLogedUser().getId())
                     .flatMap( r -> Flowable.fromIterable(r.getData()))
                     .toList().toFlowable();
         }
@@ -42,7 +42,8 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
 
         @Override
         public Flowable<Prestamo> update(Prestamo prestamo) {
-            return null;
+            return webServices().actualizarPrestamo(UtilsPreferences.loadToken(), prestamo)
+                    .map( r -> r.getData());
         }
 
         @Override

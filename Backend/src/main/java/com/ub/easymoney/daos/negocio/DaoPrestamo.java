@@ -75,7 +75,15 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         return prestamosFiltrados;        
     }
      
-    public List<Prestamo> prestamosDelCobrador(final int cobradorId){                
-        return this.stream().where( p -> p.getCobrador().getId().equals(cobradorId)).collect(toList());                        
+    public List<Prestamo> prestamosDelCobrador(final int cobradorId){                                 
+        return this.stream()
+                //buscar los que pertenescan al cobrador
+                .where( t -> t.getCobrador().getId().equals(cobradorId))
+                //filtrar los que no este 100% abonados
+                .filter( t -> {
+                    float totalAbonado = t.getAbonos().stream().filter( a -> a.isAbonado()).mapToInt( a -> a.getCantidad()).sum();
+                    float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
+                    return porcentajeAbonado < 100;
+        }).collect(toList());                        
     }
 }

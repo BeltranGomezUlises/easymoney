@@ -60,7 +60,7 @@ export default class Cobradores extends React.Component{
         })
       }).then((res)=> res.json())
       .then((response) =>{
-        utils.evalResponse(response, () => { 
+        utils.evalResponse(response, () => {
           //agregar nuevocobrador a la lista actual
           let cobradores = [...this.state.cobradores, response.data];
           //limpiar nuevo cobrador
@@ -146,7 +146,7 @@ export default class Cobradores extends React.Component{
              control={Input}
              label='Nombre de usuario de cobrador:'
              type='text'
-             placeholder='nombre de cobrador...'
+             placeholder='Nombre de cobrador'
              value={this.state.filtro.nombre}
              onChange={ (evt) => {
                let {filtro} = this.state;

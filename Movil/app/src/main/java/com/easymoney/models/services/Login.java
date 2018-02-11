@@ -1,5 +1,8 @@
 package com.easymoney.models.services;
 
+import com.easymoney.entities.Usuario;
+import com.easymoney.models.Config;
+
 /**
  * Created by ulises on 30/12/17.
  */
@@ -36,61 +39,32 @@ public class Login {
     }
 
     public static class Response {
-        private int id;
-        private String nombre;
-        private String nombreCompleto;
-        private String contra;
-        private boolean tipo;
 
-        public int getId() {
-            return id;
+        private Usuario usuario;
+        private Config config;
+
+        public Response() {
         }
 
-        public void setId(int id) {
-            this.id = id;
+        public Response(Usuario usuario, Config config) {
+            this.usuario = usuario;
+            this.config = config;
         }
 
-        public String getNombre() {
-            return nombre;
+        public Usuario getUsuario() {
+            return usuario;
         }
 
-        public void setNombre(String nombre) {
-            this.nombre = nombre;
+        public void setUsuario(Usuario usuario) {
+            this.usuario = usuario;
         }
 
-        public String getContra() {
-            return contra;
+        public Config getConfig() {
+            return config;
         }
 
-        public void setContra(String contra) {
-            this.contra = contra;
-        }
-
-        public String getNombreCompleto() {
-            return nombreCompleto;
-        }
-
-        public void setNombreCompleto(String nombreCompleto) {
-            this.nombreCompleto = nombreCompleto;
-        }
-
-        public boolean isTipo() {
-            return tipo;
-        }
-
-        public void setTipo(boolean tipo) {
-            this.tipo = tipo;
-        }
-
-        @Override
-        public String toString() {
-            return "Response{" +
-                    "id=" + id +
-                    ", nombre='" + nombre + '\'' +
-                    ", nombreCompleto='" + nombreCompleto + '\'' +
-                    ", contra='" + contra + '\'' +
-                    ", tipo=" + tipo +
-                    '}';
+        public void setConfig(Config config) {
+            this.config = config;
         }
     }
 }

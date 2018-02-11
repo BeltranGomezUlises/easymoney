@@ -84,7 +84,7 @@ export default class Clientes extends React.Component{
     if (this.state.loading) {
       return <Button primary loading>Actualizar</Button>
     }else{
-      return <Button primary type='sumbit'>Actualizar</Button>    
+      return <Button primary type='sumbit'>Actualizar</Button>
     }
   }
 
@@ -101,7 +101,7 @@ export default class Clientes extends React.Component{
                   <label>Días de los prestamos:</label>
                   <input type='number' min='1' step='1' max='99'
                     required
-                    placeholder='ingrese los días de plazo que se le asignarán a los prestamos'
+                    placeholder='Ingrese los días de plazo que se le asignarán a los prestamos'
                     value={this.state.configuraciones.diasPrestamo}
                     onInput={this.updateInputDiasPrestamo} />
                 </Form.Field>
@@ -109,7 +109,7 @@ export default class Clientes extends React.Component{
                   <label>Porcentaje de impuesto:</label>
                   <input type='number' min='1' step='1' max='1000'
                     required
-                    placeholder='ingrese el porcentaje de impuesto que se le asinarán a los prestamos'
+                    placeholder='Ingrese el porcentaje de impuesto que se le asinarán a los prestamos'
                     value={this.state.configuraciones.porcentajeInteresPrestamo}
                     onInput={this.updateInputPorcentajeInteresPrestamo}/>
                 </Form.Field>

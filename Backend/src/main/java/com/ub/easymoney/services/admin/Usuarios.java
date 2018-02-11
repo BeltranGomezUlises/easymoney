@@ -7,6 +7,8 @@ package com.ub.easymoney.services.admin;
 
 import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.managers.admin.ManagerUsuario;
+import com.ub.easymoney.models.ModelCambiarContra;
+import com.ub.easymoney.models.commons.exceptions.ParametroInvalidoException;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
@@ -16,6 +18,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -44,6 +47,22 @@ public class Usuarios extends ServiceFacade<Usuario, Integer>{
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(res);
         } catch(Exception e ){
+            setErrorResponse(res, e);
+        }
+        return res;
+    }
+    
+    @POST
+    @Path("/cambiarContra")
+    public Response<Usuario> cambiarContraseña(@HeaderParam("Authorization") String token, ModelCambiarContra modelCambiarContra){
+        Response<Usuario> res = new Response<>();
+        try {
+            ManagerUsuario managerUsuario = new ManagerUsuario();
+            managerUsuario.setToken(token);
+            setOkResponse(res, "Contraseña actualizada", managerUsuario.cambiarContraseña(modelCambiarContra));
+        } catch (ParametroInvalidoException e) {
+            setWarningResponse(res, e.getMessage(), null);
+        } catch (Exception e) {
             setErrorResponse(res, e);
         }
         return res;

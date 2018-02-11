@@ -1,5 +1,6 @@
 package com.easymoney.data.repositories;
 
+import com.easymoney.entities.Usuario;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.services.UtilsWS;
