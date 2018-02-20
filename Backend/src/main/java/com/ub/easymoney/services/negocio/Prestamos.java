@@ -68,6 +68,22 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         return r;
     }
     
+    @GET
+    @Path("/totalesGeneralesFiltro")
+    public Response<ModeloPrestamoTotalesGenerales> totalesGeneralesFiltro(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro){
+        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();        
+        try {
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            managerPrestamo.setToken(token);
+            r.setData(managerPrestamo.totalesPrestamosGenerales(filtro));            
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(r);
+        } catch (Exception ex) {
+            setErrorResponse(r, ex);
+        }
+        return r;
+    }
+    
     @POST
     @Path("/cargarPrestamos")
     public Response<List<Prestamo>> listarFiltrados(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro){

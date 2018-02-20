@@ -15,6 +15,8 @@ export default class Clientes extends React.Component{
     this.updateInputDiasPrestamo = this.updateInputDiasPrestamo.bind(this);
     this.updateInputPorcentajeInteresPrestamo = this.updateInputPorcentajeInteresPrestamo.bind(this);
     this.updateInputContraDefault = this.updateInputContraDefault.bind(this);
+    this.updateInputCantidadMultaMes = this.updateInputCantidadMultaMes.bind(this);
+    this.updateInputCantidadMultaDiaria = this.updateInputCantidadMultaDiaria.bind(this);
     this.handleSumbit = this.handleSumbit.bind(this);
   }
 
@@ -45,6 +47,20 @@ export default class Clientes extends React.Component{
       let {configuraciones} = this.state;
       configuraciones.contraDefault = contraDefault;
       this.setState({configuraciones});
+  }
+
+  updateInputCantidadMultaDiaria(evt){
+    const cantidadMultaDiaria = evt.target.value;
+    let {configuraciones} = this.state;
+    configuraciones.cantidadMultaDiaria = cantidadMultaDiaria;
+    this.setState({configuraciones});
+  }
+
+  updateInputCantidadMultaMes(evt){
+    const cantidadMultaMes = evt.target.value;
+    let {configuraciones} = this.state;
+    configuraciones.cantidadMultaMes = cantidadMultaMes;
+    this.setState({configuraciones});
   }
 
   actualizarConfigs(){
@@ -113,6 +129,28 @@ export default class Clientes extends React.Component{
                     value={this.state.configuraciones.porcentajeInteresPrestamo}
                     onInput={this.updateInputPorcentajeInteresPrestamo}/>
                 </Form.Field>
+                {
+                  //cantidades de las multas, utilizadas por el movil para generar los cobros con el negocio de las multas
+                }
+                <Form.Field>
+                  <label>Cantidad de multa diaria pago tardío:</label>
+                  <input type='number' min='1' step='1' max='1000'
+                    required
+                    placeholder='Ingrese la cantidad de dinero a cobrar por día de retraso al cliente en sus pagos'
+                    value={this.state.configuraciones.cantidadMultaDiaria}
+                    onInput={this.updateInputCantidadMultaDiaria}/>
+                </Form.Field>
+                <Form.Field>
+                  <label>Cantidad de multa diaria de pago tardío depues del plazo de pago:</label>
+                  <input type='number' min='1' step='1' max='1000'
+                    required
+                    placeholder='Ingrese la cantidad de dinero a cobrar por día de retraso al cliente en sus pagos, cuando exceda el plazo de pago'
+                    value={this.state.configuraciones.cantidadMultaMes}
+                    onInput={this.updateInputCantidadMultaMes}/>
+                </Form.Field>
+                {
+                  //contraseña default con la que se crean los cobradores, usuarios de la aplicacion movil
+                }
                 <Form.Field>
                   <label>Contraseña default cobrador:</label>
                   <input type='text'

@@ -35,6 +35,12 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         super(new DaoPrestamo());
     }
 
+    /**
+     * Persiste el prestamo asegurando la generacion de los abonos del prestamo
+     * @param entity entidad prestamo a persistir
+     * @return retorna el prestamo persistido con sus abonos asegurados
+     * @throws Exception si existe un error de I/O
+     */
     @Override
     public Prestamo persist(Prestamo entity) throws Exception {
         int cantImpuesto = entity.getCantidad();
@@ -72,6 +78,12 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         return p;//To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * Obtiene los totales generales de un prestamo en particular
+     * @param prestamoId identificador del prestamo
+     * @return modelo con los totales generales de un prestamo
+     * @throws Exception si existe un error de I/O
+     */
     public ModeloPrestamoTotales totalesPrestamo(int prestamoId) throws Exception {
         ModeloPrestamoTotales mPrestamoTotales = new ModeloPrestamoTotales();
 
@@ -85,22 +97,48 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         return mPrestamoTotales;
     }
 
-    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales() throws Exception {
-        DaoAbono daoAbono = new DaoAbono();
-        DaoMulta daoMulta = new DaoMulta();
-
-        List<Pair<Integer, Integer>> abonosMultas = daoAbono.stream()
+    /**
+     * Obtiene los totales generales de un conjunto de abonos, pertenecientes a un conjunto de prestamos
+     * @param abonos lista de abonos a obtener sus totales generales
+     * @return modelo de totales generales con los valores generados con la lista proporcionada
+     * @throws Exception si existe un error de I/O
+     */
+    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales(final List<Abono> abonos) throws Exception {
+        List<Pair<Integer, Integer>> abonosMultas = abonos.stream()
                 .filter(a -> a.isAbonado())
                 .map(e -> new Pair<>(e.getCantidad(), e.getMulta().getMulta()))
                 .collect(toList());
 
-        int totalAbonado = abonosMultas.stream().mapToInt(e -> e.getOne()).sum();
-        int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();
-        int totalPrestamo = this.stream().mapToInt(p -> p.getCantidad()).sum();
-        int totalAPagar = this.stream().mapToInt(p -> p.getCantidadPagar()).sum();
-        int totalRecuperado = totalAbonado + totalMultado;
-        int capital = totalRecuperado - totalPrestamo;
-        float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar) * 100f);
+        final int totalAbonado = abonosMultas.stream().mapToInt(e -> e.getOne()).sum();
+        final int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();
+        final int totalPrestamo = this.stream().mapToInt(p -> p.getCantidad()).sum();
+        final int totalAPagar = this.stream().mapToInt(p -> p.getCantidadPagar()).sum();
+        final int totalRecuperado = totalAbonado + totalMultado;
+        final int capital = totalRecuperado - totalPrestamo;
+        final float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar) * 100f);
+
+        return new ModeloPrestamoTotalesGenerales(totalPrestamo, totalAbonado, totalMultado, totalRecuperado, capital, porcentajeAbonado);
+    }
+
+    /**
+     * Obtiene los totales generales de todos los prestamos
+     * @return modelo con los totales generales 
+     * @throws Exception si existe un error de I/O
+     */
+    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales() throws Exception {
+
+        List<Pair<Integer, Integer>> abonosMultas = new DaoAbono().stream()
+                .filter(a -> a.isAbonado())
+                .map(e -> new Pair<>(e.getCantidad(), e.getMulta().getMulta()))
+                .collect(toList());
+
+        final int totalAbonado = abonosMultas.stream().mapToInt(e -> e.getOne()).sum();
+        final int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();
+        final int totalPrestamo = this.stream().mapToInt(p -> p.getCantidad()).sum();
+        final int totalAPagar = this.stream().mapToInt(p -> p.getCantidadPagar()).sum();
+        final int totalRecuperado = totalAbonado + totalMultado;
+        final int capital = totalRecuperado - totalPrestamo;
+        final float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar) * 100f);
 
         return new ModeloPrestamoTotalesGenerales(totalPrestamo, totalAbonado, totalMultado, totalRecuperado, capital, porcentajeAbonado);
     }
@@ -119,6 +157,19 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     public List<Prestamo> prestamosDelCobrador(final int cobradorId) {
         DaoPrestamo daoPrestamo = new DaoPrestamo();
         return daoPrestamo.prestamosDelCobrador(cobradorId);
+    }
+
+    /**
+     * Genera el resultado de los totales generales de los prestamos segun un filtrado
+     *
+     * @param filtro objeto con las propiedades a filtrar en los prestamos
+     * @return modelo del resultado de los totales generales del prestamo
+     */
+    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales(FiltroPrestamo filtro) throws Exception {
+        List<Prestamo> prestamos = this.findAll(filtro);
+        List<Abono> abonos = new ArrayList<>();
+        prestamos.forEach(p -> abonos.addAll(p.getAbonos()));
+        return totalesPrestamosGenerales(abonos);
     }
 
 }
