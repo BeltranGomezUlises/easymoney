@@ -7,10 +7,30 @@ package com.easymoney.models;
 public class ModelTotalAPagar {
     private int totalAbonar;
     private int totalMultar;
+    private int totalMultarMes;
+    private int ajusteDePago;
 
-    public ModelTotalAPagar(int totalAbonar, int totalMultar) {
+    public ModelTotalAPagar(int totalAbonar, int totalMultar, int totalMultarMes, int ajusteDePago) {
         this.totalAbonar = totalAbonar;
         this.totalMultar = totalMultar;
+        this.totalMultarMes = totalMultarMes;
+        this.ajusteDePago = ajusteDePago;
+    }
+
+    public int getAjusteDePago() {
+        return ajusteDePago;
+    }
+
+    public void setAjusteDePago(int ajusteDePago) {
+        this.ajusteDePago = ajusteDePago;
+    }
+
+    public int getTotalMultarMes() {
+        return totalMultarMes;
+    }
+
+    public void setTotalMultarMes(int totalMultarMes) {
+        this.totalMultarMes = totalMultarMes;
     }
 
     public int getTotalAbonar() {
@@ -30,7 +50,7 @@ public class ModelTotalAPagar {
     }
 
     public int getTotalPagar() {
-        return totalAbonar + totalMultar;
+        return totalAbonar + totalMultar + totalMultarMes + ajusteDePago;
     }
 
 

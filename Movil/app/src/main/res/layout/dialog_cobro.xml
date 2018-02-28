@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Multa:" />
+            android:text="Multa diaria:" />
 
         <TextView
             android:id="@+id/tvMulta"
@@ -50,6 +50,50 @@
             android:textAlignment="viewEnd"
             tools:ignore="RtlCompat" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Multa post-plazo:" />
+
+        <TextView
+            android:id="@+id/tvMultaMes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="1"
+            android:text="$40"
+            android:textAlignment="viewEnd"
+            tools:ignore="RtlCompat" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Ajuste necesario:" />
+
+        <TextView
+            android:id="@+id/tvAjuste"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="1"
+            android:text="$40"
+            android:textAlignment="viewEnd"
+            tools:ignore="RtlCompat" />
     </LinearLayout>
 
     <android.support.design.widget.TextInputLayout

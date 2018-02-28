@@ -26,6 +26,8 @@ public class CobroDialogFragment extends DialogFragment {
     DetallePrestamoPresenter presenter;
     private TextView tvAbono;
     private TextView tvMulta;
+    private TextView tvMultaMes;
+    private TextView tvAjuste;
     private EditText txtAbonar;
     private EditText txtDescripcion;
 
@@ -46,13 +48,18 @@ public class CobroDialogFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.dialog_cobro, null);
         tvAbono = rootView.findViewById(R.id.tvAbono);
         tvMulta = rootView.findViewById(R.id.tvMulta);
+        tvMultaMes = rootView.findViewById(R.id.tvMultaMes);
+        tvAjuste= rootView.findViewById(R.id.tvAjuste);
         txtAbonar = rootView.findViewById(R.id.txtAbonar);
         txtDescripcion = rootView.findViewById(R.id.txtDes);
 
-        ModelTotalAPagar model = presenter.calcularTotalesPagar();
+        final ModelTotalAPagar model = presenter.calcularTotalesPagar();
 
         tvAbono.setText("$" + String.valueOf(model.getTotalAbonar()));
         tvMulta.setText("$" + String.valueOf(model.getTotalMultar()));
+        tvMultaMes.setText("$" + String.valueOf(model.getTotalMultarMes()));
+        tvAjuste.setText("$" + String.valueOf(model.getAjusteDePago()));
+
         txtAbonar.setText(String.valueOf(model.getTotalPagar()));
 
         builder.setView(rootView)
@@ -66,7 +73,7 @@ public class CobroDialogFragment extends DialogFragment {
             Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
             button.setOnClickListener(view -> {
                 if (validateIns()) {
-                    abonar();
+                    abonar(model);
                     dialog.dismiss();
                 }
             });
@@ -77,10 +84,10 @@ public class CobroDialogFragment extends DialogFragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void abonar() {
+    private void abonar(final ModelTotalAPagar model) {
         final int abono = Integer.parseInt(txtAbonar.getText().toString());
         final String multaDes = txtDescripcion.getText().toString();
-        presenter.abonarAlPrestamo(abono, multaDes);
+        presenter.abonarAlPrestamo(abono, multaDes, model);
     }
 
     private boolean validateIns() {

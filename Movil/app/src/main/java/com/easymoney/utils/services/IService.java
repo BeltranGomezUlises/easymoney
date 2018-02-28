@@ -29,7 +29,7 @@ public interface IService {
      * endpoint de los servicios
      */
 //    String END_POINT = "http://201.165.0.142:8383/em/api/";
-    String END_POINT = "http://172.16.3.52:8084/EasyMoney/api/";
+    String END_POINT = "http://192.168.43.202:8084/EasyMoney/api/";
 
     /**
      * Inicio de sesion
@@ -67,6 +67,15 @@ public interface IService {
     Flowable<Response<List<Abono>, Object>> abonosDelPrestamo(@Header("Authorization")String token, @Path("prestamoId") int prestamoId);
 
     /**
+     * servicio para agregar un abono de ajuste a un prestamo donde las cantidades abonadas no tienen el valor correspondiente
+     * @param token token de sesion
+     * @param abono abono a agregar, con su respectiva multa y comentario
+     * @return respuesta con el abono agregado
+     */
+    @POST("abonos/agregarAjuste")
+    Flowable<Response<Abono, Object>> agregarAbonoAjuste(@Header("Authorization") String token, @Body Abono abono);
+
+    /**
      * actualiza un prestamo
      * @param token token de sesion
      * @param prestamo prestamo a actualizar
@@ -83,4 +92,6 @@ public interface IService {
      */
     @POST("usuarios/cambiarContra")
     Flowable<Response<Usuario, Object>> cambiarContra(@Header("Authorization") String token, @Body ModelCambiarContra cambiarContra);
+
+
 }

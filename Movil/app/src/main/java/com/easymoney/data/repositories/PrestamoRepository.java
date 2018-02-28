@@ -6,6 +6,7 @@ import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsPreferences;
+import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.List;
 
@@ -94,14 +95,15 @@ public class PrestamoRepository implements PrestamoDataSource {
 
     /**
      * devuelve los datos totales de un prestamo
+     *
      * @param prestamoId identificador del prestamo
      * @return Response con el modelo de totales de un prestamo
      */
-    public Flowable<Response<ModelPrestamoTotales, Object>> totalesPrestamo(int prestamoId){
+    public Flowable<Response<ModelPrestamoTotales, Object>> totalesPrestamo(int prestamoId) {
         return webServices().totalesDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
     }
 
-    public Flowable<Response<List<Abono>, Object>> abonosPrestamo(int prestamoId){
+    public Flowable<Response<List<Abono>, Object>> abonosPrestamo(int prestamoId) {
         return webServices().abonosDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
     }
 
@@ -114,6 +116,17 @@ public class PrestamoRepository implements PrestamoDataSource {
                 .doOnComplete(() -> {
                     isDirty = false;
                 });
+    }
+
+    /**
+     * agregar un abono de ajuste
+     * @param abono abono a agregar
+     * @return response con el abono agregado
+     */
+    public Flowable<Response<Abono, Object>> agregarAbonoAjuste(Abono abono){
+        return webServices().agregarAbonoAjuste(UtilsPreferences.loadToken(), abono)
+                .observeOn(SchedulerProvider.uiT())
+                .subscribeOn(SchedulerProvider.ioT());
     }
 
     /**

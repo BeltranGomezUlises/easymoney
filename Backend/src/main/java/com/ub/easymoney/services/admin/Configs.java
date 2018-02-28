@@ -10,7 +10,6 @@ import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.managers.admin.ManagerConfig;
 import com.ub.easymoney.managers.admin.ManagerUsuario;
 import com.ub.easymoney.models.commons.reponses.Response;
-import com.ub.easymoney.utils.UtilsSecurity;
 import com.ub.easymoney.utils.UtilsService;
 import java.util.ArrayList;
 import java.util.List;
