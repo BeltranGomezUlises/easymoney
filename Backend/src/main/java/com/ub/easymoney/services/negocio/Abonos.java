@@ -16,6 +16,7 @@ import com.ub.easymoney.utils.UtilsService;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
@@ -33,6 +34,7 @@ public class Abonos extends ServiceFacade<Abono, AbonoPK> {
 
     /**
      * devuelve la lista de abonos de un prestamo (detalle del prestamo)
+     *
      * @param token token de sesion
      * @param id identificador del prestamo al que se busca su detalle
      * @return lista de abonos del prestamo buscado en data
@@ -48,10 +50,28 @@ public class Abonos extends ServiceFacade<Abono, AbonoPK> {
             UtilsService.setOkResponse(res, abonosDelPrestamo, "Abonos del prestamo " + id, "lista de abonos del prestamo");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             UtilsService.setInvalidTokenResponse(res);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             UtilsService.setErrorResponse(res, ex);
         }
         return res;
     }
-    
+
+    /**
+     * genera un abono al prestamo cuando es necesario realizar un ajuste de pago,sucede cuando el cliente no va al corriente o es necesario ponerle
+     * @param token token de sesion
+     * @param abonoAgregar abono a agregar
+     * @return 
+     */
+    @POST
+    @Path("/agregarAjuste")
+    public Response<Abono> agregarAbonoAjuste(@HeaderParam("Authorization") String token, Abono abonoAgregar) {
+        Response<Abono> res = new Response<>();
+        try {
+            this.alta(token, abonoAgregar);
+        } catch (Exception ex) {
+            UtilsService.setErrorResponse(res, ex);
+        }
+        return res;
+    }
+
 }

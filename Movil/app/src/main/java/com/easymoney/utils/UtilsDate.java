@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -232,6 +233,18 @@ public class UtilsDate {
         } catch (ParseException e) {
         }
         return res;
+    }
+
+    /**
+     * Obtiene la cantidad de dias que existen de diferencia entre una fecha y otra
+     *
+     * @param fechaInicial fecha menor desde la cual contar los dias
+     * @param fechaFinal   fecha mayor hasta la cual contar los dias
+     * @return numero de dias
+     */
+    public static long diasEntreFechas(final Date fechaInicial, final Date fechaFinal) {
+        long diffMillis = fechaFinal.getTime() - fechaInicial.getTime();
+        return TimeUnit.DAYS.convert(diffMillis, TimeUnit.MILLISECONDS);
     }
 
     /**

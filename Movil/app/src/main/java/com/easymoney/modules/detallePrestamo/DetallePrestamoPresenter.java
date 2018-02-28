@@ -7,9 +7,13 @@ import android.view.View;
 
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Abono;
+import com.easymoney.entities.AbonoPK;
+import com.easymoney.entities.Multa;
+import com.easymoney.entities.MultaPK;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.ModelTotalAPagar;
+import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
@@ -76,8 +80,10 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                     proccessAbonos(r.getData());
                                     break;
                                 case WARNING:
+                                    consultaFragment.showMessage(r.getMeta().getMessage());
                                     break;
                                 case ERROR:
+                                    consultaFragment.showMessage("Existió un error de programación");
                                     break;
                                 default:
                             }
@@ -158,6 +164,9 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     public ModelTotalAPagar calcularTotalesPagar() {
         int abonoAPagar = 0;
         int multaAPagar = 0;
+        int multaAPagarMes = 0;
+        int ajusteDePago = 0;
+
         Calendar cal = new GregorianCalendar();
         Date fechaActual = new Date();
         cal.setTime(fechaActual);
@@ -178,7 +187,22 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 multaAPagar += multaDiaria;
             }
         }
-        return new ModelTotalAPagar(abonoAPagar, multaAPagar);
+
+        //buscar si tiene dias sin pago despues de la fecha limite de pago y tiene algo por abonas
+        if (prestamo.getFechaLimite().compareTo(fechaActual) < 0) {
+            int multaMes = UtilsPreferences.loadConfig().getCantidadMultaMes();
+            int cantidadDeDiasDespuesDelMes = (int) UtilsDate.diasEntreFechas(prestamo.getFechaLimite(), fechaActual);
+            multaAPagarMes = multaMes * cantidadDeDiasDespuesDelMes;
+        }
+
+        if (prestamo.getAbonos().stream().allMatch(a -> a.isAbonado())) {
+            int sumaPagos = prestamo.getAbonos().stream().mapToInt(a -> a.getCantidad()).sum();
+            if (sumaPagos < prestamo.getCantidadPagar()) {
+                ajusteDePago = prestamo.getCantidadPagar() - sumaPagos;
+            }
+        }
+
+        return new ModelTotalAPagar(abonoAPagar, multaAPagar, multaAPagarMes, ajusteDePago);
     }
 
 
@@ -188,15 +212,16 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      * @param abono cantidad de dinero a abonar por el cliente, intresado en el dialog
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void abonarAlPrestamo(int abono, String multaDes) {
+    public void abonarAlPrestamo(int abono, String multaDes, final ModelTotalAPagar model) {
         Calendar cal = new GregorianCalendar();
         cal.setTime(new Date());
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
         int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
-        //distribuir pago con prioridad en multa y abonos anteriores e ir cubirendo la cantidad del abono
+        //distribuir pago con prioridad en multa y abonos anteriores e ir cubriendo la cantidad del abono
         List<Abono> abonos = prestamo.getAbonos().stream()
                 .sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()))
                 .collect(toList());
+
         for (Abono abonoActual : abonos) {
             if (!abonoActual.isAbonado()) {
                 cal.setTime(abonoActual.getAbonoPK().getFecha());
@@ -222,6 +247,30 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             }
         }
 
+        if (abono > 0) {
+            //existe un ajuste de pago, por que ya no hay abonos sin pagar distribuir la multa de post-plazo si existe en el abono de ajuste de pago
+            if (model.getAjusteDePago() > 0) {
+                Date fechaActual = new Date();
+                Abono abonoAjuste = new Abono();
+                if (model.getTotalMultarMes() > 0) {
+                    Multa multa = new Multa(new MultaPK(prestamo.getId(),fechaActual ));
+                    multa.setMultaDes("Multa post-plazo");
+                    abonoAjuste.setMulta(multa);
+                    if (abono >= model.getTotalMultarMes()){
+                        multa.setMulta(model.getTotalMultarMes());
+                        abono -= model.getTotalMultarMes();
+                    }else {
+                        multa.setMulta(abono);
+                        abono = 0;
+                    }
+                }
+                abonoAjuste.setAbonoPK(new AbonoPK(prestamo.getId(),fechaActual  ));
+                abonoAjuste.setCantidad(abono);
+                abonoAjuste.setAbonado(true);
+                abonos.add(abonoAjuste);
+            }
+        }
+
         prestamo.setAbonos(abonos);
         this.showLoading(true);
         repository.update(prestamo).subscribeOn(SchedulerProvider.ioT())
@@ -242,11 +291,11 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      * @param abonos abonos del prestamo con los cuales trabajar
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void proccessAbonos(List<Abono> abonos) {
+    private void proccessAbonos(final List<Abono> abonos) {
         prestamo.setAbonos(abonos);
         abonoFragment.replaceData(abonos);
-        Date fechaActual = new Date();
-        if (abonos.stream().anyMatch(a -> a.isAbonado() == false && a.getAbonoPK().getFecha().compareTo(fechaActual) <= 0)) {
+        final int sumaAbonos = abonos.stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
+        if (sumaAbonos < prestamo.getCantidadPagar()) {
             this.fab.setVisibility(View.VISIBLE);
         } else {
             this.fab.setVisibility(View.GONE);
