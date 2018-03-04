@@ -1,12 +1,12 @@
 package com.easymoney.modules.ingresosEgresos;
 
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +27,30 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
  * Created by ulises on 03/03/2018.
  */
 
+@SuppressLint("ValidFragment")
 public class IngresosEgresosFragment extends Fragment implements IngresosEgresosContract.View {
+
+    private static IngresosEgresosFragment instance;
 
     private ProgressDialog dialog;
     private ListView listView;
     private MovimientoAdapter movimientoAdapter;
+    private IngresosEgresosPresenter presenter;
+
+    /**
+     * prevenir instanciación externa
+     */
+    @SuppressLint("ValidFragment")
+    private IngresosEgresosFragment(IngresosEgresosPresenter presenter) {
+        this.presenter = presenter;
+    }
+
+    public static IngresosEgresosFragment getInstance(IngresosEgresosPresenter presenter) {
+        if (instance == null) {
+            instance = new IngresosEgresosFragment(presenter);
+        }
+        return instance;
+    }
 
     @Nullable
     @Override
@@ -42,12 +61,13 @@ public class IngresosEgresosFragment extends Fragment implements IngresosEgresos
         movimientoAdapter = new MovimientoAdapter(new ArrayList<>());
         listView.setAdapter(movimientoAdapter);
 
+        this.presenter.subscribe();
+
         return root;
     }
 
     @Override
     public void showLoading(boolean active) {
-        FragmentActivity act = getActivity();
         if (active) {
             dialog = ProgressDialog.show(getActivity(), "Cargando", "Por favor espere...", true);
         } else {
@@ -64,11 +84,15 @@ public class IngresosEgresosFragment extends Fragment implements IngresosEgresos
 
     @Override
     public void setPresenter(IngresosEgresosContract.Presenter presenter) {
-        presenter.subscribe();
+        this.presenter = (IngresosEgresosPresenter) presenter;
     }
 
-    public void replaceMovimientoList(List<Movimiento> movimientos){
+    public void replaceMovimientoList(List<Movimiento> movimientos) {
         movimientoAdapter.replaceData(movimientos);
+    }
+
+    public void addMovimientotList(Movimiento movimiento){
+        movimientoAdapter.add(movimiento);
     }
 
     private static class MovimientoAdapter extends BaseAdapter {
@@ -85,6 +109,11 @@ public class IngresosEgresosFragment extends Fragment implements IngresosEgresos
 
         protected void replaceData(List<Movimiento> movimientos) {
             this.movimientos = movimientos;
+            this.notifyDataSetChanged();
+        }
+
+        protected  void add(Movimiento movimiento){
+            this.movimientos.add(movimiento);
             this.notifyDataSetChanged();
         }
 

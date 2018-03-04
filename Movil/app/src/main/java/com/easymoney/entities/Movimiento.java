@@ -12,6 +12,7 @@ public class Movimiento {
     private double cantidad;
     private Date fecha;
     private String descripcion;
+    private Usuario usuarioCreador;
 
     public Movimiento() {
     }
@@ -24,6 +25,21 @@ public class Movimiento {
         this.id = id;
         this.cantidad = cantidad;
         this.fecha = fecha;
+    }
+
+    public Movimiento(double cantidad, Date fecha, String descripcion, Usuario usuarioCreador) {
+        this.cantidad = cantidad;
+        this.fecha = fecha;
+        this.descripcion = descripcion;
+        this.usuarioCreador = usuarioCreador;
+    }
+
+    public Usuario getUsuarioCreador() {
+        return usuarioCreador;
+    }
+
+    public void setUsuarioCreador(Usuario usuarioCreador) {
+        this.usuarioCreador = usuarioCreador;
     }
 
     public Integer getId() {

@@ -11,6 +11,8 @@ import com.easymoney.utils.activities.ActivityUtils;
 
 public class IngresosEgresosActivity extends AppCompatActivity {
 
+    private IngresosEgresosPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,18 +21,17 @@ public class IngresosEgresosActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         MovimientoRepository movimientoRepository = new MovimientoRepository();
-        IngresosEgresosPresenter presenter = new IngresosEgresosPresenter(movimientoRepository);
+        presenter = new IngresosEgresosPresenter(movimientoRepository);
         IngresosEgresosFragment ingresosEgresosFragment = (IngresosEgresosFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (ingresosEgresosFragment == null) {
-            ingresosEgresosFragment = new IngresosEgresosFragment();
+            ingresosEgresosFragment = IngresosEgresosFragment.getInstance(presenter);
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), ingresosEgresosFragment, R.id.contentFrame);
-            presenter.setView(ingresosEgresosFragment);
-            ingresosEgresosFragment.setPresenter(presenter);
         }
-        FloatingActionButton fab = findViewById(R.id.fab);
-        //todo colocar el comportamiento al boton flotante lanzar modal de captura de movimiento
-    }
+        presenter.setView(ingresosEgresosFragment);
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(v -> lanzarModalMovimiento());
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -40,5 +41,10 @@ public class IngresosEgresosActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    private void lanzarModalMovimiento() {
+        IngresoEgresoDialogFragment dialog = new IngresoEgresoDialogFragment(presenter);
+        dialog.show(getFragmentManager(), "Movimiento");
     }
 }

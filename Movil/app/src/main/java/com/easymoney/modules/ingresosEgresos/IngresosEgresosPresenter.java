@@ -3,7 +3,6 @@ package com.easymoney.modules.ingresosEgresos;
 import android.annotation.SuppressLint;
 import android.support.v4.app.Fragment;
 
-
 import com.easymoney.data.repositories.MovimientoRepository;
 import com.easymoney.entities.Movimiento;
 
@@ -14,7 +13,7 @@ import io.reactivex.disposables.CompositeDisposable;
  */
 
 @SuppressLint("ValidFragment")
-public class IngresosEgresosPresenter extends Fragment implements IngresosEgresosContract.Presenter {
+public class IngresosEgresosPresenter implements IngresosEgresosContract.Presenter {
 
     private MovimientoRepository repository;
     private CompositeDisposable compositeDisposable;
@@ -37,7 +36,17 @@ public class IngresosEgresosPresenter extends Fragment implements IngresosEgreso
 
     @Override
     public void agregarIngresoEgreso(Movimiento movimiento) {
-
+        showLoading(true);
+        compositeDisposable.add(
+                repository.altaMovimiento(movimiento)
+                        .subscribe(r -> {
+                            showLoading(false);
+                            agregarMovimientoLista(r.getData());
+                        }, ex -> {
+                            showLoading(false);
+                            showMessage("Error de comunicación");
+                        })
+        );
     }
 
     @Override
@@ -62,10 +71,15 @@ public class IngresosEgresosPresenter extends Fragment implements IngresosEgreso
                                     }
                                 }
                                 , ex -> {
+                                    ex.printStackTrace();
                                     showLoading(false);
                                     showMessage("Existió un error de comunicación");
                                 })
         );
+    }
+
+    private void agregarMovimientoLista(Movimiento movimiento) {
+        fragment.addMovimientotList(movimiento);
     }
 
     @Override

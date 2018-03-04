@@ -118,6 +118,6 @@ public interface IService {
      * @return movimiento dado de alta, con el id generado
      */
     @POST("movimientos")
-    Flowable<Response<Movimiento, Object>> altaMovimientos(@Header("Authorization") final String token, final Movimiento movimiento);
+    Flowable<Response<Movimiento, Object>> altaMovimientos(@Header("Authorization") final String token, @Body final Movimiento movimiento);
 
 }

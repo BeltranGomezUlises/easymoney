@@ -28,4 +28,15 @@ public class MovimientoRepository {
                 .observeOn(SchedulerProvider.uiT());
     }
 
+    /**
+     * Da de alta un movimiento
+     * @param movimiento movimiento a dar de alta
+     * @return movimiento dado de alta
+     */
+    public Flowable<Response<Movimiento, Object>> altaMovimiento(Movimiento movimiento){
+        return webServices().altaMovimientos(UtilsPreferences.loadToken(), movimiento)
+                .subscribeOn(SchedulerProvider.ioT())
+                .observeOn(SchedulerProvider.uiT());
+    }
+
 }
