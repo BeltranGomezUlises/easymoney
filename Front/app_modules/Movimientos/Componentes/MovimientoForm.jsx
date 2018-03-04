@@ -35,6 +35,7 @@ export default class MovimientoForm extends Component{
     if (this.state.tipoMovimiento) {
       movimiento.cantidad *= -1;
     }
+    movimiento.usuarioCreador = JSON.parse(localStorage.getItem('logedUser'));    
     fetch(localStorage.getItem('url') + 'movimientos',{
       method: 'POST',
       headers: {

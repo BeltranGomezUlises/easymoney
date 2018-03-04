@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -38,9 +39,18 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     private AbonoFragment abonoFragment;
     private Prestamo prestamo;
     private ModelPrestamoTotales prestamoTotales;
+    private ModelTotalAPagar modelTotalAPagar;
 
     public DetallePrestamoPresenter(Prestamo prestamo) {
         this.prestamo = prestamo;
+    }
+
+    public ModelTotalAPagar getModelTotalAPagar() {
+        return modelTotalAPagar;
+    }
+
+    public void setModelTotalAPagar(ModelTotalAPagar modelTotalAPagar) {
+        this.modelTotalAPagar = modelTotalAPagar;
     }
 
     @Override
@@ -55,14 +65,15 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                             consultaFragment.setTotales(r.getData());
                             break;
                         case WARNING:
-                            consultaFragment.showMessage(r.getMeta().getMessage());
+                            showMessage(r.getMeta().getMessage());
                             break;
                         case ERROR:
-                            consultaFragment.showMessage("Existió un error de programación");
+                            showMessage("Existió un error de programación");
                             break;
                     }
                 }, ex -> {
-                    consultaFragment.showMessage("Existió un error de programación");
+                    showLoading(false);
+                    showMessage("Existió un error de comunicación");
                     ex.printStackTrace();
                 }));
     }
@@ -80,14 +91,16 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                     proccessAbonos(r.getData());
                                     break;
                                 case WARNING:
-                                    consultaFragment.showMessage(r.getMeta().getMessage());
+                                    showMessage(r.getMeta().getMessage());
                                     break;
                                 case ERROR:
-                                    consultaFragment.showMessage("Existió un error de programación");
+                                    showMessage("Existió un error de programación");
                                     break;
                                 default:
                             }
                         }, ex -> {
+                            showMessage("Existió un error de comunicación");
+                            showLoading(false);
                             ex.printStackTrace();
                         })
         );
@@ -97,6 +110,11 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     public void showLoading(boolean active) {
         this.abonoFragment.showLoading(active);
         this.consultaFragment.showLoading(active);
+    }
+
+    public final void showMessage(final String message){
+        this.consultaFragment.showMessage(message);
+        this.abonoFragment.showMessage(message);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -172,7 +190,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         cal.setTime(fechaActual);
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
         List<Abono> abonos = prestamo.getAbonos().stream()
-                .filter(a -> !a.isAbonado() && a.getAbonoPK().getFecha().compareTo(fechaActual) <= 0)
+                .filter(a -> !a.isAbonado() && a.getAbonoPK().getFecha().getTime() <= fechaActual.getTime())
                 .sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()))
                 .collect(toList());
         int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
@@ -201,10 +219,10 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 ajusteDePago = prestamo.getCantidadPagar() - sumaPagos;
             }
         }
-
-        return new ModelTotalAPagar(abonoAPagar, multaAPagar, multaAPagarMes, ajusteDePago);
+        ModelTotalAPagar modelTotalAPagar = new ModelTotalAPagar(abonoAPagar, multaAPagar, multaAPagarMes, ajusteDePago);
+        this.setModelTotalAPagar(modelTotalAPagar);
+        return modelTotalAPagar;
     }
-
 
     /**
      * distribuye el abono del cliente en los abonos, tomando en cuenta la prioridad del las multas si le corresponde y la antiguedad del abono
@@ -212,7 +230,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      * @param abono cantidad de dinero a abonar por el cliente, intresado en el dialog
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void abonarAlPrestamo(int abono, String multaDes, final ModelTotalAPagar model) {
+    public void abonarAlPrestamo(int abono, final String multaDes, final ModelTotalAPagar model) {
         Calendar cal = new GregorianCalendar();
         cal.setTime(new Date());
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
@@ -233,8 +251,16 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                     } else {
                         abonoActual.getMulta().setMultaDes(multaDes);
                         abonoActual.getMulta().setMulta(abono);
+                        abono = 0;
                         break; //se acabo el abono
                     }
+                }
+                if (cal.get(Calendar.DAY_OF_YEAR) == diaActual) {
+                    //si es el dia de hoy, poner el restante del abono como abono
+                    abonoActual.setCantidad(abono);
+                    abonoActual.setAbonado(true);
+                    abono = 0;
+                    break;
                 }
                 if (abono > abonoActual.getCantidad()) {
                     abonoActual.setAbonado(true);
@@ -242,29 +268,44 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 } else {
                     abonoActual.setAbonado(true);
                     abonoActual.setCantidad(abono);
+                    abono = 0;
                     break; //se acabo el abono
                 }
             }
         }
 
+        Date fechaActual = new Date();
         if (abono > 0) {
-            //existe un ajuste de pago, por que ya no hay abonos sin pagar distribuir la multa de post-plazo si existe en el abono de ajuste de pago
-            if (model.getAjusteDePago() > 0) {
-                Date fechaActual = new Date();
-                Abono abonoAjuste = new Abono();
-                if (model.getTotalMultarMes() > 0) {
-                    Multa multa = new Multa(new MultaPK(prestamo.getId(),fechaActual ));
-                    multa.setMultaDes("Multa post-plazo");
-                    abonoAjuste.setMulta(multa);
-                    if (abono >= model.getTotalMultarMes()){
-                        multa.setMulta(model.getTotalMultarMes());
-                        abono -= model.getTotalMultarMes();
-                    }else {
-                        multa.setMulta(abono);
-                        abono = 0;
+            if (model.getTotalMultarMes() > 0) {
+                //generar los dias de multa post-plazo para cada dia de multa
+                cal.setTime(abonos.get(abonos.size() - 1).getAbonoPK().getFecha()); //fecha del ultimo abono
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+                int cantidadMultaPostPlazo = UtilsPreferences.loadConfig().getCantidadMultaMes();
+                while (cal.getTime().getTime() <= fechaActual.getTime() && abono > 0) {
+                    if (abono - cantidadMultaPostPlazo >= 0) {
+                        Abono abonoPostPlazo = new Abono(prestamo.getId(), cal.getTime());
+                        Multa multaPostPlazo = new Multa(prestamo.getId(), cal.getTime());
+                        multaPostPlazo.setMulta(cantidadMultaPostPlazo);
+                        multaPostPlazo.setMultaDes("Multa post-plazo");
+                        abonoPostPlazo.setMulta(multaPostPlazo);
+                        abonoPostPlazo.setAbonado(true);
+                        abonos.add(abonoPostPlazo);
+                        abono -= cantidadMultaPostPlazo;
+                        cal.add(Calendar.DAY_OF_YEAR, 1);
                     }
                 }
-                abonoAjuste.setAbonoPK(new AbonoPK(prestamo.getId(),fechaActual  ));
+            }
+        }
+
+        if (abono > 0 && model.getAjusteDePago() > 0) {
+            //si ya hay uno del dia de hoy
+            Abono ultimoAbono = abonos.get(abonos.size() -1);
+            cal.setTime(ultimoAbono.getAbonoPK().getFecha());
+            int diaPrestamo = cal.get(Calendar.DAY_OF_YEAR);
+            if (diaPrestamo == diaActual){
+                ultimoAbono.setCantidad(ultimoAbono.getCantidad() + model.getAjusteDePago());
+            }else{
+                Abono abonoAjuste = new Abono(prestamo.getId(), fechaActual);
                 abonoAjuste.setCantidad(abono);
                 abonoAjuste.setAbonado(true);
                 abonos.add(abonoAjuste);
@@ -277,12 +318,14 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 .observeOn(SchedulerProvider.uiT())
                 .subscribe(p -> {
                     proccessAbonos(prestamo.getAbonos());
+                    cargarTotalesPrestamo();
                     showLoading(false);
                 }, ex -> {
+                    showLoading(false);
+                    showMessage("Existió un error de comunicación");
                     ex.printStackTrace();
                 });
 
-        //proccessAbonos(abonos);
     }
 
     /**
@@ -293,9 +336,15 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void proccessAbonos(final List<Abono> abonos) {
         prestamo.setAbonos(abonos);
+        this.calcularTotalesPagar();
         abonoFragment.replaceData(abonos);
         final int sumaAbonos = abonos.stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
-        if (sumaAbonos < prestamo.getCantidadPagar()) {
+        Calendar cal = new GregorianCalendar();
+        int diaDelAñoAcutal = cal.get(Calendar.DAY_OF_YEAR);
+        cal.setTime(prestamo.getFecha());
+        int diaDelAñoFechaPrestamo = cal.get(Calendar.DAY_OF_YEAR);
+
+        if (sumaAbonos < prestamo.getCantidadPagar() && (diaDelAñoAcutal > diaDelAñoFechaPrestamo) && this.getModelTotalAPagar().getTotalPagar() > 0) {
             this.fab.setVisibility(View.VISIBLE);
         } else {
             this.fab.setVisibility(View.GONE);

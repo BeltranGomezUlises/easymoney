@@ -60,7 +60,6 @@ public class CambiarContraFragment extends Fragment implements CambiarContraCont
     }
 
     private void cambiarContra() {
-        int usuarioId = UtilsPreferences.loadLogedUser().getId();
         String contraActual = tvContraAcutal.getText().toString();
         String contraNueva = tvContraNueva.getText().toString();
         String contraNuevaConfirmacion = tvContraNuevaConfirmacion.getText().toString();

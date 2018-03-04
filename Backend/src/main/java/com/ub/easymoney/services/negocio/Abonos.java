@@ -56,22 +56,4 @@ public class Abonos extends ServiceFacade<Abono, AbonoPK> {
         return res;
     }
 
-    /**
-     * genera un abono al prestamo cuando es necesario realizar un ajuste de pago,sucede cuando el cliente no va al corriente o es necesario ponerle
-     * @param token token de sesion
-     * @param abonoAgregar abono a agregar
-     * @return 
-     */
-    @POST
-    @Path("/agregarAjuste")
-    public Response<Abono> agregarAbonoAjuste(@HeaderParam("Authorization") String token, Abono abonoAgregar) {
-        Response<Abono> res = new Response<>();
-        try {
-            this.alta(token, abonoAgregar);
-        } catch (Exception ex) {
-            UtilsService.setErrorResponse(res, ex);
-        }
-        return res;
-    }
-
 }

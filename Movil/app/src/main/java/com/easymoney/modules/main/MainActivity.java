@@ -21,6 +21,7 @@ import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.modules.cambiarContra.CambiarContraActivity;
 import com.easymoney.modules.detallePrestamo.DetallePrestamoActivity;
+import com.easymoney.modules.ingresosEgresos.IngresosEgresosActivity;
 import com.easymoney.modules.login.LoginActivity;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.schedulers.SchedulerProvider;
@@ -68,12 +69,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listaPrestamos = findViewById(R.id.prestamoList);
         adapterPrestamo = new PrestamoAdapter(new ArrayList<>());
         listaPrestamos.setAdapter(adapterPrestamo);
-        listaPrestamos.setOnItemClickListener((adapterView, view, i, l) ->{
+        listaPrestamos.setOnItemClickListener((adapterView, view, i, l) -> {
             Prestamo p = (Prestamo) adapterView.getItemAtPosition(i);
             Intent intent = new Intent(MainActivity.this, DetallePrestamoActivity.class);
             intent.putExtra("Prestamo", p);
             startActivity(intent);
-        } );
+        });
         prestamoRepository = PrestamoRepository.getINSTANCE();
         prestamoRepository.forceRemoteUpdate();
         prestamoRepository.findAll()
@@ -81,13 +82,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .observeOn(SchedulerProvider.uiT())
                 .subscribe(
                         prestamos -> {
-                            if (!prestamos.isEmpty()){
+                            if (!prestamos.isEmpty()) {
                                 tvInfo.setVisibility(View.GONE);
                                 adapterPrestamo.replaceData(prestamos);
-                            }else{
+                            } else {
                                 tvInfo.setText("Sin préstamos por cobrar");
                             }
-                            },
+                        },
                         ex -> ex.printStackTrace()
                 );
     }
@@ -106,17 +107,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.cobros) {
-
-        } else if (id == R.id.cerrarSesion) {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finishAffinity();
-        } else if (id == R.id.cambiarContra){
-            Intent intent = new Intent(MainActivity.this, CambiarContraActivity.class);
-            startActivity(intent);
+        Intent intent;
+        switch (id) {
+            case R.id.cobros:
+                break;
+            case R.id.IE:
+                intent = new Intent(MainActivity.this, IngresosEgresosActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.cerrarSesion:
+                intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finishAffinity();
+                break;
+            case R.id.cambiarContra:
+                intent = new Intent(MainActivity.this, CambiarContraActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

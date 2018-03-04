@@ -53,7 +53,7 @@ public class CobroDialogFragment extends DialogFragment {
         txtAbonar = rootView.findViewById(R.id.txtAbonar);
         txtDescripcion = rootView.findViewById(R.id.txtDes);
 
-        final ModelTotalAPagar model = presenter.calcularTotalesPagar();
+        final ModelTotalAPagar model = presenter.getModelTotalAPagar();
 
         tvAbono.setText("$" + String.valueOf(model.getTotalAbonar()));
         tvMulta.setText("$" + String.valueOf(model.getTotalMultar()));
