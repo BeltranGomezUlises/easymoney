@@ -39,7 +39,9 @@ export default class Login extends React.Component{
     .then((response) => {
       if (response.meta.status == 'OK') {
         if (response.data.usuario.tipo === true) {
+          //guaradr el usuario logeado y el token de sesion
           localStorage.setItem('tokenSesion', response.meta.metaData);
+          localStorage.setItem('logedUser', JSON.stringify(response.data.usuario));
           let ruta = window.location.href.split('#');
           window.location.href = ruta[0] + '#/prestamos';
         } else{

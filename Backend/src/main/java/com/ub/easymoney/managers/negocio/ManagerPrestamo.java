@@ -37,6 +37,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
     /**
      * Persiste el prestamo asegurando la generacion de los abonos del prestamo
+     *
      * @param entity entidad prestamo a persistir
      * @return retorna el prestamo persistido con sus abonos asegurados
      * @throws Exception si existe un error de I/O
@@ -52,7 +53,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         GregorianCalendar cal = new GregorianCalendar();
         Date d = cal.getTime(); //guardamos la fecha actual
 
-        cal.add(Calendar.DAY_OF_MONTH, UtilsConfig.getDiasPlazoPrestamo());
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
         entity.setFechaLimite(cal.getTime());
 
         Prestamo p = super.persist(entity);
@@ -62,7 +63,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         Abono abono;
 
         cal.setTime(d);
-        cal.add(Calendar.DAY_OF_MONTH, 1); //primer dia de abono es el dia siguiente del prestamo
+        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
         int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
         for (int i = 0; i < diasPlazo; i++) {
             abono = new Abono(p.getId(), cal.getTime());
@@ -70,7 +71,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
             abono.setAbonado(false);
             abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));
             listaAbonos.add(abono);
-            cal.add(Calendar.DAY_OF_MONTH, 1);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
         }
         entity.setAbonos(listaAbonos);
         super.update(entity);
@@ -80,6 +81,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
     /**
      * Obtiene los totales generales de un prestamo en particular
+     *
      * @param prestamoId identificador del prestamo
      * @return modelo con los totales generales de un prestamo
      * @throws Exception si existe un error de I/O
@@ -99,6 +101,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
     /**
      * Obtiene los totales generales de un conjunto de abonos, pertenecientes a un conjunto de prestamos
+     *
      * @param abonos lista de abonos a obtener sus totales generales
      * @return modelo de totales generales con los valores generados con la lista proporcionada
      * @throws Exception si existe un error de I/O
@@ -122,7 +125,8 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
     /**
      * Obtiene los totales generales de todos los prestamos
-     * @return modelo con los totales generales 
+     *
+     * @return modelo con los totales generales
      * @throws Exception si existe un error de I/O
      */
     public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales() throws Exception {
@@ -172,4 +176,111 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         return totalesPrestamosGenerales(abonos);
     }
 
+    public Prestamo persistPruebaDentroMes(Prestamo entity) throws Exception {
+        int cantImpuesto = entity.getCantidad();
+        cantImpuesto *= ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f);
+        entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
+        
+        Date fechaPrueba = new Date( System.currentTimeMillis() - ((24*60*60*1000)*2)); //hace 2 dias
+        
+        entity.setFecha(fechaPrueba);
+        
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(fechaPrueba);
+        
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
+        entity.setFechaLimite(cal.getTime());
+        Prestamo p = super.persist(entity);
+        ManagerAbono managerAbono = new ManagerAbono();
+        List<Abono> listaAbonos = new ArrayList<>();
+        Abono abono;
+        
+        cal.setTime(fechaPrueba);
+        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
+        int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
+        for (int i = 0; i < diasPlazo; i++) {
+            abono = new Abono(p.getId(), cal.getTime());
+            abono.setCantidad(p.getCantidadPagar() / diasPlazo);
+            abono.setAbonado(false);
+            abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));
+            listaAbonos.add(abono);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        entity.setAbonos(listaAbonos);
+        super.update(entity);
+
+        return p;//To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Prestamo persistPruebaPorCerrarMes(Prestamo entity) throws Exception {
+        int cantImpuesto = entity.getCantidad();
+        cantImpuesto *= ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f);
+        entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
+        
+        
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo() * -1);
+        entity.setFecha(cal.getTime());
+        
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
+        entity.setFechaLimite(cal.getTime());
+        
+        Prestamo p = super.persist(entity);
+        ManagerAbono managerAbono = new ManagerAbono();
+        List<Abono> listaAbonos = new ArrayList<>();
+        Abono abono;
+        
+        cal.setTime(entity.getFecha());
+        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
+        int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
+        for (int i = 0; i < diasPlazo; i++) {
+            abono = new Abono(p.getId(), cal.getTime());
+            abono.setCantidad(p.getCantidadPagar() / diasPlazo);
+            abono.setAbonado(false);
+            abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));
+            listaAbonos.add(abono);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        entity.setAbonos(listaAbonos);
+        super.update(entity);
+
+        return p;//To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Prestamo persistPruebaCerrardoMes(Prestamo entity) throws Exception {
+        int cantImpuesto = entity.getCantidad();
+        cantImpuesto *= ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f);
+        entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
+        
+        
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo() * -1);
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        entity.setFecha(cal.getTime());
+        
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
+        entity.setFechaLimite(cal.getTime());
+        
+        Prestamo p = super.persist(entity);
+        ManagerAbono managerAbono = new ManagerAbono();
+        List<Abono> listaAbonos = new ArrayList<>();
+        Abono abono;
+        
+        cal.setTime(entity.getFecha());
+        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
+        int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
+        for (int i = 0; i < diasPlazo; i++) {
+            abono = new Abono(p.getId(), cal.getTime());
+            abono.setCantidad(p.getCantidadPagar() / diasPlazo);
+            abono.setAbonado(false);
+            abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));
+            listaAbonos.add(abono);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        entity.setAbonos(listaAbonos);
+        super.update(entity);
+
+        return p;//To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

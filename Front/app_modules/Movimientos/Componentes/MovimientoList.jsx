@@ -47,6 +47,7 @@ export default class MovimientoList extends React.Component {
       .then((response) =>{
         utils.evalResponse(response, ()=>{
           if (response.data.length > 0) {
+            console.log(response.data);
             this.setState({
               movimientos: response.data,
               conMovimientos:true
@@ -71,6 +72,9 @@ export default class MovimientoList extends React.Component {
             {new Date(ie.fecha).toLocaleDateString()}
           </Table.Cell>
           <Table.Cell>
+            {ie.usuarioCreador.nombre}
+          </Table.Cell>
+          <Table.Cell>
             {ie.cantidad}
           </Table.Cell>
           <Table.Cell>
@@ -89,9 +93,10 @@ export default class MovimientoList extends React.Component {
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
-              <Table.HeaderCell>fecha</Table.HeaderCell>
-                <Table.HeaderCell>$ cantidad</Table.HeaderCell>
-              <Table.HeaderCell>descripcion</Table.HeaderCell>
+              <Table.HeaderCell>Fecha</Table.HeaderCell>
+              <Table.HeaderCell>Usuario</Table.HeaderCell>
+              <Table.HeaderCell>$ Cantidad</Table.HeaderCell>
+              <Table.HeaderCell>Descripción</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>

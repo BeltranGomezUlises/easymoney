@@ -85,9 +85,6 @@ public class DetallePrestamoActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private ConsultaFragment consultaFragment;
-
-
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }

@@ -8,6 +8,10 @@
             android:id="@+id/cobros"
             android:icon="@drawable/ic_cobros"
             android:title="Cobros" />
+        <item
+            android:id="@+id/IE"
+            android:icon="@drawable/ic_money_square"
+            android:title="Ingresos/Egresos" />
     </group>
 
     <item android:title="Cuenta">

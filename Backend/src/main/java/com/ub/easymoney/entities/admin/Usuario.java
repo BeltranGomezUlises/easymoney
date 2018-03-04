@@ -7,6 +7,7 @@ package com.ub.easymoney.entities.admin;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
+import com.ub.easymoney.entities.negocio.Movimiento;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +32,9 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "usuario")
 public class Usuario implements Serializable, IEntity<Integer> {
+
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuarioCreador", fetch = FetchType.EAGER)
+//    private List<Movimiento> movimientoList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -141,5 +145,13 @@ public class Usuario implements Serializable, IEntity<Integer> {
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
     }
+
+//    public List<Movimiento> getMovimientoList() {
+//        return movimientoList;
+//    }
+//
+//    public void setMovimientoList(List<Movimiento> movimientoList) {
+//        this.movimientoList = movimientoList;
+//    }
 
 }
