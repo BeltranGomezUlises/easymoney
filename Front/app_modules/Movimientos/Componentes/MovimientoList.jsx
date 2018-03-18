@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Header, Table, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
+import { Header, Table, Dimmer, Loader, Segment, Container, Modal, Button, Divider, Form, Input} from 'semantic-ui-react'
 import MovimientoForm from './MovimientoForm.jsx'
 import * as utils from '../../../utils.js';
 
@@ -13,15 +13,21 @@ export default class MovimientoList extends React.Component {
       conMovimientos: true,
       modalOpenAgregar: false,
       modalOpenWarning: false,
-      conMovimientos: true
+      conMovimientos: true,
+      buscando: false,
+      filtro:{
+        nombreCobrador:'',
+        fechaFinal: '',
+        fechaInicial: ''
+      }
     }
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
   }
 
-  handleCloseAgregar(hasChanches){
+  handleCloseAgregar(hasChanges){
     this.setState({modalOpenAgregar: false});
-    if (hasChanches.hasChanches) {
+    if (hasChanges.hasChanges) {
         this.cargarMovimientos();
     }
   }
@@ -30,30 +36,39 @@ export default class MovimientoList extends React.Component {
     this.setState({modalOpenAgregar: true});
   }
 
+/*
   componentWillMount(){
     this.cargarMovimientos();
   }
-
+*/
   cargarMovimientos(){
-      fetch(localStorage.getItem('url') + 'movimientos',{
-        method: 'GET',
+    let {filtro} = this.state;
+    let fechaInicial = filtro.fechaInicial !== '' ? utils.toUtcDate(filtro.fechaInicial) : '';
+    let fechaFinal = filtro.fechaFinal !== '' ? utils.toUtcDate(filtro.fechaFinal) + 86400000  : '';
+      fetch(localStorage.getItem('url') + 'movimientos/filtro',{
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin':'*',
           'Authorization': localStorage.getItem('tokenSesion')
-        }
+        },
+        body: JSON.stringify({
+          nombre: filtro.nombreCobrador,
+          fechaInicial,
+          fechaFinal
+        })
       }).then((res)=> res.json())
       .then((response) =>{
         utils.evalResponse(response, ()=>{
           if (response.data.length > 0) {
-            console.log(response.data);
             this.setState({
               movimientos: response.data,
-              conMovimientos:true
+              conMovimientos:true,
+              buscando:false
             });
           }else{
-            this.setState({conMovimientos: false});
+            this.setState({conMovimientos: false, buscando:false});
           }
         })
       })
@@ -87,7 +102,6 @@ export default class MovimientoList extends React.Component {
 
   renderMovimientos(){
     if (this.state.conMovimientos) {
-      if (this.state.movimientos.length > 0) {
         return(
           <Table celled selectable>
           <Table.Header>
@@ -104,15 +118,6 @@ export default class MovimientoList extends React.Component {
           </Table.Body>
         </Table>
         )
-      }else{
-          return(
-            <div>
-              <Dimmer active inverted>
-                <Loader size='large'>Descargando...</Loader>
-              </Dimmer>
-            </div>
-          )
-      }
     }else{
       return(
         <Container textAlign='center'>
@@ -120,6 +125,75 @@ export default class MovimientoList extends React.Component {
         </Container>
       );
     }
+  }
+
+  renderButtonBuscar(){
+    if (this.state.buscando) {
+      return(
+        <Button primary loading>Buscar</Button>
+      );
+    }else{
+      return(
+        <Button primary type='submit' onClick={()=>{
+            this.setState({buscando:true})
+            this.cargarMovimientos();
+        }}>Buscar</Button>
+      );
+    }
+  }
+
+  renderFiltros(){
+    return(
+      <Form>
+        <Form.Group>
+          <Form.Field
+             control={Input}
+             label='Nombre Cobrador:'
+             type='text'
+             placeholder='Nombre de cobrador'
+             value={this.state.filtro.nombreCobrador}
+             onChange={ (evt) => {
+               let {filtro} = this.state;
+               filtro.nombreCobrador = evt.target.value;
+               this.setState({filtro});
+             }}/>
+          <Form.Field>
+            <label>Movimientos despues de:</label>
+            <input
+              type={'date'}
+              value={this.state.filtro.fechaInicial}
+              onChange={(evt) => {
+                let {filtro} = this.state;
+                filtro.fechaInicial = evt.target.value;
+                this.setState({filtro});
+              }}/>
+          </Form.Field>
+          <Form.Field>
+            <label>Movimientos antes de:</label>
+            <input
+              type={'date'}
+              value={this.state.filtro.fechaFinal}
+              onChange={(evt) => {
+                let {filtro} = this.state;
+                filtro.fechaFinal = evt.target.value;
+                this.setState({filtro});
+              }}/>
+          </Form.Field>
+       </Form.Group>
+        <Form.Field>
+          {this.renderButtonBuscar()}
+        </Form.Field>
+
+        <Form.Field control={Button} secundary onClick={ () => {
+          let filtro = {
+            nombreCobrador:'',
+            fechaFinal:'',
+            fechaInicial: ''
+          }
+          this.setState({filtro});
+        }}>Limpiar filtros</Form.Field>
+      </Form>
+    );
   }
 
   render() {
@@ -134,6 +208,8 @@ export default class MovimientoList extends React.Component {
             <MovimientoForm handleClose={this.handleCloseAgregar}/>
           </Modal.Content>
         </Modal>
+        <Divider horizontal>Filtros</Divider>
+        {this.renderFiltros()}
       </Segment>
         <Segment>
           {this.renderMovimientos()}

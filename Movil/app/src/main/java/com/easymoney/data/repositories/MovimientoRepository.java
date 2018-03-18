@@ -23,7 +23,7 @@ public class MovimientoRepository {
      * @return lista de movimientos
      */
     public Flowable<Response<List<Movimiento>, Object>> findAll() {
-        return webServices().obtenerMovimientos(UtilsPreferences.loadToken())
+        return webServices().obtenerMovimientos(UtilsPreferences.loadToken(), UtilsPreferences.loadLogedUser().getId())
                 .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT());
     }

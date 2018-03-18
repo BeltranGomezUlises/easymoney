@@ -29,8 +29,8 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-//    String END_POINT = "http://201.165.0.142:8383/em/api/";
-    String END_POINT = "http://192.168.1.70:8084/EasyMoney/api/";
+    String END_POINT = "http://201.165.0.142:8383/em/api/";
+//    String END_POINT = "http://192.168.10.159:8084/EasyMoney/api/";
 
     /**
      * Inicio de sesion
@@ -107,8 +107,8 @@ public interface IService {
      * @param token token de sesion
      * @return lista de movimientos
      */
-    @GET("movimientos")
-    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") final String token);
+    @GET("movimientos/cobrador/{cobradorId}")
+    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") final String token, @Path("cobradorId") final int cobradorId);
 
     /**
      * Da de alta un nuevo movimiento

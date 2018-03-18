@@ -153,14 +153,12 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @param filtro objecto con las propiedaes a filtrar
      * @return lista de prestamos filtrados
      */
-    public List<Prestamo> findAll(FiltroPrestamo filtro) {
-        DaoPrestamo daoPrestamo = new DaoPrestamo();
-        return daoPrestamo.findAll(filtro);
+    public List<Prestamo> findAll(FiltroPrestamo filtro) {        
+        return new DaoPrestamo().findAll(filtro);
     }
 
     public List<Prestamo> prestamosDelCobrador(final int cobradorId) {
-        DaoPrestamo daoPrestamo = new DaoPrestamo();
-        return daoPrestamo.prestamosDelCobrador(cobradorId);
+        return new DaoPrestamo().prestamosDelCobrador(cobradorId);
     }
 
     /**
