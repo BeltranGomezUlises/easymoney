@@ -3,6 +3,7 @@ package com.easymoney.data.repositories;
 import com.easymoney.data.dataSources.PrestamoDataSource;
 import com.easymoney.entities.Abono;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.models.EnumPrestamos;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsPreferences;
@@ -21,15 +22,12 @@ import static com.easymoney.utils.services.UtilsWS.webServices;
 public class PrestamoRepository implements PrestamoDataSource {
 
     private static PrestamoRepository INSTANCE;
-    private PrestamoDataSource.PrestamoLocalDataSource localDataSource;
     private PrestamoDataSource.PrestamoRemoteDataSource remoteDataSource;
-    private boolean isDirty = true;
 
     /**
      * prevenir instancias
      */
     private PrestamoRepository() {
-        this.localDataSource = new PrestamoLocalDataSource();
         this.remoteDataSource = new PrestamoRemoteDataSource();
     }
 
@@ -47,7 +45,7 @@ public class PrestamoRepository implements PrestamoDataSource {
 
     @Override
     public Flowable<List<Prestamo>> findAll() {
-        return getAndSaveRemotePrestamos();
+        return null;
     }
 
     @Override
@@ -90,7 +88,6 @@ public class PrestamoRepository implements PrestamoDataSource {
      */
     @Override
     public void deleteAll() {
-        localDataSource.deleteAll();
     }
 
     /**
@@ -107,33 +104,28 @@ public class PrestamoRepository implements PrestamoDataSource {
         return webServices().abonosDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
     }
 
-    private Flowable<List<Prestamo>> getAndSaveRemotePrestamos() {
-        localDataSource.deleteAll();
-        return remoteDataSource
-                .findAll()
-                .flatMap(prestamos -> Flowable.fromIterable(prestamos).doOnNext(prestamo -> localDataSource.persist(prestamo)))
-                .toList().toFlowable()
-                .doOnComplete(() -> {
-                    isDirty = false;
-                });
-    }
-
     /**
-     * agregar un abono de ajuste
-     * @param abono abono a agregar
-     * @return response con el abono agregado
+     * consulta los prestamos del cobrador, segun menu_ingresos_egresos del enumarados, todos o solo los que se les puede cobrar
+     *
+     * @param enumPrestamos TODOS, para consultar todos los prestamos del cobrador y POR_COBRAR para consultar aquellos que se les puede cobrar
+     * @return lista de prestamos
      */
-    public Flowable<Response<Abono, Object>> agregarAbonoAjuste(Abono abono){
-        return webServices().agregarAbonoAjuste(UtilsPreferences.loadToken(), abono)
+    public Flowable<List<Prestamo>> findAll(EnumPrestamos enumPrestamos) {
+        return remoteDataSource.findAll(enumPrestamos)
                 .observeOn(SchedulerProvider.uiT())
                 .subscribeOn(SchedulerProvider.ioT());
     }
 
     /**
-     * forza a la siguiente consulta de los prestamos a ser remota para garantizar el ultimo estado o cambio de usuario
+     * agregar un abono de ajuste
+     *
+     * @param abono abono a agregar
+     * @return response con el abono agregado
      */
-    public void forceRemoteUpdate() {
-        this.isDirty = true;
+    public Flowable<Response<Abono, Object>> agregarAbonoAjuste(Abono abono) {
+        return webServices().agregarAbonoAjuste(UtilsPreferences.loadToken(), abono)
+                .observeOn(SchedulerProvider.uiT())
+                .subscribeOn(SchedulerProvider.ioT());
     }
 
 }

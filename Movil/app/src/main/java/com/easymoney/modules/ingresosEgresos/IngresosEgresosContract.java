@@ -1,6 +1,8 @@
 package com.easymoney.modules.ingresosEgresos;
 
 import com.easymoney.entities.Movimiento;
+import com.easymoney.models.EnumRangoFecha;
+import com.easymoney.models.EnumTipoMovimiento;
 import com.easymoney.utils.baseClases.BasePresenter;
 import com.easymoney.utils.baseClases.BaseView;
 
@@ -20,7 +22,7 @@ public interface IngresosEgresosContract {
         void showMessage(String message);
 
         void agregarIngresoEgreso(Movimiento movimiento);
-        void cargarMovimientos();
+        void cargarMovimientos(EnumTipoMovimiento tipoMovimiento, EnumRangoFecha enumRangoFecha);
 
     }
 }

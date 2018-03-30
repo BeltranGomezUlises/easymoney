@@ -351,4 +351,5 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         }
 
     }
+
 }

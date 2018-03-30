@@ -13,7 +13,6 @@ export default class PrestamoList extends React.Component {
       prestamos:[],
       totalesPrestamos:{},
       modalOpenAgregar:false,
-      conPrestamos:true,
       nuevoPrestamo:{
         cantidad:0,
         cliente:{
@@ -43,8 +42,8 @@ export default class PrestamoList extends React.Component {
   }
 
   componentWillMount(){
-    this.cargarPrestamos();
-    this.cargarTotalesPrestamos();
+    //this.cargarPrestamos();
+    //this.cargarTotalesPrestamos();
   }
 
   handleCloseAgregar(){
@@ -115,15 +114,37 @@ export default class PrestamoList extends React.Component {
       if (response.data.length > 0) {
         this.setState({
           prestamos:response.data,
-          conPrestamos:true,
           buscando: false
         });
       }else{
         this.setState({
-          conPrestamos: false,
           buscando: false
         });
       }
+    })
+
+    fetch(localStorage.getItem('url') + 'prestamos/totalesGeneralesFiltro',{
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      },
+      body:JSON.stringify({
+        nombreCliente: filtro.nombreCliente,
+        nombreCobrador : filtro.nombreCobrador,
+        fechaPrestamoInicial,
+        fechaPrestamoFinal,
+        fechaLimiteInicial,
+        fechaLimiteFinal,
+        acreditados: filtro.acreditados
+      })
+    }).then((res)=> res.json())
+    .then((response) =>{
+      utils.evalResponse(response, () => {
+        this.setState({totalesPrestamos: response.data});
+      });
     })
   }
 
@@ -143,6 +164,24 @@ export default class PrestamoList extends React.Component {
       });
     })
   }
+
+  cargarTotalesPrestamosFiltro(filtro){
+    fetch(localStorage.getItem('url') + 'prestamos/totalesGeneralesFiltro',{
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      }
+    }).then((res)=> res.json())
+    .then((response) =>{
+      utils.evalResponse(response, () => {
+        this.setState({totalesPrestamos: response.data});
+      });
+    })
+  }
+
 
   renderPrestamosList(){
     return this.state.prestamos.map((prestamo) =>{
@@ -185,10 +224,9 @@ export default class PrestamoList extends React.Component {
   }
 
   renderPrestamos(){
-    if (this.state.conPrestamos) {
-      if (this.state.prestamos.length > 0) {
+    if (this.state.prestamos.length > 0) {
         return(
-          <Table celled selectable>
+          <Table celled selectable striped>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
@@ -205,21 +243,6 @@ export default class PrestamoList extends React.Component {
           </Table.Body>
         </Table>
         )
-      }else{
-          return(
-            <div>
-              <Dimmer active inverted>
-                <Loader size='large'>Descargando...</Loader>
-              </Dimmer>
-            </div>
-          )
-      }
-    }else{
-      return(
-        <Container textAlign='center'>
-            <h2>Sin Prestamos...</h2>
-        </Container>
-      );
     }
   }
 

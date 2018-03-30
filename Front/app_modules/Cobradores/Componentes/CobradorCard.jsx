@@ -48,7 +48,7 @@ export default class CobradorCard extends React.Component{
     this.setState({cobrador});
   }
 
-  editarCobrador(){    
+  editarCobrador(){
     if (this.state.cobrador.nombre !== '') {
         fetch(localStorage.getItem('url') + 'usuarios',{
           method: 'PUT',
@@ -90,6 +90,16 @@ export default class CobradorCard extends React.Component{
       })
   }
 
+  renderCobradorContent(){
+    return(
+      <div>
+        {this.state.cobrador.nombreCompleto}
+        <br/><br/>
+        Contraseña: {this.state.cobrador.contra}
+      </div>
+    );
+  }
+
   render(){
     return(
       <div style={{padding:'10px'}}>
@@ -99,7 +109,7 @@ export default class CobradorCard extends React.Component{
                {this.state.cobrador.nombre}
              </Card.Header>
              <Card.Description>
-               {this.state.cobrador.nombreCompleto}
+               {this.renderCobradorContent()}
              </Card.Description>
           </Card.Content>
           <Card.Content extra>

@@ -30,6 +30,36 @@ public class UtilsDate {
     private static final SimpleDateFormat SDF_UTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /**
+     * pone los atributos de hora, minuto, segundo y milisegundo en ceros
+     *
+     * @param cal calendario con la fecha a modificar
+     * @return fecha con las propiedades de tiempo en ceros
+     */
+    public static Date setTimeToZero(Calendar cal) {
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    /**
+     * pone los atributos de hora, minuto, segundo y milisegundo en ceros
+     *
+     * @param date fecha a modificar sus atributos de tiempo
+     * @return fecha con los atributos de tiempo en ceros
+     */
+    public static Date setTimeToZero(Date date) {
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    /**
      * sumatoria de tiempo en formato texto HH:mm
      *
      * @param tiempos lista de tiempos a sumar

@@ -100,30 +100,6 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     }
 
     /**
-     * Obtiene los totales generales de un conjunto de abonos, pertenecientes a un conjunto de prestamos
-     *
-     * @param abonos lista de abonos a obtener sus totales generales
-     * @return modelo de totales generales con los valores generados con la lista proporcionada
-     * @throws Exception si existe un error de I/O
-     */
-    public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales(final List<Abono> abonos) throws Exception {
-        List<Pair<Integer, Integer>> abonosMultas = abonos.stream()
-                .filter(a -> a.isAbonado())
-                .map(e -> new Pair<>(e.getCantidad(), e.getMulta().getMulta()))
-                .collect(toList());
-
-        final int totalAbonado = abonosMultas.stream().mapToInt(e -> e.getOne()).sum();
-        final int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();
-        final int totalPrestamo = this.stream().mapToInt(p -> p.getCantidad()).sum();
-        final int totalAPagar = this.stream().mapToInt(p -> p.getCantidadPagar()).sum();
-        final int totalRecuperado = totalAbonado + totalMultado;
-        final int capital = totalRecuperado - totalPrestamo;
-        final float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar) * 100f);
-
-        return new ModeloPrestamoTotalesGenerales(totalPrestamo, totalAbonado, totalMultado, totalRecuperado, capital, porcentajeAbonado);
-    }
-
-    /**
      * Obtiene los totales generales de todos los prestamos
      *
      * @return modelo con los totales generales
@@ -153,16 +129,17 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @param filtro objecto con las propiedaes a filtrar
      * @return lista de prestamos filtrados
      */
-    public List<Prestamo> findAll(FiltroPrestamo filtro) {
-        DaoPrestamo daoPrestamo = new DaoPrestamo();
-        return daoPrestamo.findAll(filtro);
+    public List<Prestamo> findAll(FiltroPrestamo filtro) {        
+        return new DaoPrestamo().findAll(filtro);
     }
 
-    public List<Prestamo> prestamosDelCobrador(final int cobradorId) {
-        DaoPrestamo daoPrestamo = new DaoPrestamo();
-        return daoPrestamo.prestamosDelCobrador(cobradorId);
+    public List<Prestamo> prestamosPorCobrar(final int cobradorId) {
+        return new DaoPrestamo().prestamosPorCobrar(cobradorId);
     }
 
+    public List<Prestamo> prestamosDelCobrador(final int cobradorId){
+        return new DaoPrestamo().prestamosDelCobrador(cobradorId);
+    }
     /**
      * Genera el resultado de los totales generales de los prestamos segun un filtrado
      *
@@ -173,7 +150,21 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         List<Prestamo> prestamos = this.findAll(filtro);
         List<Abono> abonos = new ArrayList<>();
         prestamos.forEach(p -> abonos.addAll(p.getAbonos()));
-        return totalesPrestamosGenerales(abonos);
+        
+        List<Pair<Integer, Integer>> abonosMultas = abonos.stream()
+                .filter(a -> a.isAbonado())
+                .map(e -> new Pair<>(e.getCantidad(), e.getMulta().getMulta()))
+                .collect(toList());
+
+        final int totalAbonado = abonosMultas.stream().mapToInt(e -> e.getOne()).sum();
+        final int totalMultado = abonosMultas.stream().mapToInt(e -> e.getTwo()).sum();
+        final int totalPrestamo = prestamos.stream().mapToInt(p -> p.getCantidad()).sum();
+        final int totalAPagar = prestamos.stream().mapToInt(p -> p.getCantidadPagar()).sum();
+        final int totalRecuperado = totalAbonado + totalMultado;
+        final int capital = totalRecuperado - totalPrestamo;
+        final float porcentajeAbonado = (((float) totalAbonado / (float) totalAPagar) * 100f);
+
+        return new ModeloPrestamoTotalesGenerales(totalPrestamo, totalAbonado, totalMultado, totalRecuperado, capital, porcentajeAbonado);                
     }
 
     public Prestamo persistPruebaDentroMes(Prestamo entity) throws Exception {
