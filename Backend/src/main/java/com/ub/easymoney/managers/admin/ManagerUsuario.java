@@ -65,9 +65,12 @@ public class ManagerUsuario extends ManagerSQL<Usuario, Integer> {
         throw new UserException.UsuarioYaExistente("Usuario ya existente en el sistema");
     }
 
-    public List<Usuario> usuariosCobradores() {
-        DaoUsuario daoUsuario = new DaoUsuario();
-        return daoUsuario.usuariosCobradores();
+    public List<Usuario> usuariosCobradores() throws Exception {
+        List<Usuario> usuarioCobradores = new DaoUsuario().usuariosCobradores();
+        for (Usuario usuarioCobradore : usuarioCobradores) {
+            usuarioCobradore.setContra(UtilsSecurity.decifrarMD5(usuarioCobradore.getContra()));
+        }
+        return usuarioCobradores;
     }
     
     public Usuario cambiarContraseña(ModelCambiarContra modelCambiarContra) throws ParametroInvalidoException, Exception{

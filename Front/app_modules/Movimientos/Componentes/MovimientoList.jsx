@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Header, Table, Dimmer, Loader, Segment, Container, Modal, Button, Divider, Form, Input} from 'semantic-ui-react'
+import { Menu, Icon, Header, Table, Dimmer, Loader, Segment, Container, Modal, Button, Divider, Form, Input} from 'semantic-ui-react'
 import MovimientoForm from './MovimientoForm.jsx'
 import * as utils from '../../../utils.js';
 
@@ -101,22 +101,39 @@ export default class MovimientoList extends React.Component {
   }
 
   renderMovimientos(){
+    let leftIcon = '<';
+    let rightIcon = '>';
     if (this.state.conMovimientos) {
         return(
-          <Table celled selectable>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
-              <Table.HeaderCell>Fecha</Table.HeaderCell>
-              <Table.HeaderCell>Usuario</Table.HeaderCell>
-              <Table.HeaderCell>$ Cantidad</Table.HeaderCell>
-              <Table.HeaderCell>Descripción</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {this.renderMovimientoList()}
-          </Table.Body>
-        </Table>
+          <Table celled selectable striped>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
+                <Table.HeaderCell>Fecha</Table.HeaderCell>
+                <Table.HeaderCell>Usuario</Table.HeaderCell>
+                <Table.HeaderCell>$ Cantidad</Table.HeaderCell>
+                <Table.HeaderCell>Descripción</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {this.renderMovimientoList()}
+            </Table.Body>
+            <Table.Footer>
+              <Table.Row>
+                <Table.HeaderCell colSpan='5'>
+                  <Menu pagination>
+                    <Menu.Item as='a' icon>
+                    <h3>{leftIcon}</h3>
+                    </Menu.Item>
+                    <Menu.Item>Cambiar de página</Menu.Item>
+                    <Menu.Item as='a' icon>
+                    <h3>{rightIcon}</h3>
+                    </Menu.Item>
+                  </Menu>
+                </Table.HeaderCell>
+              </Table.Row>
+            </Table.Footer>
+          </Table>
         )
     }else{
       return(

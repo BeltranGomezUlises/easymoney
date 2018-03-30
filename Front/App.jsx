@@ -48,8 +48,8 @@ class MainContainer extends React.Component{
              <strong>Salir</strong>
            </Menu.Item>
          </Menu>
-       <Sidebar.Pushable as={Segment} attached="bottom" >
-         <Sidebar width='thin' as={Menu} animation="uncover" visible={this.state.menuVisible} icon="labeled" vertical inline inverted>
+       <Sidebar.Pushable as={Segment}>
+         <Sidebar as={Menu} animation="push" direction='top' visible={this.state.menuVisible} icon="labeled" inverted>
            <Menu.Item as={Link} to='/clientes'>Clientes</Menu.Item>
            <Menu.Item as={Link} to='/cobradores'>Cobradores</Menu.Item>
            <Menu.Item as={Link} to='/prestamos'>Préstamos</Menu.Item>

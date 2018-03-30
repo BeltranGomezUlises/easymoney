@@ -1,10 +1,11 @@
 package com.easymoney.modules.ingresosEgresos;
 
 import android.annotation.SuppressLint;
-import android.support.v4.app.Fragment;
 
 import com.easymoney.data.repositories.MovimientoRepository;
 import com.easymoney.entities.Movimiento;
+import com.easymoney.models.EnumRangoFecha;
+import com.easymoney.models.EnumTipoMovimiento;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -50,10 +51,10 @@ public class IngresosEgresosPresenter implements IngresosEgresosContract.Present
     }
 
     @Override
-    public void cargarMovimientos() {
+    public void cargarMovimientos(EnumTipoMovimiento tipoMovimiento, EnumRangoFecha enumRangoFecha) {
         showLoading(true);
         compositeDisposable.add(
-                repository.findAll()
+                repository.findAll(tipoMovimiento, enumRangoFecha)
                         .subscribe(r -> {
                                     showLoading(false);
                                     switch (r.getMeta().getStatus()) {
@@ -84,7 +85,7 @@ public class IngresosEgresosPresenter implements IngresosEgresosContract.Present
 
     @Override
     public void subscribe() {
-        this.cargarMovimientos();
+        this.cargarMovimientos(EnumTipoMovimiento.TODOS, EnumRangoFecha.DIAS7);
     }
 
     @Override

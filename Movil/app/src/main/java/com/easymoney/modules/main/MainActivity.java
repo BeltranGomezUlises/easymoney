@@ -9,22 +9,25 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.easymoney.R;
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.models.EnumPrestamos;
 import com.easymoney.modules.cambiarContra.CambiarContraActivity;
 import com.easymoney.modules.detallePrestamo.DetallePrestamoActivity;
 import com.easymoney.modules.ingresosEgresos.IngresosEgresosActivity;
 import com.easymoney.modules.login.LoginActivity;
 import com.easymoney.utils.UtilsDate;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ListView listaPrestamos;
     private PrestamoAdapter adapterPrestamo;
     private PrestamoRepository prestamoRepository;
+    private List<Prestamo> prestamos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,26 +80,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         });
         prestamoRepository = PrestamoRepository.getINSTANCE();
-        prestamoRepository.forceRemoteUpdate();
-        prestamoRepository.findAll()
-                .subscribeOn(SchedulerProvider.ioT())
-                .observeOn(SchedulerProvider.uiT())
-                .subscribe(
-                        prestamos -> {
-                            if (!prestamos.isEmpty()) {
-                                tvInfo.setVisibility(View.GONE);
-                                adapterPrestamo.replaceData(prestamos);
-                            } else {
-                                tvInfo.setText("Sin préstamos por cobrar");
-                            }
-                        },
-                        ex -> ex.printStackTrace()
-                );
+        this.cargarPrestamos(EnumPrestamos.POR_COBRAR);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -130,6 +120,87 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void cargarPrestamos(EnumPrestamos enumPrestamos) {
+        prestamoRepository.findAll(enumPrestamos)
+                .subscribe(
+                        prestamos -> {
+                            if (!prestamos.isEmpty()) {
+                                tvInfo.setVisibility(View.GONE);
+                                this.prestamos = prestamos;
+                                adapterPrestamo.replaceData(this.prestamos);
+                            } else {
+                                tvInfo.setText("Sin préstamos por cobrar");
+                            }
+                        },
+                        ex -> ex.printStackTrace()
+                );
+    }
+
+    /**
+     * Filtra la lista de prestamos y reemplaza los datos del adaptador segun el nombre de empleado buscado
+     *
+     * @param nombreCliente nombre del cliente buscado
+     */
+    private void filtrarPrestamos(String nombreCliente) {
+        List<Prestamo> prestamosBuscados = new ArrayList<>();
+        for (Prestamo prestamo : this.prestamos) {
+            if (prestamo.getCliente().getNombre().toLowerCase().contains(nombreCliente.toLowerCase())) {
+                prestamosBuscados.add(prestamo);
+            }
+        }
+        adapterPrestamo.replaceData(prestamosBuscados);
+    }
+
+    /**
+     * resetea los prestamos mostrados con todos los existentes
+     */
+    private void desfiltrarPrestamos() {
+        adapterPrestamo.replaceData(this.prestamos);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main_options, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                MainActivity.this.desfiltrarPrestamos();
+                return false;
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                MainActivity.this.filtrarPrestamos(s);
+                return false;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_filter:
+                lanzarModalFiltro();
+                break;
+        }
+        return true;
+    }
+
+    private void lanzarModalFiltro() {
+        MainFiltroDialogFragment dialog = new MainFiltroDialogFragment(this);
+        dialog.show(getFragmentManager(), "Filtro");
     }
 
     private static class PrestamoAdapter extends BaseAdapter {

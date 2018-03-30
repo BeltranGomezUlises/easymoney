@@ -41,10 +41,22 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
      * @return lista de movimientos que cumplen con el friltro
      */
     public List<Movimiento> movimientos(FiltroMovimientos filtro) {
-        JPAJinqStream<Movimiento> stream = this.stream();
+        JPAJinqStream<Movimiento> stream = this.stream();        
         if (filtro.getNombre() != null) {
             String nombre = filtro.getNombre().toLowerCase();
             stream = stream.where(m -> m.getUsuarioCreador().getNombre().toLowerCase().contains(nombre));
+        }
+        if (filtro.getTipoMovimiento() != null) {
+            boolean tipoMovimiento = filtro.getTipoMovimiento();
+            if (tipoMovimiento) {
+                stream = stream.where( m -> m.getCantidad() > 0);
+            }else{
+                stream = stream.where( m -> m.getCantidad() < 0);
+            }
+        }
+        if (filtro.getCobradorId() != null) {
+            Integer idCobrador = filtro.getCobradorId();
+            stream = stream.where( m -> m.getUsuarioCreador().getId().equals(idCobrador));
         }
         if (filtro.getFechaFinal() != null) {
             Date fechaFinal = filtro.getFechaFinal();

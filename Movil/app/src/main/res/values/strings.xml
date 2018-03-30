@@ -16,6 +16,7 @@
     <string name="navigation_drawer_close">Cerrar panel navegación</string>
 
     <string name="action_settings">Configuraciones</string>
+    <string name="action_filter">Filtros</string>
 
     <string name="tvContraActual">Contraseña actual</string>
     <string name="tvContraNueva">Nueva contraseña</string>

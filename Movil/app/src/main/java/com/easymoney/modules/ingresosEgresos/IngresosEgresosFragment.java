@@ -2,6 +2,7 @@ package com.easymoney.modules.ingresosEgresos;
 
 
 import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -82,6 +83,7 @@ public class IngresosEgresosFragment extends Fragment implements IngresosEgresos
         Snackbar.make(this.getView(), message, LENGTH_LONG).show();
     }
 
+
     @Override
     public void setPresenter(IngresosEgresosContract.Presenter presenter) {
         this.presenter = (IngresosEgresosPresenter) presenter;
@@ -139,6 +141,7 @@ public class IngresosEgresosFragment extends Fragment implements IngresosEgresos
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
                 rowView = inflater.inflate(R.layout.adapter_movimiento, viewGroup, false);
             }
+            rowView.setOnClickListener( __ -> {});
             Movimiento movimiento = movimientos.get(i);
 
             tvFecha = rowView.findViewById(R.id.tvFecha);

@@ -1,18 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.ub.easymoney.models.filtros;
+package com.easymoney.models;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Date;
 
 /**
- * Modelo de filtro para la consulta de movimientos
- *
- * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
+ * Created by ulises on 27/03/2018.
  */
-public class FiltroMovimientos {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ModelFiltroMovimiento {
 
     /**
      * id del cobrador que generó el prestamo
@@ -27,11 +23,11 @@ public class FiltroMovimientos {
      */
     private String nombre;
     /**
-     * fecha inicial del filtro de fechas
+     * fecha inicial del menu_ingresos_egresos de fechas
      */
     private Date fechaInicial;
     /**
-     * fecha final del filtro de fechas
+     * fecha final del menu_ingresos_egresos de fechas
      */
     private Date fechaFinal;
 
@@ -74,5 +70,4 @@ public class FiltroMovimientos {
     public void setFechaFinal(Date fechaFinal) {
         this.fechaFinal = fechaFinal;
     }
-
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import org.jinq.jpa.JPAJinqStream;
 import static com.ub.easymoney.utils.UtilsValidations.isNotNullOrEmpty;
 import static java.util.stream.Collectors.toList;
+import javax.persistence.EntityManager;
 
 /**
  *
@@ -76,7 +77,13 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         return prestamosFiltrados;
     }
 
-    public List<Prestamo> prestamosDelCobrador(final int cobradorId) {
+    /**
+     * retorna los prestamos asignados al cobrador y que aun se pueden cobrar
+     *
+     * @param cobradorId identificador del cobrador
+     * @return lista de prestamos por cobrar
+     */
+    public List<Prestamo> prestamosPorCobrar(final int cobradorId) {
         return this.stream()
                 //buscar los que pertenescan al cobrador
                 .where(t -> t.getCobrador().getId().equals(cobradorId))
@@ -86,5 +93,17 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
                     float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
                     return porcentajeAbonado < 100;
                 }).collect(toList());
+    }
+
+    /**
+     * consulta los prestamos asignado a un cobrador en especifico
+     *
+     * @param cobradorId identificador del cobrador
+     * @return lista de prestamos asignados al cobrador
+     */
+    public List<Prestamo> prestamosDelCobrador(int cobradorId) {
+        return getEM().createQuery("SELECT t FROM Prestamo t WHERE t.cobrador.id = :cobradorId", Prestamo.class)
+                .setParameter("cobradorId", cobradorId)
+                .getResultList();
     }
 }

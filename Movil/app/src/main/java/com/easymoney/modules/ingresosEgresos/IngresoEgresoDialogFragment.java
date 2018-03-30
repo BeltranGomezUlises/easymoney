@@ -102,7 +102,7 @@ public class IngresoEgresoDialogFragment extends DialogFragment {
 
     private void agregarMovmiento() {
         int cantidad = Integer.parseInt(etCantidad.getText().toString());
-        if (chkIngresoEgreso.isChecked()) {
+        if (!chkIngresoEgreso.isChecked()) {
             cantidad *= -1;
         }
         String descripcion = etDescripciom.getText().toString();

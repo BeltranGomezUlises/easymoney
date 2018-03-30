@@ -6,6 +6,7 @@ import com.easymoney.entities.Movimiento;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.entities.Usuario;
 import com.easymoney.models.ModelCambiarContra;
+import com.easymoney.models.ModelFiltroMovimiento;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
@@ -29,8 +30,8 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-    String END_POINT = "http://201.165.0.142:8383/em/api/";
-//    String END_POINT = "http://192.168.10.159:8084/EasyMoney/api/";
+//    String END_POINT = "http://201.165.0.142:8383/em/api/";
+    String END_POINT = "http://192.168.1.72:8383/EasyMoney/api/";
 
     /**
      * Inicio de sesion
@@ -50,6 +51,16 @@ public interface IService {
      */
     @GET("prestamos/prestamosPorCobrar/{cobradorId}")
     Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(@Header("Authorization") final String token, @Path("cobradorId") final int cobradorId);
+
+    /**
+     * Obtiene los prestamos que le corresponden al cobrador
+     *
+     * @param token token de sesion
+     * @param cobradorId identificador del cobrador
+     * @return respuesta con la lista de prestamos
+     */
+    @GET("prestamos/prestamosDelCobrador/{cobradorId}")
+    Flowable<Response<List<Prestamo>, Object>> prestamosDelCobrador(@Header("Authorization") final String token, @Path("cobradorId") final int cobradorId);
 
     /**
      * Obtiene los totales generales del estado de un prestamo
@@ -102,13 +113,14 @@ public interface IService {
     Flowable<Response<Usuario, Object>> cambiarContra(@Header("Authorization") final String token, @Body final ModelCambiarContra cambiarContra);
 
     /**
-     * Consulta todos los movimientos
+     * Consulta todos los movimientos con un menu_ingresos_egresos proporcionado
      *
      * @param token token de sesion
+     * @param filtro modelo con el menu_ingresos_egresos a consultar los movimientos
      * @return lista de movimientos
      */
-    @GET("movimientos/cobrador/{cobradorId}")
-    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") final String token, @Path("cobradorId") final int cobradorId);
+    @POST("movimientos/menu_ingresos_egresos")
+    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") final String token, @Body final ModelFiltroMovimiento filtro);
 
     /**
      * Da de alta un nuevo movimiento

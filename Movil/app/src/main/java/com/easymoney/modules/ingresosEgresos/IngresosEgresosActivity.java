@@ -3,6 +3,8 @@ package com.easymoney.modules.ingresosEgresos;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.easymoney.R;
@@ -39,12 +41,27 @@ public class IngresosEgresosActivity extends AppCompatActivity {
             case android.R.id.home:
                 this.finish();
                 break;
+            case R.id.action_filter:
+                lanzarModalFiltro();
+                break;
         }
         return true;
+    }
+
+    private void lanzarModalFiltro(){
+        IngresoEgresoFiltroDialogFragment dialog = new IngresoEgresoFiltroDialogFragment(presenter);
+        dialog.show(getFragmentManager(), "menu_ingresos_egresos");
     }
 
     private void lanzarModalMovimiento() {
         IngresoEgresoDialogFragment dialog = new IngresoEgresoDialogFragment(presenter);
         dialog.show(getFragmentManager(), "Movimiento");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_ingresos_egresos, menu);
+        return true;
     }
 }
