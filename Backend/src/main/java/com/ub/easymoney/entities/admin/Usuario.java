@@ -7,7 +7,6 @@ package com.ub.easymoney.entities.admin;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
-import com.ub.easymoney.entities.negocio.Movimiento;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import java.io.Serializable;
 import java.util.List;

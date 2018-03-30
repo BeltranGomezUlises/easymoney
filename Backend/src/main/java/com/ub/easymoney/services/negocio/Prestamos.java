@@ -42,7 +42,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
 
     @GET
     @Path("/totales/{id}")
-    public Response<ModeloPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") final String token, @PathParam("id")final int id) {
+    public Response<ModeloPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") final String token, @PathParam("id") final int id) {
         Response<ModeloPrestamoTotales> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -54,15 +54,15 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         }
         return r;
     }
-    
+
     @GET
     @Path("/totalesGenerales")
-    public Response<ModeloPrestamoTotalesGenerales> totalesGenerales(@HeaderParam("Authorization") final String token){
-        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();        
+    public Response<ModeloPrestamoTotalesGenerales> totalesGenerales(@HeaderParam("Authorization") final String token) {
+        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
             managerPrestamo.setToken(token);
-            r.setData(managerPrestamo.totalesPrestamosGenerales());            
+            r.setData(managerPrestamo.totalesPrestamosGenerales());
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(r);
         } catch (Exception ex) {
@@ -70,15 +70,15 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         }
         return r;
     }
-    
-    @GET
+
+    @POST
     @Path("/totalesGeneralesFiltro")
-    public Response<ModeloPrestamoTotalesGenerales> totalesGeneralesFiltro(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro){
-        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();        
+    public Response<ModeloPrestamoTotalesGenerales> totalesGeneralesFiltro(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro) {
+        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
             managerPrestamo.setToken(token);
-            r.setData(managerPrestamo.totalesPrestamosGenerales(filtro));            
+            r.setData(managerPrestamo.totalesPrestamosGenerales(filtro));
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(r);
         } catch (Exception ex) {
@@ -86,26 +86,56 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         }
         return r;
     }
-    
+
     @POST
     @Path("/cargarPrestamos")
-    public Response<List<Prestamo>> listarFiltrados(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro){
+    public Response<List<Prestamo>> listarFiltrados(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro) {
         Response response = new Response();
-        try {            
+        try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
             managerPrestamo.setToken(token);
-            setOkResponse(response, managerPrestamo.findAll(filtro), "Entidades encontradas");           
+            setOkResponse(response, managerPrestamo.findAll(filtro), "Entidades encontradas");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(response);
         } catch (Exception ex) {
             setErrorResponse(response, ex);
         }
-         return response;
+        return response;
     }
-    
+
+    /**
+     * Consulta los prestamos asignado a un cobrador que aun se pueden efectuar cobros
+     *
+     * @param token token de sesion
+     * @param cobradorId identificador del cobrador
+     * @return lista de prestamos encontrados del cobrador que se pueden cobrar
+     */
     @GET
     @Path("/prestamosPorCobrar/{cobradorId}")
-    public Response<List<Prestamo>> prestamosConCobroParaHoy(@HeaderParam("Authorization") final String token, @PathParam("cobradorId") final int cobradorId){
+    public Response<List<Prestamo>> prestamosConCobroParaHoy(@HeaderParam("Authorization") final String token, @PathParam("cobradorId") final int cobradorId) {
+        Response<List<Prestamo>> r = new Response<>();
+        try {
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            managerPrestamo.setToken(token);
+            setOkResponse(r, managerPrestamo.prestamosPorCobrar(cobradorId), "prestamos del cobrador");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(r);
+        } catch (Exception ex) {
+            setErrorResponse(r, ex);
+        }
+        return r;
+    }
+
+    /**
+     * Consulta todos los prestamos asignado al cobrador
+     *
+     * @param token token de sesion
+     * @param cobradorId identificador dle cobrador
+     * @return lista de prestamos que pertenen al cobrador
+     */
+    @GET
+    @Path("/prestamosDelCobrador/{cobradorId}")
+    public Response<List<Prestamo>> prestamosCobrador(@HeaderParam("Authorization") final String token, @PathParam("cobradorId") final int cobradorId) {
         Response<List<Prestamo>> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -118,22 +148,27 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         }
         return r;
     }
-    
+
+    /**
+     * servicio que genera datos de prestamos para las pruebas
+     *
+     * @return
+     */
     @GET
     @Path("/generarPruebas")
-    public List<Prestamo> crearPrestamosDePruebas(){
+    public List<Prestamo> crearPrestamosDePruebas() {
         List<Prestamo> prestamos = new ArrayList<>();
-        
+
         ManagerPrestamo managerPrestamo = new ManagerPrestamo();
         ManagerCliente managerCliente = new ManagerCliente();
         ManagerUsuario managerUsuario = new ManagerUsuario();
-        
+
         try {
             //fecha dentro del rango de cobro
             for (int i = 0; i < 3; i++) {
                 Prestamo p = new Prestamo();
                 p.setCliente(managerCliente.findFirst());
-                p.setCobrador(managerUsuario.stream().where( u -> u.getTipo() == false).findFirst().get());
+                p.setCobrador(managerUsuario.stream().where(u -> u.getTipo() == false).findFirst().get());
                 p.setCantidad(5000);
                 managerPrestamo.persistPruebaDentroMes(p);
                 prestamos.add(p);
@@ -142,7 +177,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             for (int i = 0; i < 3; i++) {
                 Prestamo p = new Prestamo();
                 p.setCliente(managerCliente.findFirst());
-                p.setCobrador(managerUsuario.stream().where( u -> u.getTipo() == false).findFirst().get());
+                p.setCobrador(managerUsuario.stream().where(u -> u.getTipo() == false).findFirst().get());
                 p.setCantidad(5000);
                 managerPrestamo.persistPruebaPorCerrarMes(p);
                 prestamos.add(p);
@@ -151,16 +186,16 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             for (int i = 0; i < 3; i++) {
                 Prestamo p = new Prestamo();
                 p.setCliente(managerCliente.findFirst());
-                p.setCobrador(managerUsuario.stream().where( u -> u.getTipo() == false).findFirst().get());
+                p.setCobrador(managerUsuario.stream().where(u -> u.getTipo() == false).findFirst().get());
                 p.setCantidad(5000);
                 managerPrestamo.persistPruebaCerrardoMes(p);
                 prestamos.add(p);
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return prestamos; 
+        return prestamos;
     }
-    
+
 }
