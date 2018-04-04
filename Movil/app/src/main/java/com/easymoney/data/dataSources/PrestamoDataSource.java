@@ -2,7 +2,6 @@ package com.easymoney.data.dataSources;
 
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
-import com.easymoney.utils.UtilsPreferences;
 
 import java.util.List;
 
@@ -41,8 +40,7 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
 
         @Override
         public Flowable<Prestamo> update(Prestamo prestamo) {
-            return webServices().actualizarPrestamo(UtilsPreferences.loadToken(), prestamo)
-                    .map(r -> r.getData());
+            return null;
         }
 
         @Override

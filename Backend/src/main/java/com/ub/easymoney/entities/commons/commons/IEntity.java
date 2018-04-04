@@ -28,8 +28,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public interface IEntity<K> {
 
     /**
-     * todas las entidades necesitan tener una forma de identificarse, en este metodo se retorna el atributo que indentifica a una entidad 
-     * como unica, puede ser un atributo simple o un modelo que encapsule atributos y convierta el id en una llave compuesta
+     * todas las entidades necesitan tener una forma de identificarse, en este metodo se retorna el atributo que indentifica a una entidad como unica, puede ser un atributo simple o un modelo que encapsule atributos y convierta el id en una llave compuesta
      *
      * @return objeto que representa la llave unica de la entidad
      */

@@ -4,6 +4,7 @@ import com.easymoney.data.dataSources.PrestamoDataSource;
 import com.easymoney.entities.Abono;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
+import com.easymoney.models.ModelAbonarPrestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsPreferences;
@@ -128,4 +129,15 @@ public class PrestamoRepository implements PrestamoDataSource {
                 .subscribeOn(SchedulerProvider.ioT());
     }
 
+    /**
+     * Genera el abono al prestamo y actualiza el prestamo con la distribucion del pago
+     *
+     * @param modelAbonarPrestamo modelo contenedor de los valores necesarios asi como el prestamo con la dsitribucion de abonos a actualizar
+     * @return prestamo actualizado
+     */
+    public Flowable<Response<Prestamo, Object>> abonarPrestamo(ModelAbonarPrestamo modelAbonarPrestamo) {
+        return webServices().abonarPrestamo(UtilsPreferences.loadToken(), modelAbonarPrestamo)
+                .observeOn(SchedulerProvider.uiT())
+                .subscribeOn(SchedulerProvider.ioT());
+    }
 }

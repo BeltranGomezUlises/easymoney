@@ -30,10 +30,7 @@ public class ApplicationConfig extends Application {
     }
 
     /**
-     * Do not modify addRestResourceClasses() method.
-     * It is automatically populated with
-     * all resources defined in the project.
-     * If required, comment out calling this method in getClasses().
+     * Do not modify addRestResourceClasses() method. It is automatically populated with all resources defined in the project. If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(com.ub.easymoney.services.admin.Configs.class);
@@ -43,9 +40,10 @@ public class ApplicationConfig extends Application {
         resources.add(com.ub.easymoney.services.negocio.Abonos.class);
         resources.add(com.ub.easymoney.services.negocio.Accesos.class);
         resources.add(com.ub.easymoney.services.negocio.Clientes.class);
+        resources.add(com.ub.easymoney.services.negocio.Cobros.class);
         resources.add(com.ub.easymoney.services.negocio.Movimientos.class);
         resources.add(com.ub.easymoney.services.negocio.Multas.class);
         resources.add(com.ub.easymoney.services.negocio.Prestamos.class);
     }
-    
+
 }

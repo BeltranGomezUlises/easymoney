@@ -81,7 +81,7 @@ public class Config implements Serializable, IEntity {
     public void setPorcentajeInteresPrestamo(int porcentajeInteresPrestamo) {
         this.porcentajeInteresPrestamo = porcentajeInteresPrestamo;
     }
-    
+
     public Integer getId() {
         return id;
     }
@@ -143,5 +143,5 @@ public class Config implements Serializable, IEntity {
     public void setCantidadMultaDiaria(int cantidadMultaDiaria) {
         this.cantidadMultaDiaria = cantidadMultaDiaria;
     }
-    
+
 }

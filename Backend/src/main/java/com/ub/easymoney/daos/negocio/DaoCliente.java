@@ -42,7 +42,7 @@ public class DaoCliente extends DaoSQLFacade<Cliente, Integer> {
         }
 
         return stream
-                .sortedBy( u -> u.getNombre())                        
+                .sortedBy(u -> u.getNombre())
                 .collect(toList());
     }
 

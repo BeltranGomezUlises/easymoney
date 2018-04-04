@@ -7,8 +7,9 @@ package com.ub.easymoney.entities.commons;
 
 /**
  * entidad de configuracion de correo para su uso por el sistema
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
- * 
+ *
  */
 public class ConfigMail {
 

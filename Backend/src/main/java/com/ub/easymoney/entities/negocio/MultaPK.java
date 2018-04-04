@@ -79,5 +79,5 @@ public class MultaPK implements Serializable {
     public String toString() {
         return "com.ub.easymoney.entities.negocio.MultaPK[ prestamo=" + prestamo + ", fecha=" + fecha + " ]";
     }
-    
+
 }

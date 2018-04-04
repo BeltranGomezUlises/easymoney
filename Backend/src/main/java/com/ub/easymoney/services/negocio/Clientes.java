@@ -30,16 +30,16 @@ public class Clientes extends ServiceFacade<Cliente, Integer> {
 
     public Clientes() {
         super(new ManagerCliente());
-    }   
+    }
 
     @POST
     @Path("/cargarClientes")
-    public Response<List<Cliente>> listarFiltrados(@HeaderParam("Authorization") String token, FiltroCliente filtro){
-         Response response = new Response();
-        try {            
+    public Response<List<Cliente>> listarFiltrados(@HeaderParam("Authorization") String token, FiltroCliente filtro) {
+        Response response = new Response();
+        try {
             ManagerCliente managerCliente = new ManagerCliente();
-            managerCliente.setToken(token);            
-            setOkResponse(response, managerCliente.findAll(filtro), "Entidades encontradas");           
+            managerCliente.setToken(token);
+            setOkResponse(response, managerCliente.findAll(filtro), "Entidades encontradas");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(response);
         } catch (Exception ex) {

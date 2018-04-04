@@ -59,8 +59,8 @@ public class UtilsMail {
     public static void sendRecuperarContraseñaHTMLMail(String toMail, String userName, String codigoRecuperacion) throws EmailException, MalformedURLException {
 
         //cargar la configuracion del correo que esta asignado para recuperacion de contraseñas
-        ConfigMail configMail = UtilsConfig.getResetPasswordConfigMail();                
-        
+        ConfigMail configMail = UtilsConfig.getResetPasswordConfigMail();
+
         HtmlEmail email = new HtmlEmail();
         email.setHostName(configMail.getHostName());
         email.setSmtpPort(configMail.getPort());
@@ -75,37 +75,37 @@ public class UtilsMail {
         String cid = email.embed(url, "esoftLogo");
 
         String htmlCadena
-                = "<html>\n" +
-                "    <head>\n" +
-                "        <title>Servicio de recuperación de contraseña</title>\n" +
-                "    </head>\n" +
-                "    <body style=\"color: rgba(0,0,0, 0.8); font-family: verdana; font-size: 14px;\">\n" +
-                "        <div style=\"width: 100%; display: flex; justfy-content: center;\">\n" +
-                "            <div style=\"width: 70%;\">\n" +
-                "                <div style=\"width: 100%; margin-bottom: 10px;\">\n" +
-                "                    <img src=\"cid:" + cid + "\" style=\"height: 60px; margin-left: 20px;\" />\n" +
-                "                </div>\n" +
-                "\n" +
-                "                <div style=\"border: 1px solid rgba(128, 128, 128, 0.31); width: 100%; padding: 20px;\">\n" +
-                "                    <h3 style=\"margin-top: 0;\">" +
-                                    "HOLA " + userName +
-                "                    </h3>\n" +
-                "                    <p>Utilize el siguiente codigo para continuar con el proceso de recuperación de su contraseña</p>\n" +
-                "\n" +
-                "                    <div style=\"background: #009BD2; color: white; padding: 10px; width: 100px; text-align: center;\">\n" +
-                                codigoRecuperacion +
-                "                    </div>\n" +
-                "                </div>\n" +
-                "\n" +
-                "                <div style=\"width: 100%; margin-bottom: 10px;\">\n" +
-                "                    <p style=\"margin-left: 20px; color: rgba(128, 128, 128, 0.5);\">"+
-                "                       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste corporis adipisci saepe error nobis quia."+
-                "                    </p>\n" +
-                "                </div>\n" +
-                "            </div>\n" +
-                "        </div>\n" +
-                "    </body>\n" +
-                "</html>";
+                = "<html>\n"
+                + "    <head>\n"
+                + "        <title>Servicio de recuperación de contraseña</title>\n"
+                + "    </head>\n"
+                + "    <body style=\"color: rgba(0,0,0, 0.8); font-family: verdana; font-size: 14px;\">\n"
+                + "        <div style=\"width: 100%; display: flex; justfy-content: center;\">\n"
+                + "            <div style=\"width: 70%;\">\n"
+                + "                <div style=\"width: 100%; margin-bottom: 10px;\">\n"
+                + "                    <img src=\"cid:" + cid + "\" style=\"height: 60px; margin-left: 20px;\" />\n"
+                + "                </div>\n"
+                + "\n"
+                + "                <div style=\"border: 1px solid rgba(128, 128, 128, 0.31); width: 100%; padding: 20px;\">\n"
+                + "                    <h3 style=\"margin-top: 0;\">"
+                + "HOLA " + userName
+                + "                    </h3>\n"
+                + "                    <p>Utilize el siguiente codigo para continuar con el proceso de recuperación de su contraseña</p>\n"
+                + "\n"
+                + "                    <div style=\"background: #009BD2; color: white; padding: 10px; width: 100px; text-align: center;\">\n"
+                + codigoRecuperacion
+                + "                    </div>\n"
+                + "                </div>\n"
+                + "\n"
+                + "                <div style=\"width: 100%; margin-bottom: 10px;\">\n"
+                + "                    <p style=\"margin-left: 20px; color: rgba(128, 128, 128, 0.5);\">"
+                + "                       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste corporis adipisci saepe error nobis quia."
+                + "                    </p>\n"
+                + "                </div>\n"
+                + "            </div>\n"
+                + "        </div>\n"
+                + "    </body>\n"
+                + "</html>";
 
         // set the html message           
         email.setHtmlMsg(htmlCadena);

@@ -7,10 +7,9 @@ import android.view.View;
 
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Abono;
-import com.easymoney.entities.AbonoPK;
 import com.easymoney.entities.Multa;
-import com.easymoney.entities.MultaPK;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.models.ModelAbonarPrestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.ModelTotalAPagar;
 import com.easymoney.utils.UtilsDate;
@@ -21,7 +20,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -112,7 +110,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         this.consultaFragment.showLoading(active);
     }
 
-    public final void showMessage(final String message){
+    public final void showMessage(final String message) {
         this.consultaFragment.showMessage(message);
         this.abonoFragment.showMessage(message);
     }
@@ -231,6 +229,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void abonarAlPrestamo(int abono, final String multaDes, final ModelTotalAPagar model) {
+        final int abonoTotal = abono;
         Calendar cal = new GregorianCalendar();
         cal.setTime(new Date());
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
@@ -299,12 +298,12 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
         if (abono > 0 && model.getAjusteDePago() > 0) {
             //si ya hay uno del dia de hoy
-            Abono ultimoAbono = abonos.get(abonos.size() -1);
+            Abono ultimoAbono = abonos.get(abonos.size() - 1);
             cal.setTime(ultimoAbono.getAbonoPK().getFecha());
             int diaPrestamo = cal.get(Calendar.DAY_OF_YEAR);
-            if (diaPrestamo == diaActual){
+            if (diaPrestamo == diaActual) {
                 ultimoAbono.setCantidad(ultimoAbono.getCantidad() + model.getAjusteDePago());
-            }else{
+            } else {
                 Abono abonoAjuste = new Abono(prestamo.getId(), fechaActual);
                 abonoAjuste.setCantidad(abono);
                 abonoAjuste.setAbonado(true);
@@ -314,7 +313,11 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
         prestamo.setAbonos(abonos);
         this.showLoading(true);
-        repository.update(prestamo).subscribeOn(SchedulerProvider.ioT())
+
+        ModelAbonarPrestamo modelAbonarPrestamo = new ModelAbonarPrestamo(abonoTotal, prestamo.getCliente().getId(), UtilsPreferences.loadLogedUser().getId(), prestamo);
+
+        repository.abonarPrestamo(modelAbonarPrestamo)
+                .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT())
                 .subscribe(p -> {
                     proccessAbonos(prestamo.getAbonos());
@@ -325,7 +328,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                     showMessage("Existió un error de comunicación");
                     ex.printStackTrace();
                 });
-
     }
 
     /**

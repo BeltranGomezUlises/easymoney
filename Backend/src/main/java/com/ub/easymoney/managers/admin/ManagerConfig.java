@@ -14,9 +14,9 @@ import com.ub.easymoney.managers.commons.ManagerSQL;
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 public class ManagerConfig extends ManagerSQL<Config, Integer> {
-    
+
     public ManagerConfig() {
         super(new DaoConfig());
     }
-            
+
 }

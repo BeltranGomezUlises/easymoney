@@ -31,8 +31,6 @@ public class ModeloPrestamoTotalesGenerales {
         this.porcentajeCompletado = porcentajeCompletado;
     }
 
-    
-    
     public int getTotalPrestado() {
         return totalPrestado;
     }

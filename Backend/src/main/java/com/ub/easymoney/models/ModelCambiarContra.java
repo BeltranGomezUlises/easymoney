@@ -7,6 +7,7 @@ package com.ub.easymoney.models;
 
 /**
  * modelo para solicitar el cambio de contraseña de un usuario
+ *
  * @author ulises
  */
 public class ModelCambiarContra {

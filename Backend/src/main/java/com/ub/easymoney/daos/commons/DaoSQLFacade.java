@@ -16,7 +16,9 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.jinq.jpa.JPAJinqStream;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
@@ -72,7 +74,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
      *
      * @return EntityManager de la fabrica de este Data Access Object
      */
-    public EntityManager getEM() {
+    public EntityManager getEMInstance() {
         return eMFactory.createEntityManager();
     }
 
@@ -83,7 +85,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
      * @return query contruido con el JPQL
      */
     protected Query createQuery(String jpql) {
-        return this.getEM().createQuery(jpql);
+        return this.getEMInstance().createQuery(jpql);
     }
 
     /**
@@ -125,7 +127,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     //Todos los metodos siguientes tiene con objetivo hacer y solo hacer lo que su nombre indica       
     //</editor-fold>
     public void persist(T entity) throws Exception {
-        EntityManager em = this.getEM();
+        EntityManager em = this.getEMInstance();
         try {
             em.getTransaction().begin();
             em.persist(entity);
@@ -140,7 +142,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     public List<T> persistAll(List<T> entities) throws Exception {
-        EntityManager em = this.getEM();
+        EntityManager em = this.getEMInstance();
         try {
             em.getTransaction().begin();
             entities.forEach((entity) -> {
@@ -158,7 +160,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     public void delete(K id) throws ForeignKeyException, Exception {
-        EntityManager em = this.getEM();
+        EntityManager em = this.getEMInstance();
         try {
             em.getTransaction().begin();
             em.remove(em.getReference(claseEntity, id));
@@ -176,7 +178,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     public void deleteAll(List<K> ids) throws Exception {
-        EntityManager em = this.getEM();
+        EntityManager em = this.getEMInstance();
         try {
             em.getTransaction().begin();
             for (Object id : ids) {
@@ -193,7 +195,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     public void update(T entity) throws Exception {
-        EntityManager em = this.getEM();
+        EntityManager em = this.getEMInstance();
         try {
             em.getTransaction().begin();
             em.merge(entity);
@@ -216,7 +218,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     public T findOne(K id) throws Exception {
-        return getEM().find(claseEntity, id);
+        return getEMInstance().find(claseEntity, id);
     }
 
     public List<T> findAll(int max) throws Exception {
@@ -232,7 +234,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     private List<T> findAll(boolean all, int maxResults, int firstResult) throws Exception {
-        EntityManager em = getEM();
+        EntityManager em = getEMInstance();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(claseEntity));
@@ -251,15 +253,27 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
         }
     }
 
+    /**
+     * Cuenta el numero de registros de una entidad
+     *
+     * @return cantidad de registros que existen en la base de datos de la entidad
+     * @throws Exception si existe un error de I/O
+     */
     public long count() throws Exception {
-        EntityManager em = getEM();
-        long count = streamProvider.streamAll(getEM(), claseEntity).count();
-        if (em != null) {
-            em.close();
-        }
-        return count;
+        EntityManager em = this.getEMInstance();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(claseEntity)));
+        return em.createQuery(cq).getSingleResult();
     }
 
+    /**
+     * Genera el mensaje personalizado por entidad de un problema de relacion de llave foranea
+     *
+     * @param s mensaje de exception con el cual trabajar
+     * @param accionAMostrar action del usuario a mostrar
+     * @return mensaje formado a partir de la entidad, para mostrar al usuario final
+     */
     private String foreignKeyMessage(String s, String accionAMostrar) {
         Pattern p = Pattern.compile("\"(.+?)\"");
         Matcher m = p.matcher(s);
@@ -269,5 +283,58 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
         }
         return "No se pudo " + accionAMostrar + " " + incidencias.get(0) + " por que aun está siendo utilizado en algún " + incidencias.get(incidencias.size() - 1);
     }
-    
+
+    /**
+     * ejecuta un select con los atributos en attributes y efectua una paginación desde from hasta to
+     *
+     * @param from indice inferior
+     * @param to indice superior
+     * @param attributes strings con los nombres de los atributos
+     * @return lista de resutados de la consulta a db
+     */
+    public List select(Integer from, Integer to, String... attributes) {
+        EntityManager em = this.getEMInstance();
+        String selects = "";
+        for (String attribute : attributes) {
+            selects += "t." + attribute + ",";
+        }
+        selects = selects.substring(0, selects.length() - 1);
+        Query q = em.createQuery("SELECT " + selects + " FROM " + claseEntity.getSimpleName() + " t");
+        if (from != null) {
+            q.setFirstResult(from);
+        }
+        if (to != null) {
+            q.setMaxResults(to - from + 1);
+        }
+        return q.getResultList();
+    }
+
+    /**
+     * ejecuta un select con los atributos en attributes y efectua una paginación desde from hasta to
+     *
+     * @param attributes strings con los nombres de los atributos
+     * @return lista de resutados de la consulta a db
+     */
+    public List select(String... attributes) {
+        EntityManager em = this.getEMInstance();
+        String selects = "";
+        for (String attribute : attributes) {
+            selects += "t." + attribute + ",";
+        }
+        selects = selects.substring(0, selects.length() - 1);
+        Query q = em.createQuery("SELECT " + selects + " FROM " + claseEntity.getSimpleName() + " t");
+        return q.getResultList();
+    }
+
+    public List<T> findRange(final int rangoInicial, final int rangoFinal) {
+        int resultados = rangoFinal - rangoInicial + 1;
+        EntityManager em = this.getEMInstance();
+        CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+        cq.select(cq.from(claseEntity));
+        Query q = em.createQuery(cq);
+        q.setMaxResults(resultados);
+        q.setFirstResult(rangoInicial);
+        return q.getResultList();
+    }
+
 }

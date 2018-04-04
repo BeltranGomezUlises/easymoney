@@ -25,7 +25,7 @@ import java.util.List;
 import org.jinq.jpa.JPAJinqStream;
 
 /**
- * fachada para manejar entidades sql 
+ * fachada para manejar entidades sql
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  * @param <T> Entidad a manejar
@@ -34,35 +34,36 @@ import org.jinq.jpa.JPAJinqStream;
 public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, K> {
 
     protected final DaoSQLFacade<T, K> dao;
-    
+
     public ManagerSQL(DaoSQLFacade<T, K> dao) {
         super();
         this.dao = dao;
     }
-    
+
     public ManagerSQL(DaoSQLFacade dao, String token) throws TokenInvalidoException, TokenExpiradoException {
         super(token);
         this.dao = dao;
     }
-    
+
     @Override
-    public List<T> persistAll(List<T> entities) throws Exception {        
-        return dao.persistAll(entities);        
+    public List<T> persistAll(List<T> entities) throws Exception {
+        return dao.persistAll(entities);
     }
 
     @Override
     public T persist(T entity) throws Exception {
-       
+
         dao.persist(entity);
         return entity;
     }
+
     @Override
-    public void delete(K id) throws ForeignKeyException, Exception {        
+    public void delete(K id) throws ForeignKeyException, Exception {
         dao.delete(id);
     }
 
     @Override
-    public void deleteAll(List<K> ids) throws Exception {        
+    public void deleteAll(List<K> ids) throws Exception {
         dao.deleteAll(ids);
     }
 
@@ -72,7 +73,7 @@ public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, 
     }
 
     @Override
-    public T findOne(K id) throws Exception {                  
+    public T findOne(K id) throws Exception {
         return dao.findOne(id);
     }
 
@@ -82,20 +83,20 @@ public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, 
     }
 
     @Override
-    public List<T> findAll(int max) throws Exception{
+    public List<T> findAll(int max) throws Exception {
         return dao.findAll(max);
     }
 
     @Override
-    public long count()throws Exception {
+    public long count() throws Exception {
         return dao.count();
     }
 
     @Override
-    public T findFirst() throws Exception{
+    public T findFirst() throws Exception {
         return (T) dao.findFirst();
     }
-    
+
     public JPAJinqStream<T> stream() {
         return dao.stream();
     }
@@ -103,6 +104,32 @@ public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, 
     @Override
     public K stringToKey(String s) {
         return dao.stringToPK(s);
+    }
+
+    public List<T> findRange(int initialPosition, int lastPosition) {
+        return dao.findRange(initialPosition, lastPosition);
+    }
+
+    /**
+     * consulta los atributos proporcionados en la entidad de manejador
+     *
+     * @param attributes lista de nombres de los atributos a consultar
+     * @return lista de arreglo de objetos con los atributos solicitados
+     */
+    public List select(String... attributes) {
+        return this.dao.select(attributes);
+    }
+
+    /**
+     * consulta los atributos proporcionados de la entidad de manejador con un rango de posiciones
+     *
+     * @param from indice inferior
+     * @param to indice superior
+     * @param attributes lista de nombre de los atributos a consultar
+     * @return lista de arreglo de objetos con los atributos solicitados
+     */
+    public List select(Integer from, Integer to, String... attributes) {
+        return this.dao.select(from, to, attributes);
     }
 
 }

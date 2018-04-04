@@ -25,20 +25,21 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * servicios LCRUD de usuarios del sistema
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Path("/usuarios")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class Usuarios extends ServiceFacade<Usuario, Integer>{
-    
+public class Usuarios extends ServiceFacade<Usuario, Integer> {
+
     public Usuarios() {
         super(new ManagerUsuario());
     }
-                    
+
     @GET
     @Path("/usuariosCobradores")
-    public Response<List<Usuario>> usuariosCobradores(@HeaderParam("Authorization") String token){
+    public Response<List<Usuario>> usuariosCobradores(@HeaderParam("Authorization") String token) {
         Response<List<Usuario>> res = new Response();
         try {
             ManagerUsuario managerUsuario = new ManagerUsuario();
@@ -46,15 +47,15 @@ public class Usuarios extends ServiceFacade<Usuario, Integer>{
             setOkResponse(res, managerUsuario.usuariosCobradores(), "usuarios cobradores");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(res);
-        } catch(Exception e ){
+        } catch (Exception e) {
             setErrorResponse(res, e);
         }
         return res;
     }
-    
+
     @POST
     @Path("/cambiarContra")
-    public Response<Usuario> cambiarContraseña(@HeaderParam("Authorization") String token, ModelCambiarContra modelCambiarContra){
+    public Response<Usuario> cambiarContraseña(@HeaderParam("Authorization") String token, ModelCambiarContra modelCambiarContra) {
         Response<Usuario> res = new Response<>();
         try {
             ManagerUsuario managerUsuario = new ManagerUsuario();

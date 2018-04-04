@@ -25,6 +25,7 @@ public class UtilsDate {
 
     /**
      * sumatoria de tiempo en formato texto HH:mm
+     *
      * @param tiempos lista de tiempos a sumar
      * @return la cantidad de horas y minutos en formato texto que resulta de sumar el parametro tiempos
      */
@@ -50,6 +51,7 @@ public class UtilsDate {
 
     /**
      * convierte date en su representacion texto en formato d/MM/yyyy
+     *
      * @param date fecha a convertir
      * @return texto de la fecha
      */
@@ -59,8 +61,9 @@ public class UtilsDate {
 
     /**
      * convierte date en su representacion texto en formato d/MM/yyyy HH:mm
+     *
      * @param date fecha a convertir
-     * @return 
+     * @return
      */
     public static String format_D_MM_YYYY_HH_MM(Date date) {
         return SDF_D_MM_YYYY_HH_MM.format(date);
@@ -68,8 +71,9 @@ public class UtilsDate {
 
     /**
      * convierte date en su representacion texto en formato HH:mm
+     *
      * @param date fecha a convertir
-     * @return 
+     * @return
      */
     public static String format_HH_MM(Date date) {
         return SDF_HM.format(date);
@@ -77,8 +81,9 @@ public class UtilsDate {
 
     /**
      * convierte date en su representacion texto en formato yyyy-MM-dd'T'HH:mm:ss.SSSSSSSX
+     *
      * @param date fecha a convertir
-     * @return 
+     * @return
      */
     public static String format_YYYY_MM_DD_T_HH_MM_SS_sssssss(Date date) {
         return SDF_YYYY_MM_DD_T_HH_MM_SS_sssssssX.format(date);
@@ -86,8 +91,9 @@ public class UtilsDate {
 
     /**
      * convierte date en su representacion texto en formato yyyy-MM-dd'T'HH:mm:ss.SSSZ
+     *
      * @param date fecha a convertir
-     * @return 
+     * @return
      */
     public static String sdfUTC(Date date) {
         return SDF_UTC.format(date);
@@ -95,6 +101,7 @@ public class UtilsDate {
 
     /**
      * obtiene el nombre del dia de la semana de la fecha otorgada en el parametro "date" en formato texto "EEEE"
+     *
      * @param date fecha de la cuel obtener el día
      * @param DateFormat formato de texto en el que se encuentra la fecha
      * @return texto con el nombre del dáa de la semana
@@ -107,9 +114,10 @@ public class UtilsDate {
 
     /**
      * obtiene el nombre del dia de la semana de la fecha otorgada en el parametro date en formato texto "EEEE"
+     *
      * @param date
      * @return
-     * @throws ParseException 
+     * @throws ParseException
      */
     public static String nameDayOfWeek(String date) throws ParseException {
         return nameDayOfWeek(SDF_NDOW.parse(date));
@@ -117,8 +125,9 @@ public class UtilsDate {
 
     /**
      * obtiene el nombre del dia de la semana de la fecha otorgada en el parametro date en formato texto "EEEE"
+     *
      * @param date
-     * @return 
+     * @return
      */
     public static String nameDayOfWeek(Date date) {
         return SDF_NDOW.format(date);
@@ -126,8 +135,9 @@ public class UtilsDate {
 
     /**
      * obtiene la fecha del día que corresponda a el lunes anterior de la fecha proporsionada en texto
+     *
      * @param fecha fecha proporsionada en texto en formato d/MM/yyyy
-     * @return 
+     * @return
      */
     public static Date lunesAnterior(String fecha) {
         GregorianCalendar cal = new GregorianCalendar();
@@ -143,8 +153,9 @@ public class UtilsDate {
 
     /**
      * obtiene la fecha del día que corresponda a el lunes posterior de la fecha proporsionada en texto
+     *
      * @param fecha fecha proporsionada en texto en formato d/MM/yyyy
-     * @return 
+     * @return
      */
     public static Date lunesPosterior(String fecha) {
         GregorianCalendar cal = new GregorianCalendar();
@@ -160,8 +171,9 @@ public class UtilsDate {
 
     /**
      * obtiene la fecha del día que corresponda a el lunes anterior de la fecha proporsionada
+     *
      * @param fecha fecha proporsionada
-     * @return 
+     * @return
      */
     public static Date lunesAnterior(Date fecha) {
         GregorianCalendar cal = new GregorianCalendar();
@@ -177,8 +189,9 @@ public class UtilsDate {
 
     /**
      * obtiene la fecha del día que corresponda a el domingo posterior de la fecha proporsionada
+     *
      * @param fecha
-     * @return 
+     * @return
      */
     public static Date domingoPosterior(Date fecha) {
         GregorianCalendar cal = new GregorianCalendar();
@@ -194,6 +207,7 @@ public class UtilsDate {
 
     /**
      * verifica si una fecha pertenece a la misma semana de otra fecha proporsionada
+     *
      * @param date fecha a la cual verficar en formato "d/MM/yyyy"
      * @param week fecha de la cual tomar la semana en formato "d/MM/yyyy"
      * @return true si la fecha pertenece a la misma semana

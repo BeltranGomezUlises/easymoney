@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ * Copyright (C) 2018 Alonso - Alonso@kriblet.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ub.easymoney.models.commons.exceptions;
-
-;
+package com.ub.easymoney.models.commons;
 
 /**
  *
- * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ * @author Alonso - Alonso@kriblet.com
  */
-public class TokenInvalidoException extends Exception {
+public class ModelCantidad {
 
-    public TokenInvalidoException(String message) {
-        super(message);
+    private long cantidad;
+
+    public ModelCantidad() {
+    }
+
+    public ModelCantidad(long cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public long getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
 }
