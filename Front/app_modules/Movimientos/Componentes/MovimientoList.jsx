@@ -197,6 +197,8 @@ export default class MovimientoList extends React.Component {
               }}/>
           </Form.Field>
        </Form.Group>
+
+       <Form.Group>
         <Form.Field>
           {this.renderButtonBuscar()}
         </Form.Field>
@@ -209,14 +211,7 @@ export default class MovimientoList extends React.Component {
           }
           this.setState({filtro});
         }}>Limpiar filtros</Form.Field>
-      </Form>
-    );
-  }
 
-  render() {
-    return (
-      <div>
-      <Segment>
         <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
           onClose={this.handleCloseAgregar}
           open={this.state.modalOpenAgregar}>
@@ -225,6 +220,15 @@ export default class MovimientoList extends React.Component {
             <MovimientoForm handleClose={this.handleCloseAgregar}/>
           </Modal.Content>
         </Modal>
+        </Form.Group>
+      </Form>
+    );
+  }
+
+  render() {
+    return (
+      <div>
+      <Segment>
         <Divider horizontal>Filtros</Divider>
         {this.renderFiltros()}
       </Segment>

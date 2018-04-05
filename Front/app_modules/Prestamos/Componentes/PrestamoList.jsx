@@ -331,7 +331,7 @@ export default class PrestamoList extends React.Component {
             checked={this.state.filtro.acreditados} />
         </Form.Field>
 
-
+        <Form.Group>
         <Form.Field>
           {this.renderButtonBuscar()}
         </Form.Field>
@@ -347,6 +347,24 @@ export default class PrestamoList extends React.Component {
           }
           this.setState({filtro});
         }}>Limpiar filtros</Form.Field>
+
+        <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
+          onClose={this.handleCloseAgregar}
+          open={this.state.modalOpenAgregar}>
+          <Header content='Agregar prestamo' />
+          <Modal.Content>
+              <PrestamoForm getData={this.onCreateHandler}></PrestamoForm>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color='green' onClick={this.agregarPrestamo}>
+              Guardar
+            </Button>
+            <Button color='red' onClick={this.handleCloseAgregar}>
+              Cancelar
+            </Button>
+          </Modal.Actions>
+        </Modal>
+        </Form.Group>
       </Form>
     );
   }
@@ -370,23 +388,6 @@ export default class PrestamoList extends React.Component {
     return (
       <div>
         <Segment>
-          <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
-            onClose={this.handleCloseAgregar}
-            open={this.state.modalOpenAgregar}>
-            <Header content='Agregar prestamo' />
-            <Modal.Content>
-                <PrestamoForm getData={this.onCreateHandler}></PrestamoForm>
-            </Modal.Content>
-            <Modal.Actions>
-              <Button color='green' onClick={this.agregarPrestamo}>
-                Guardar
-              </Button>
-              <Button color='red' onClick={this.handleCloseAgregar}>
-                Cancelar
-              </Button>
-            </Modal.Actions>
-          </Modal>
-
           <Divider horizontal>Filtros</Divider>
           {this.renderFiltros()}
         </Segment>

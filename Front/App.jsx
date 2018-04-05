@@ -9,7 +9,7 @@ import Prestamos from './app_modules/Prestamos/Prestamos.jsx';
 import Movimientos from './app_modules/Movimientos/Movimientos.jsx'
 import Login from './app_modules/Login.jsx';
 import Configuraciones from './app_modules/Configuraciones.jsx';
-
+import Cobros from './app_modules/Reportes/Cobros/Cobros.jsx'
 import config from './config.json';
 
 const App =()=>(
@@ -43,7 +43,7 @@ class MainContainer extends React.Component{
            <Menu.Item as={Link} to='/movimientos'>Movimientos Ingresos y Egresos</Menu.Item>
            <Dropdown item simple text='Reportes' green>
              <Dropdown.Menu>
-               <Dropdown.Item>Cobros</Dropdown.Item>
+               <Dropdown.Item as={Link} to='/cobros'>Cobros</Dropdown.Item>
                <Dropdown.Divider />
                <Dropdown.Item>Clientes liquidados</Dropdown.Item>
                <Dropdown.Item>Prestamos general</Dropdown.Item>
@@ -72,6 +72,7 @@ class MainContainer extends React.Component{
              <Route path="/movimientos" component={Movimientos}/>
              <Route path="/login" component={Login}/>
              <Route path="/configuraciones" component={Configuraciones}/>
+             <Route path="/cobros" component={Cobros}/>
            </div>
           </div>
       );

@@ -134,15 +134,6 @@ export default class Clientes extends React.Component{
     return(
       <div>
         <Segment>
-          <Modal
-            trigger={<Button color='green'  onClick={this.handleOpenAgregar}>Agregar</Button>}
-            onClose={this.handleCloseAgregar}
-            open={this.state.modalOpenAgregar}>
-            <Header content='Agregar cliente' />
-            <Modal.Content>
-                <ClienteForm getData={this.onCreateHandler} agregarCliente={this.agregarCliente}/>
-            </Modal.Content>
-          </Modal>
           <Divider horizontal>Filtros</Divider>
             <Form>
               <Form.Group>
@@ -173,14 +164,25 @@ export default class Clientes extends React.Component{
                    }}
                 />
               </Form.Group>
-              <Form.Field control={Button} primary onClick={ () => {
-                let filtro = {
-                  nombre:'',
-                  apodo:''
-                }
-                this.setState({filtro});
-                this.cargarClientes();
-              }}>Limpiar filtros</Form.Field>
+              <Form.Group>
+                <Form.Field control={Button} gray onClick={ () => {
+                  let filtro = {
+                    nombre:'',
+                    apodo:''
+                  }
+                  this.setState({filtro});
+                  this.cargarClientes();
+                }}>Limpiar filtros</Form.Field>
+                <Modal
+                  trigger={<Button color='green'  onClick={this.handleOpenAgregar}>Agregar</Button>}
+                  onClose={this.handleCloseAgregar}
+                  open={this.state.modalOpenAgregar}>
+                  <Header content='Agregar cliente' />
+                  <Modal.Content>
+                      <ClienteForm getData={this.onCreateHandler} agregarCliente={this.agregarCliente}/>
+                  </Modal.Content>
+                </Modal>
+              </Form.Group>
             </Form>
 
         </Segment>
