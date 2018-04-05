@@ -38,12 +38,7 @@ export default class PrestamoList extends React.Component {
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
     this.agregarPrestamo = this.agregarPrestamo.bind(this);
     this.onCreateHandler = this.onCreateHandler.bind(this);
-    this.cargarTotalesPrestamos = this.cargarTotalesPrestamos.bind(this);
-  }
-
-  componentWillMount(){
-    //this.cargarPrestamos();
-    //this.cargarTotalesPrestamos();
+    this.cargarPrestamos = this.cargarPrestamos.bind(this);
   }
 
   handleCloseAgregar(){
@@ -110,17 +105,11 @@ export default class PrestamoList extends React.Component {
         acreditados: filtro.acreditados
       })
     }).then((res)=> res.json())
-    .then((response) =>{
-      if (response.data.length > 0) {
+    .then((response) => {
         this.setState({
           prestamos:response.data,
           buscando: false
         });
-      }else{
-        this.setState({
-          buscando: false
-        });
-      }
     })
 
     fetch(localStorage.getItem('url') + 'prestamos/totalesGeneralesFiltro',{
@@ -148,41 +137,6 @@ export default class PrestamoList extends React.Component {
     })
   }
 
-  cargarTotalesPrestamos(){
-    fetch(localStorage.getItem('url') + 'prestamos/totalesGenerales',{
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin':'*',
-        'Authorization': localStorage.getItem('tokenSesion')
-      }
-    }).then((res)=> res.json())
-    .then((response) =>{
-      utils.evalResponse(response, () => {
-        this.setState({totalesPrestamos: response.data});
-      });
-    })
-  }
-
-  cargarTotalesPrestamosFiltro(filtro){
-    fetch(localStorage.getItem('url') + 'prestamos/totalesGeneralesFiltro',{
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin':'*',
-        'Authorization': localStorage.getItem('tokenSesion')
-      }
-    }).then((res)=> res.json())
-    .then((response) =>{
-      utils.evalResponse(response, () => {
-        this.setState({totalesPrestamos: response.data});
-      });
-    })
-  }
-
-
   renderPrestamosList(){
     return this.state.prestamos.map((prestamo) =>{
       return(
@@ -196,7 +150,7 @@ export default class PrestamoList extends React.Component {
             }>
             <Modal.Header>Detalle Prestamo</Modal.Header>
             <Modal.Content>
-              <PrestamoDetalle prestamo={prestamo} update={this.cargarTotalesPrestamos}>
+              <PrestamoDetalle prestamo={prestamo} update={this.cargarPrestamos}>
               </PrestamoDetalle>
             </Modal.Content>
           </Modal>
@@ -224,7 +178,6 @@ export default class PrestamoList extends React.Component {
   }
 
   renderPrestamos(){
-    if (this.state.prestamos.length > 0) {
         return(
           <Table celled selectable striped>
           <Table.Header>
@@ -243,7 +196,6 @@ export default class PrestamoList extends React.Component {
           </Table.Body>
         </Table>
         )
-    }
   }
 
   renderTotalesPrestamosList(){
