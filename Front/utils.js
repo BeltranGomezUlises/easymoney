@@ -9,15 +9,13 @@ export function evalResponse(response, callback){
     case 'OK':
       if (callback){
         callback();
-      }      
+      }
       break;
     case 'WARNING':
       notify.show(response.meta.message, 'warning', 6000);
-      console.log(response);
       break;
     case 'ERROR':
       notify.show(response.meta.message + ' causado por: ' + response.meta.devMessage, 'error', 8000);
-      console.log(response);
       break;
   }
 }
@@ -28,5 +26,5 @@ export function evalResponse(response, callback){
 */
 export function toUtcDate(dateString){
   let date = new Date(dateString);
-  return date.getTime() + (date.getTimezoneOffset() * 60 * 1000);
+  return date.getTime() + (date.getTimezoneOffset() * 60000);
 }

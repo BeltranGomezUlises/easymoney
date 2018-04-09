@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
+import { Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader, Segment, Container, Modal, Button, Menu, Pagination, Grid} from 'semantic-ui-react'
 import PrestamoForm from './PrestamoForm.jsx'
 import PrestamoDetalle from './PrestamoDetalle.jsx'
 import * as utils from '../../../utils.js';
@@ -10,6 +10,8 @@ export default class PrestamoList extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      activePage:1,
+      totalPages: 10,
       prestamos:[],
       totalesPrestamos:{},
       modalOpenAgregar:false,
@@ -39,6 +41,11 @@ export default class PrestamoList extends React.Component {
     this.agregarPrestamo = this.agregarPrestamo.bind(this);
     this.onCreateHandler = this.onCreateHandler.bind(this);
     this.cargarPrestamos = this.cargarPrestamos.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
+  }
+
+  handlePaginationChange(e, { activePage }){
+     this.setState({ activePage });
   }
 
   handleCloseAgregar(){
@@ -106,9 +113,11 @@ export default class PrestamoList extends React.Component {
       })
     }).then((res)=> res.json())
     .then((response) => {
+        let totalPages = Math.ceil(response.data.length / 10);
         this.setState({
           prestamos:response.data,
-          buscando: false
+          buscando: false,
+          totalPages
         });
     })
 
@@ -138,7 +147,9 @@ export default class PrestamoList extends React.Component {
   }
 
   renderPrestamosList(){
-    return this.state.prestamos.map((prestamo) =>{
+    const limiteSuperior = this.state.activePage * 10;
+    let prestamos = this.state.prestamos.slice(limiteSuperior - 10, limiteSuperior);
+    return prestamos.map((prestamo) =>{
       return(
         <Table.Row key={prestamo.id}>
           <Modal trigger={
@@ -179,22 +190,25 @@ export default class PrestamoList extends React.Component {
 
   renderPrestamos(){
         return(
-          <Table celled selectable striped>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
-              <Table.HeaderCell>Cliente</Table.HeaderCell>
-              <Table.HeaderCell>Cobrador</Table.HeaderCell>
-              <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
-              <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
-              <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
-              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {this.renderPrestamosList()}
-          </Table.Body>
-        </Table>
+          <div>
+            <Table celled selectable striped>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
+                  <Table.HeaderCell>Cliente</Table.HeaderCell>
+                  <Table.HeaderCell>Cobrador</Table.HeaderCell>
+                  <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
+                  <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
+                  <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
+                  <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {this.renderPrestamosList()}
+              </Table.Body>
+            </Table>
+            <Pagination activePage={this.state.activePage} onPageChange={this.handlePaginationChange} totalPages={this.state.totalPages} />
+          </div>
         )
   }
 

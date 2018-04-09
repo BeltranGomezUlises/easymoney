@@ -11,6 +11,7 @@ import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.negocio.ManagerCobro;
 import com.ub.easymoney.models.ModelAbonarPrestamo;
 import com.ub.easymoney.models.ModelConsultaCobros;
+import com.ub.easymoney.models.ModelReporteCobro;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
@@ -64,8 +65,8 @@ public class Cobros extends ServiceFacade<Cobro, Integer> {
      */
     @POST
     @Path("/cliente")
-    public Response<List<Cobro>> cobrosDelCliente(@HeaderParam("Authorization") final String token, final ModelConsultaCobros m) {
-        Response<List<Cobro>> r = new Response<>();
+    public Response<List<ModelReporteCobro>> cobrosDelCliente(@HeaderParam("Authorization") final String token, final ModelConsultaCobros m) {
+        Response<List<ModelReporteCobro>> r = new Response<>();
         try {
             DaoCobro daoCobro = new DaoCobro();
             UtilsJWT.validateSessionToken(token);
@@ -87,12 +88,12 @@ public class Cobros extends ServiceFacade<Cobro, Integer> {
      */
     @POST
     @Path("/cobrador")
-    public Response<List<Cobro>> cobrosDelCobrador(@HeaderParam("Authorization") final String token, final ModelConsultaCobros m) {
-        Response<List<Cobro>> r = new Response<>();
+    public Response<List<ModelReporteCobro>> cobrosDelCobrador(@HeaderParam("Authorization") final String token, final ModelConsultaCobros m) {
+        Response<List<ModelReporteCobro>> r = new Response<>();
         try {
             DaoCobro daoCobro = new DaoCobro();
             UtilsJWT.validateSessionToken(token);
-            UtilsService.setOkResponse(r, daoCobro.cobrosDelCobrador(m.getAgrupadorId(), m.getFechaInicial(), m.getFechaFinal()), "Cobros del cliente", null);
+            UtilsService.setOkResponse(r, daoCobro.cobrosDelCobrador(m.getAgrupadorId(), m.getFechaInicial(), m.getFechaFinal()), "Cobros del cobrador", null);
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             UtilsService.setWarningResponse(r, e.getMessage());
         } catch (Exception e) {
@@ -100,4 +101,51 @@ public class Cobros extends ServiceFacade<Cobro, Integer> {
         }
         return r;
     }
+
+    /**
+     * Consulta los cobros que ha realizado un cobrador con un rango de fechas
+     *
+     * @param token token de sesion
+     * @param m modelo con los atributos de consulta
+     * @return lista de cobros del cobrador obtenidos
+     */
+    @POST
+    @Path("/prestamo")
+    public Response<List<ModelReporteCobro>> cobrosDelPrestamo(@HeaderParam("Authorization") final String token, final ModelConsultaCobros m) {
+        Response<List<ModelReporteCobro>> r = new Response<>();
+        try {
+            DaoCobro daoCobro = new DaoCobro();
+            UtilsJWT.validateSessionToken(token);
+            UtilsService.setOkResponse(r, daoCobro.cobrosDelPrestamo(m.getAgrupadorId(), m.getFechaInicial(), m.getFechaFinal()), "Cobros del prestamo", null);
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            UtilsService.setWarningResponse(r, e.getMessage());
+        } catch (Exception e) {
+            UtilsService.setErrorResponse(r, e);
+        }
+        return r;
+    }
+
+    /**
+     * Consulta los cobros con un rango de fechas
+     *
+     * @param token token de sesion
+     * @param m modelo con los atributos de consulta
+     * @return lista de cobros del cobrador obtenidos
+     */
+    @POST
+    @Path("/rango")
+    public Response<List<ModelReporteCobro>> cobrosDesdeHasta(@HeaderParam("Authorization") final String token, final ModelConsultaCobros m) {
+        Response<List<ModelReporteCobro>> r = new Response<>();
+        try {
+            DaoCobro daoCobro = new DaoCobro();
+            UtilsJWT.validateSessionToken(token);
+            UtilsService.setOkResponse(r, daoCobro.cobrosDesdeHasta(m.getFechaInicial(), m.getFechaFinal()), "Cobros del prestamo", null);
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            UtilsService.setWarningResponse(r, e.getMessage());
+        } catch (Exception e) {
+            UtilsService.setErrorResponse(r, e);
+        }
+        return r;
+    }
+
 }

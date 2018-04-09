@@ -11,17 +11,13 @@ import com.ub.easymoney.entities.negocio.Cliente;
 import com.ub.easymoney.entities.negocio.Cobro;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.models.ModelAbonarPrestamo;
+import com.ub.easymoney.models.ModelReporteCobro;
 import com.ub.easymoney.utils.UtilsDB;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.Query;
 import org.jinq.jpa.JPAJinqStream;
-import org.jinq.jpa.JinqJPAStreamProvider;
 
 /**
  *
@@ -69,15 +65,26 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
      * @return
      */
     public List<Cobro> cobrosDelCobrador(int cobradorId, Date fechaInicial, Date fechaFinal) {
-        JPAJinqStream<Cobro> stream = this.stream();
-        stream = stream.where(c -> c.getCobrador().getId().equals(cobradorId));
+        //construccion de consulta
+        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro(c.id, c.cliente.nombre, c.cobrador.nombre, c.prestamo.id, c.cantidad, c.fecha) From Cobro c WHERE c.cobrador.id = :cobradorId";
+        //consulta dinamica
         if (fechaInicial != null) {
-            stream = stream.where(c -> !c.getFecha().before(fechaInicial));
+            query += " AND c.fecha >= :fechaInicial";
         }
         if (fechaFinal != null) {
-            stream = stream.where(c -> !c.getFecha().after(fechaFinal));
+            query += " AND c.fecha <= :fechaFinal";
         }
-        return stream.toList();
+        //creacion de Query
+        Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class)
+                .setParameter("cobradorId", cobradorId);
+        //parametros dinamicos
+        if (fechaInicial != null) {
+            q.setParameter("fechaInicial", fechaInicial);
+        }
+        if (fechaFinal != null) {
+            q.setParameter("fechaFinal", fechaFinal);
+        }
+        return q.getResultList();
     }
 
     /**
@@ -88,16 +95,89 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
      * @param fechaFinal fecha limite superior
      * @return
      */
-    public List<Cobro> cobrosDelCliente(int clienteId, Date fechaInicial, Date fechaFinal) {
-        JPAJinqStream<Cobro> stream = this.stream();
-        stream = stream.where(c -> c.getCliente().getId().equals(clienteId));
+    public List<ModelReporteCobro> cobrosDelCliente(int clienteId, Date fechaInicial, Date fechaFinal) {
+        //construccion de consulta
+        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro(c.id, c.cliente.nombre, c.cobrador.nombre, c.prestamo.id, c.cantidad, c.fecha) From Cobro c WHERE c.cliente.id = :clienteId";
+        //consulta dinamica
         if (fechaInicial != null) {
-            stream = stream.where(c -> !c.getFecha().before(fechaInicial));
+            query += " AND c.fecha >= :fechaInicial";
         }
         if (fechaFinal != null) {
-            stream = stream.where(c -> !c.getFecha().after(fechaFinal));
+            query += " AND c.fecha <= :fechaFinal";
         }
-        return stream.toList();
+        //creacion de Query
+        Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class)
+                .setParameter("clienteId", clienteId);
+        //parametros dinamicos
+        if (fechaInicial != null) {
+            q.setParameter("fechaInicial", fechaInicial);
+        }
+        if (fechaFinal != null) {
+            q.setParameter("fechaFinal", fechaFinal);
+        }
+        return q.getResultList();
+    }
+
+    /**
+     * Consulta los cobros de un prestamo con un rango de fechas
+     *
+     * @param agrupadorId prestamo al cual consultar los cobros
+     * @param fechaInicial fecha inicial de consulta
+     * @param fechaFinal fecha final de consulta
+     * @return lista de cobros encontrados
+     */
+    public List<Cobro> cobrosDelPrestamo(Integer agrupadorId, Date fechaInicial, Date fechaFinal) {
+        //construccion de consulta
+        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro(c.id, c.cliente.nombre, c.cobrador.nombre, c.prestamo.id, c.cantidad, c.fecha) From Cobro c WHERE c.prestamo.id = :agrupadorId";
+        //consulta dinamica
+        if (fechaInicial != null) {
+            query += " AND c.fecha >= :fechaInicial";
+        }
+        if (fechaFinal != null) {
+            query += " AND c.fecha <= :fechaFinal";
+        }
+        //creacion de Query
+        Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class)
+                .setParameter("agrupadorId", agrupadorId);
+        //parametros dinamicos
+        if (fechaInicial != null) {
+            q.setParameter("fechaInicial", fechaInicial);
+        }
+        if (fechaFinal != null) {
+            q.setParameter("fechaFinal", fechaFinal);
+        }
+        return q.getResultList();
+    }
+
+    /**
+     * Consulta los cobros con un rango de fechas
+     *
+     * @param fechaInicial fecha inicial de consulta
+     * @param fechaFinal fecha final de consulta
+     * @return lista de cobros encontrados
+     */
+    public List<Cobro> cobrosDesdeHasta(Date fechaInicial, Date fechaFinal) {
+        //construccion de consulta
+        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro(c.id, c.cliente.nombre, c.cobrador.nombre, c.prestamo.id, c.cantidad, c.fecha) From Cobro c";
+        //consulta dinamica        
+        boolean paramInicial = true;
+        if (fechaInicial != null) {
+            query += " WHERE c.fecha >= :fechaInicial";
+            paramInicial = false;
+        }
+        if (fechaFinal != null) {
+            query += paramInicial ? " WHERE c.fecha <= :fechaFinal" : " AND c.fecha <= :fechaFinal" ; 
+        }
+        //creacion de Query
+        Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class);
+        //parametros dinamicos
+        if (fechaInicial != null) {
+            q.setParameter("fechaInicial", fechaInicial);
+        }
+        if (fechaFinal != null) {
+            q.setParameter("fechaFinal", fechaFinal);
+        }
+        return q.getResultList();
     }
 
 }

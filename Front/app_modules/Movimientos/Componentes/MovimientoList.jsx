@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Menu, Icon, Header, Table, Dimmer, Loader, Segment, Container, Modal, Button, Divider, Form, Input} from 'semantic-ui-react'
+import { Menu, Icon, Header, Table, Dimmer, Loader, Segment, Container, Modal, Button, Divider, Form, Input, Pagination} from 'semantic-ui-react'
 import MovimientoForm from './MovimientoForm.jsx'
 import * as utils from '../../../utils.js';
 
@@ -11,9 +11,10 @@ export default class MovimientoList extends React.Component {
     this.state = {
       movimientos: [],
       conMovimientos: true,
+      activePage:1,
+      totalPages:10,
       modalOpenAgregar: false,
       modalOpenWarning: false,
-      conMovimientos: true,
       buscando: false,
       filtro:{
         nombreCobrador:'',
@@ -23,6 +24,11 @@ export default class MovimientoList extends React.Component {
     }
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
+  }
+
+  handlePaginationChange(e, { activePage }){
+     this.setState({ activePage });
   }
 
   handleCloseAgregar(hasChanges){
@@ -36,11 +42,6 @@ export default class MovimientoList extends React.Component {
     this.setState({modalOpenAgregar: true});
   }
 
-/*
-  componentWillMount(){
-    this.cargarMovimientos();
-  }
-*/
   cargarMovimientos(){
     let {filtro} = this.state;
     let fechaInicial = filtro.fechaInicial !== '' ? utils.toUtcDate(filtro.fechaInicial) : '';
@@ -62,10 +63,12 @@ export default class MovimientoList extends React.Component {
       .then((response) =>{
         utils.evalResponse(response, ()=>{
           if (response.data.length > 0) {
+            let totalPages = Math.ceil(response.data.length / 10);
             this.setState({
               movimientos: response.data,
               conMovimientos:true,
-              buscando:false
+              buscando:false,
+              totalPages
             });
           }else{
             this.setState({conMovimientos: false, buscando:false});
@@ -75,7 +78,9 @@ export default class MovimientoList extends React.Component {
   }
 
   renderMovimientoList(){
-    return this.state.movimientos.map((ie) =>{
+    const limiteSuperior = this.state.activePage * 10;
+    let movs = this.state.movimientos.slice(limiteSuperior - 10, limiteSuperior);
+    return movs.map((ie) =>{
       return(
         <Table.Row key={ie.id}>
           <Table.Cell>
@@ -101,39 +106,25 @@ export default class MovimientoList extends React.Component {
   }
 
   renderMovimientos(){
-    let leftIcon = '<';
-    let rightIcon = '>';
     if (this.state.conMovimientos) {
         return(
+          <div>
           <Table celled selectable striped>
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
                 <Table.HeaderCell>Fecha</Table.HeaderCell>
                 <Table.HeaderCell>Usuario</Table.HeaderCell>
-                <Table.HeaderCell>$ Cantidad</Table.HeaderCell>
+                <Table.HeaderCell>Monto</Table.HeaderCell>
                 <Table.HeaderCell>Descripción</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {this.renderMovimientoList()}
             </Table.Body>
-            <Table.Footer>
-              <Table.Row>
-                <Table.HeaderCell colSpan='5'>
-                  <Menu pagination>
-                    <Menu.Item as='a' icon>
-                    <h3>{leftIcon}</h3>
-                    </Menu.Item>
-                    <Menu.Item>Cambiar de página</Menu.Item>
-                    <Menu.Item as='a' icon>
-                    <h3>{rightIcon}</h3>
-                    </Menu.Item>
-                  </Menu>
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Footer>
           </Table>
+          <Pagination activePage={this.state.activePage} onPageChange={this.handlePaginationChange} totalPages={this.state.totalPages} />
+          </div>
         )
     }else{
       return(

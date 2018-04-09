@@ -28,7 +28,6 @@ class MainContainer extends React.Component{
 
 
   renderMainContent(){
-    console.log(localStorage.getItem('tokenSesion'));
     if (localStorage.getItem('tokenSesion') === '' || localStorage.getItem('tokenSesion') === null) {
       return(
         <Login></Login>
@@ -41,7 +40,7 @@ class MainContainer extends React.Component{
            <Menu.Item as={Link} to='/cobradores'>Cobradores</Menu.Item>
            <Menu.Item as={Link} to='/prestamos'>Préstamos</Menu.Item>
            <Menu.Item as={Link} to='/movimientos'>Movimientos Ingresos y Egresos</Menu.Item>
-           <Dropdown item simple text='Reportes' green>
+           <Dropdown item simple text='Reportes'>
              <Dropdown.Menu>
                <Dropdown.Item as={Link} to='/cobros'>Cobros</Dropdown.Item>
                <Dropdown.Divider />
