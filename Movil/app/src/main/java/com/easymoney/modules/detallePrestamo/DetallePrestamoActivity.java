@@ -50,8 +50,11 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener((view) -> {
-            this.lanzarModalCobro();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DetallePrestamoActivity.this.lanzarModalCobro();
+            }
         });
         fab.setVisibility(View.GONE);
         presenter.setFab(fab);

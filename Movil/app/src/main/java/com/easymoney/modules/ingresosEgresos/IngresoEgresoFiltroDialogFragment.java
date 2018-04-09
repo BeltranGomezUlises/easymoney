@@ -4,9 +4,9 @@ package com.easymoney.modules.ingresosEgresos;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.os.Build;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,13 +31,14 @@ public class IngresoEgresoFiltroDialogFragment extends DialogFragment {
     private IngresosEgresosPresenter presenter;
     private Spinner spTipoMov;
     private Spinner spRangoFecha;
+    private Context context;
 
     @SuppressLint("ValidFragment")
-    public IngresoEgresoFiltroDialogFragment(IngresosEgresosPresenter presenter) {
+    public IngresoEgresoFiltroDialogFragment(IngresosEgresosPresenter presenter, Context context) {
         this.presenter = presenter;
+        this.context = context;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -58,49 +59,60 @@ public class IngresoEgresoFiltroDialogFragment extends DialogFragment {
         listaTipoMov.add("Egresos");
         listaTipoMov.add("Todos");
 
-        spTipoMov.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, listaTipoMov));
-        spRangoFecha.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, listaRangoFechas));
+        spTipoMov.setAdapter(new ArrayAdapter<String>(context, R.layout.item_spinner, listaTipoMov));
+        spRangoFecha.setAdapter(new ArrayAdapter<String>(context, R.layout.item_spinner, listaRangoFechas));
 
         builder.setView(rootView)
-                .setTitle("menu_ingresos_egresos")
+                .setTitle("filtro")
                 .setPositiveButton("Buscar", null)
-                .setNegativeButton("Cancelar", (dialog, id) -> IngresoEgresoFiltroDialogFragment.this.getDialog().cancel());
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        IngresoEgresoFiltroDialogFragment.this.getDialog().cancel();
+                    }
+                });
 
-        Dialog dialog = builder.create();
+        final Dialog dialog = builder.create();
 
-        dialog.setOnShowListener(dialogInterface -> {
-            Button button = ((android.support.v7.app.AlertDialog) dialog).getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE);
-            button.setOnClickListener(view -> {
-                EnumTipoMovimiento enumTipoMovimiento = EnumTipoMovimiento.INGRESOS;
-                EnumRangoFecha enumRangoFecha = EnumRangoFecha.DIAS7;
-                switch (spTipoMov.getSelectedItemPosition()) {
-                    case 0:
-                        enumTipoMovimiento = EnumTipoMovimiento.INGRESOS;
-                        break;
-                    case 1:
-                        enumTipoMovimiento = EnumTipoMovimiento.EGRESOS;
-                        break;
-                    case 2:
-                        enumTipoMovimiento = EnumTipoMovimiento.TODOS;
-                        break;
-                }
-                switch (spRangoFecha.getSelectedItemPosition()) {
-                    case 0:
-                        enumRangoFecha = EnumRangoFecha.DIAS7;
-                        break;
-                    case 1:
-                        enumRangoFecha = EnumRangoFecha.DIAS15;
-                        break;
-                    case 2:
-                        enumRangoFecha = EnumRangoFecha.DIAS30;
-                        break;
-                    case 3:
-                        enumRangoFecha = EnumRangoFecha.TODOS;
-                        break;
-                }
-                presenter.cargarMovimientos(enumTipoMovimiento, enumRangoFecha);
-                dialog.dismiss();
-            });
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = ((android.support.v7.app.AlertDialog) dialog).getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        EnumTipoMovimiento enumTipoMovimiento = EnumTipoMovimiento.INGRESOS;
+                        EnumRangoFecha enumRangoFecha = EnumRangoFecha.DIAS7;
+                        switch (spTipoMov.getSelectedItemPosition()) {
+                            case 0:
+                                enumTipoMovimiento = EnumTipoMovimiento.INGRESOS;
+                                break;
+                            case 1:
+                                enumTipoMovimiento = EnumTipoMovimiento.EGRESOS;
+                                break;
+                            case 2:
+                                enumTipoMovimiento = EnumTipoMovimiento.TODOS;
+                                break;
+                        }
+                        switch (spRangoFecha.getSelectedItemPosition()) {
+                            case 0:
+                                enumRangoFecha = EnumRangoFecha.DIAS7;
+                                break;
+                            case 1:
+                                enumRangoFecha = EnumRangoFecha.DIAS15;
+                                break;
+                            case 2:
+                                enumRangoFecha = EnumRangoFecha.DIAS30;
+                                break;
+                            case 3:
+                                enumRangoFecha = EnumRangoFecha.TODOS;
+                                break;
+                        }
+                        presenter.cargarMovimientos(enumTipoMovimiento, enumRangoFecha);
+                        dialog.dismiss();
+                    }
+                });
+            }
         });
 
         return dialog;

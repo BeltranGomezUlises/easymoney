@@ -111,10 +111,8 @@ public class PrestamoRepository implements PrestamoDataSource {
      * @param enumPrestamos TODOS, para consultar todos los prestamos del cobrador y POR_COBRAR para consultar aquellos que se les puede cobrar
      * @return lista de prestamos
      */
-    public Flowable<List<Prestamo>> findAll(EnumPrestamos enumPrestamos) {
-        return remoteDataSource.findAll(enumPrestamos)
-                .observeOn(SchedulerProvider.uiT())
-                .subscribeOn(SchedulerProvider.ioT());
+    public Flowable<Response<List<Prestamo>, Object>> findAll(EnumPrestamos enumPrestamos) {
+        return remoteDataSource.findAll(enumPrestamos);
     }
 
     /**

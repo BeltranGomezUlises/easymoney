@@ -3,6 +3,7 @@ package com.easymoney.modules.main;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -15,9 +16,6 @@ import android.widget.Spinner;
 
 import com.easymoney.R;
 import com.easymoney.models.EnumPrestamos;
-import com.easymoney.models.EnumRangoFecha;
-import com.easymoney.models.EnumTipoMovimiento;
-import com.easymoney.modules.ingresosEgresos.IngresoEgresoFiltroDialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +35,6 @@ public class MainFiltroDialogFragment extends DialogFragment {
         this.activity = activity;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -51,30 +48,41 @@ public class MainFiltroDialogFragment extends DialogFragment {
         listaTiposPrestamos.add("Por cobrar");
         listaTiposPrestamos.add("Todos");
 
-        spTipoPrestamo.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, listaTiposPrestamos));
+        spTipoPrestamo.setAdapter(new ArrayAdapter<String>(activity.getApplicationContext(), R.layout.item_spinner, listaTiposPrestamos));
 
         builder.setView(rootView)
-                .setTitle("menu_ingresos_egresos")
+                .setTitle("filtro")
                 .setPositiveButton("Buscar", null)
-                .setNegativeButton("Cancelar", (dialog, id) -> MainFiltroDialogFragment.this.getDialog().cancel());
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MainFiltroDialogFragment.this.getDialog().cancel();
+                    }
+                });
 
-        Dialog dialog = builder.create();
+        final Dialog dialog = builder.create();
 
-        dialog.setOnShowListener(dialogInterface -> {
-            Button button = ((android.support.v7.app.AlertDialog) dialog).getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE);
-            button.setOnClickListener(view -> {
-                EnumPrestamos enumPrestamos = EnumPrestamos.POR_COBRAR;
-                switch (spTipoPrestamo.getSelectedItemPosition()) {
-                    case 0:
-                        enumPrestamos = EnumPrestamos.POR_COBRAR;
-                        break;
-                    case 1:
-                        enumPrestamos = EnumPrestamos.TODOS;
-                        break;
-                }
-                activity.cargarPrestamos(enumPrestamos);
-                dialog.dismiss();
-            });
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = ((android.support.v7.app.AlertDialog) dialog).getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        EnumPrestamos enumPrestamos = EnumPrestamos.POR_COBRAR;
+                        switch (spTipoPrestamo.getSelectedItemPosition()) {
+                            case 0:
+                                enumPrestamos = EnumPrestamos.POR_COBRAR;
+                                break;
+                            case 1:
+                                enumPrestamos = EnumPrestamos.TODOS;
+                                break;
+                        }
+                        activity.cargarPrestamos(enumPrestamos);
+                        dialog.dismiss();
+                    }
+                });
+            }
         });
         return dialog;
     }

@@ -6,8 +6,13 @@ import com.easymoney.data.repositories.MovimientoRepository;
 import com.easymoney.entities.Movimiento;
 import com.easymoney.models.EnumRangoFecha;
 import com.easymoney.models.EnumTipoMovimiento;
+import com.easymoney.models.services.Response;
+import com.easymoney.utils.schedulers.SchedulerProvider;
+
+import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by ulises on 03/03/2018.
@@ -40,12 +45,19 @@ public class IngresosEgresosPresenter implements IngresosEgresosContract.Present
         showLoading(true);
         compositeDisposable.add(
                 repository.altaMovimiento(movimiento)
-                        .subscribe(r -> {
-                            showLoading(false);
-                            agregarMovimientoLista(r.getData());
-                        }, ex -> {
-                            showLoading(false);
-                            showMessage("Error de comunicación");
+                        .subscribe(new Consumer<Response<Movimiento, Object>>() {
+                            @Override
+                            public void accept(Response<Movimiento, Object> r) throws Exception {
+                                showLoading(false);
+                                agregarMovimientoLista(r.getData());
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                showLoading(false);
+                                showMessage("Error de comunicación");
+                                throwable.printStackTrace();
+                            }
                         })
         );
     }
@@ -55,26 +67,34 @@ public class IngresosEgresosPresenter implements IngresosEgresosContract.Present
         showLoading(true);
         compositeDisposable.add(
                 repository.findAll(tipoMovimiento, enumRangoFecha)
-                        .subscribe(r -> {
-                                    showLoading(false);
-                                    switch (r.getMeta().getStatus()) {
-                                        case OK:
-                                            fragment.replaceMovimientoList(r.getData());
-                                            break;
-                                        case WARNING:
-                                            showMessage("Atención:" + r.getMeta().getMessage());
-                                            break;
-                                        case ERROR:
-                                            showMessage("Error de programación");
-                                            break;
-                                        default:
-                                            break;
+                        .subscribeOn(SchedulerProvider.ioT())
+                        .observeOn(SchedulerProvider.uiT())
+                        .subscribe(new Consumer<Response<List<Movimiento>, Object>>() {
+                                       @Override
+                                       public void accept(Response<List<Movimiento>, Object> r) throws Exception {
+                                           showLoading(false);
+                                           switch (r.getMeta().getStatus()) {
+                                               case OK:
+                                                   fragment.replaceMovimientoList(r.getData());
+                                                   break;
+                                               case WARNING:
+                                                   showMessage("Atención:" + r.getMeta().getMessage());
+                                                   break;
+                                               case ERROR:
+                                                   showMessage("Error de programación");
+                                                   break;
+                                               default:
+                                                   break;
+                                           }
+                                       }
+                                   }
+                                , new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable throwable) throws Exception {
+                                        showLoading(false);
+                                        showMessage("Existió un error de comunicación");
+                                        throwable.printStackTrace();
                                     }
-                                }
-                                , ex -> {
-                                    ex.printStackTrace();
-                                    showLoading(false);
-                                    showMessage("Existió un error de comunicación");
                                 })
         );
     }

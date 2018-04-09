@@ -3,6 +3,7 @@ package com.easymoney.modules.detallePrestamo;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -49,7 +50,7 @@ public class CobroDialogFragment extends DialogFragment {
         tvAbono = rootView.findViewById(R.id.tvAbono);
         tvMulta = rootView.findViewById(R.id.tvMulta);
         tvMultaMes = rootView.findViewById(R.id.tvMultaMes);
-        tvAjuste= rootView.findViewById(R.id.tvAjuste);
+        tvAjuste = rootView.findViewById(R.id.tvAjuste);
         txtAbonar = rootView.findViewById(R.id.txtAbonar);
         txtDescripcion = rootView.findViewById(R.id.txtDes);
 
@@ -65,18 +66,30 @@ public class CobroDialogFragment extends DialogFragment {
         builder.setView(rootView)
                 .setTitle("Abonar")
                 .setPositiveButton("Abonar", null)
-                .setNegativeButton("Cancelar", (dialog, id) -> CobroDialogFragment.this.getDialog().cancel());
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        CobroDialogFragment.this.getDialog().cancel();
+                    }
+                });
 
-        Dialog dialog = builder.create();
+        final Dialog dialog = builder.create();
 
-        dialog.setOnShowListener(dialogInterface -> {
-            Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-            button.setOnClickListener(view -> {
-                if (validateIns()) {
-                    abonar(model);
-                    dialog.dismiss();
-                }
-            });
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (validateIns()) {
+                            abonar(model);
+                            dialog.dismiss();
+                        }
+                    }
+
+                });
+            }
         });
 
 

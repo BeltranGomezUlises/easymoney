@@ -1,10 +1,13 @@
 package com.easymoney.modules.cambiarContra;
 
 import com.easymoney.data.repositories.UsuarioRepository;
+import com.easymoney.entities.Usuario;
 import com.easymoney.models.ModelCambiarContra;
+import com.easymoney.models.services.Response;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by ulises on 15/01/2018.
@@ -29,22 +32,27 @@ public class CambiarContraPresenter implements CambiarContraContract.Presenter {
         compositeDisposable.add(this.usuarioRepository.cambiarContraseña(modelCambiarContra)
                 .observeOn(SchedulerProvider.uiT())
                 .subscribeOn(SchedulerProvider.ioT())
-                .subscribe(r -> {
-                    fragment.showLoading(false);
-                    switch (r.getMeta().getStatus()) {
-                        case OK:
-                            fragment.showMessage("Contraseña actualizada");
-                            break;
-                        case WARNING:
-                            fragment.showMessage(r.getMeta().getMessage());
-                            break;
-                        case ERROR:
-                            fragment.showMessage("Existió un error de programación");
-                            break;
+                .subscribe(new Consumer<Response<Usuario, Object>>() {
+                    @Override
+                    public void accept(Response<Usuario, Object> r) throws Exception {
+                        fragment.showLoading(false);
+                        switch (r.getMeta().getStatus()) {
+                            case OK:
+                                fragment.showMessage("Contraseña actualizada");
+                                break;
+                            case WARNING:
+                                fragment.showMessage(r.getMeta().getMessage());
+                                break;
+                            case ERROR:
+                                fragment.showMessage("Existió un error de programación");
+                                break;
+                        }
                     }
-                }, ex -> {
-                    fragment.showMessage("Existió un error de programación");
-                    ex.printStackTrace();
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        fragment.showMessage("Existió un error de programación");
+                    }
                 })
         );
     }

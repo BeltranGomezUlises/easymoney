@@ -66,9 +66,7 @@ public class MovimientoRepository {
                 //no filtrar por fechas
                 break;
         }
-        return webServices().obtenerMovimientos(UtilsPreferences.loadToken(), modelFiltroMovimiento)
-                .subscribeOn(SchedulerProvider.ioT())
-                .observeOn(SchedulerProvider.uiT());
+        return webServices().obtenerMovimientos(UtilsPreferences.loadToken(), modelFiltroMovimiento);
     }
 
     /**

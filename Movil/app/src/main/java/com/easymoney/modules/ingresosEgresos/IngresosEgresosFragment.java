@@ -59,7 +59,7 @@ public class IngresosEgresosFragment extends Fragment implements IngresosEgresos
         View root = inflater.inflate(R.layout.fragment_ingresos_egresos, container, false);
 
         listView = root.findViewById(R.id.lista_movimientos);
-        movimientoAdapter = new MovimientoAdapter(new ArrayList<>());
+        movimientoAdapter = new MovimientoAdapter(new ArrayList<Movimiento>());
         listView.setAdapter(movimientoAdapter);
 
         this.presenter.subscribe();
@@ -141,7 +141,12 @@ public class IngresosEgresosFragment extends Fragment implements IngresosEgresos
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
                 rowView = inflater.inflate(R.layout.adapter_movimiento, viewGroup, false);
             }
-            rowView.setOnClickListener( __ -> {});
+            rowView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
             Movimiento movimiento = movimientos.get(i);
 
             tvFecha = rowView.findViewById(R.id.tvFecha);

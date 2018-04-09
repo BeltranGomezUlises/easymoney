@@ -3,6 +3,7 @@ package com.easymoney.modules.ingresosEgresos;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -53,18 +54,29 @@ public class IngresoEgresoDialogFragment extends DialogFragment {
         builder.setView(rootView)
                 .setTitle("Agregar")
                 .setPositiveButton("Agregar", null)
-                .setNegativeButton("Cancelar", (dialog, id) -> IngresoEgresoDialogFragment.this.getDialog().cancel());
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        IngresoEgresoDialogFragment.this.getDialog().cancel();
+                    }
+                });
 
-        Dialog dialog = builder.create();
+        final Dialog dialog = builder.create();
 
-        dialog.setOnShowListener(dialogInterface -> {
-            Button button = ((android.support.v7.app.AlertDialog) dialog).getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE);
-            button.setOnClickListener(view -> {
-                if (validateIns()) {
-                    agregarMovmiento();
-                    dialog.dismiss();
-                }
-            });
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = ((android.support.v7.app.AlertDialog) dialog).getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (validateIns()) {
+                            agregarMovmiento();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
         });
         return dialog;
     }
