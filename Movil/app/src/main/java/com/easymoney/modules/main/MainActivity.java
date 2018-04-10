@@ -169,20 +169,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param nombreCliente nombre del cliente buscado
      */
     private void filtrarPrestamos(String nombreCliente) {
-        List<Prestamo> prestamosBuscados = new ArrayList<>();
-        for (Prestamo prestamo : this.prestamos) {
-            if (prestamo.getCliente().getNombre().toLowerCase().contains(nombreCliente.toLowerCase())) {
-                prestamosBuscados.add(prestamo);
+        if (this.prestamos != null) {
+            List<Prestamo> prestamosBuscados = new ArrayList<>();
+            for (Prestamo prestamo : this.prestamos) {
+                if (prestamo.getCliente().getNombre().toLowerCase().contains(nombreCliente.toLowerCase())) {
+                    prestamosBuscados.add(prestamo);
+                }
             }
+            adapterPrestamo.replaceData(prestamosBuscados);
         }
-        adapterPrestamo.replaceData(prestamosBuscados);
     }
 
     /**
      * resetea los prestamos mostrados con todos los existentes
      */
     private void desfiltrarPrestamos() {
-        adapterPrestamo.replaceData(this.prestamos);
+        if (this.prestamos != null) adapterPrestamo.replaceData(this.prestamos);
     }
 
     @Override

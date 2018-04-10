@@ -23,11 +23,11 @@ class MainContainer extends React.Component{
   constructor(props) {
     super(props);
     this.state = {menuVisible: true};
-    localStorage.setItem('url', config.apiUrl );
   }
 
 
   renderMainContent(){
+    localStorage.setItem('url', config.apiUrl );
     if (localStorage.getItem('tokenSesion') === '' || localStorage.getItem('tokenSesion') === null) {
       return(
         <Login></Login>

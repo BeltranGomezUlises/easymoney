@@ -117,7 +117,7 @@ export default class Clientes extends React.Component{
             <Dimmer active inverted>
               <Loader size='large'>Descargando...</Loader>
             </Dimmer>
-            <Image src='/assets/images/descargandoClientes.png'/>
+            <Image src='assets/images/descargandoClientes.png'/>
           </div>
         );
       }

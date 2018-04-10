@@ -125,7 +125,7 @@ export default class Cobradores extends React.Component{
             <Dimmer active inverted>
               <Loader size='large'>Descargando...</Loader>
             </Dimmer>
-            <Image src='/assets/images/descargandoCobradores.png'/>
+            <Image src='assets/images/descargandoCobradores.png'/>
           </div>
         )
       }
