@@ -164,10 +164,8 @@ public class UtilsSecurity {
         }
     }
 
-    
-    
     public static void main(String[] args) {
-        System.out.println(UtilsSecurity.cifrarMD5("easymoney"));        
+        System.out.println(UtilsSecurity.cifrarMD5("easymoney"));
     }
-    
+
 }

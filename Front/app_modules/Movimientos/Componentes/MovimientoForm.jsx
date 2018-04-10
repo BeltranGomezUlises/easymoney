@@ -32,10 +32,11 @@ export default class MovimientoForm extends Component{
 
   agregarMovimiento(){
     let {movimiento} = this.state;
-    if (this.state.tipoMovimiento) {
+    if (!this.state.tipoMovimiento) {
       movimiento.cantidad *= -1;
     }
-    movimiento.usuarioCreador = JSON.parse(localStorage.getItem('logedUser'));    
+    movimiento.usuarioCreador = JSON.parse(localStorage.getItem('logedUser'));
+    movimiento.fecha = utils.toUtcDate(movimiento.fecha);
     fetch(localStorage.getItem('url') + 'movimientos',{
       method: 'POST',
       headers: {
@@ -57,7 +58,7 @@ export default class MovimientoForm extends Component{
   renderButton(){
     if (this.state.isLoading) {
       return(
-        <Button color='green' loading type='sumbit'>Agregar</Button>
+        <Button color='green' loading>Agregar</Button>
       );
     }else{
       return(
@@ -72,7 +73,7 @@ export default class MovimientoForm extends Component{
         <Form.Field>
           <label pointing='right'>Fecha:</label>
           <input type='date' required onInput={(evt) =>{
-                const fecha = evt.target.value;
+                const fecha = evt.target.value;                
                 let {movimiento} = this.state;
                 movimiento.fecha = fecha;
                 this.setState({movimiento});
@@ -80,7 +81,7 @@ export default class MovimientoForm extends Component{
             value={this.state.movimiento.fecha}/>
         </Form.Field>
         <Form.Field>
-          <Checkbox label='Marcar como egreso' onChange={ (evt, data) => {
+          <Checkbox label='Marcar como Ingreso' onChange={ (evt, data) => {
             this.setState({tipoMovimiento: data.checked});
           }}/>
         </Form.Field>

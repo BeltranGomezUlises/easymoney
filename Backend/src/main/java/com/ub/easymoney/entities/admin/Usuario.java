@@ -32,9 +32,6 @@ import javax.validation.constraints.Size;
 @Table(name = "usuario")
 public class Usuario implements Serializable, IEntity<Integer> {
 
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuarioCreador", fetch = FetchType.EAGER)
-//    private List<Movimiento> movimientoList;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -144,13 +141,5 @@ public class Usuario implements Serializable, IEntity<Integer> {
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
     }
-
-//    public List<Movimiento> getMovimientoList() {
-//        return movimientoList;
-//    }
-//
-//    public void setMovimientoList(List<Movimiento> movimientoList) {
-//        this.movimientoList = movimientoList;
-//    }
 
 }

@@ -125,7 +125,7 @@ export default class Cobradores extends React.Component{
             <Dimmer active inverted>
               <Loader size='large'>Descargando...</Loader>
             </Dimmer>
-            <Image src='/assets/images/descargandoCobradores.png'/>
+            <Image src='assets/images/descargandoCobradores.png'/>
           </div>
         )
       }
@@ -156,6 +156,15 @@ export default class Cobradores extends React.Component{
              }}
           />
         </Form.Group>
+        <Modal
+          trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
+          onClose={this.handleCloseAgregar}
+          open={this.state.modalOpenAgregar}>
+          <Header content='Agregar cobrador' />
+          <Modal.Content>
+            <CobradorForm getData={this.onCreateHandler} agregarCobrador={this.agregarCobrador}></CobradorForm>
+          </Modal.Content>
+        </Modal>
       </Form>
     );
   }
@@ -164,15 +173,6 @@ export default class Cobradores extends React.Component{
     return(
       <div>
         <Segment>
-          <Modal
-            trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
-            onClose={this.handleCloseAgregar}
-            open={this.state.modalOpenAgregar}>
-            <Header content='Agregar cobrador' />
-            <Modal.Content>
-              <CobradorForm getData={this.onCreateHandler} agregarCobrador={this.agregarCobrador}></CobradorForm>
-            </Modal.Content>
-          </Modal>
           <Divider horizontal>Filtros</Divider>
           {this.renderFiltros()}
         </Segment>

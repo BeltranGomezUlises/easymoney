@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader, Segment, Container, Modal, Button} from 'semantic-ui-react'
+import { Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader, Segment, Container, Modal, Button, Menu, Pagination, Grid} from 'semantic-ui-react'
 import PrestamoForm from './PrestamoForm.jsx'
 import PrestamoDetalle from './PrestamoDetalle.jsx'
 import * as utils from '../../../utils.js';
@@ -10,6 +10,8 @@ export default class PrestamoList extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      activePage:1,
+      totalPages: 10,
       prestamos:[],
       totalesPrestamos:{},
       modalOpenAgregar:false,
@@ -38,12 +40,12 @@ export default class PrestamoList extends React.Component {
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
     this.agregarPrestamo = this.agregarPrestamo.bind(this);
     this.onCreateHandler = this.onCreateHandler.bind(this);
-    this.cargarTotalesPrestamos = this.cargarTotalesPrestamos.bind(this);
+    this.cargarPrestamos = this.cargarPrestamos.bind(this);
+    this.handlePaginationChange = this.handlePaginationChange.bind(this);
   }
 
-  componentWillMount(){
-    //this.cargarPrestamos();
-    //this.cargarTotalesPrestamos();
+  handlePaginationChange(e, { activePage }){
+     this.setState({ activePage });
   }
 
   handleCloseAgregar(){
@@ -110,17 +112,13 @@ export default class PrestamoList extends React.Component {
         acreditados: filtro.acreditados
       })
     }).then((res)=> res.json())
-    .then((response) =>{
-      if (response.data.length > 0) {
+    .then((response) => {
+        let totalPages = Math.ceil(response.data.length / 10);
         this.setState({
           prestamos:response.data,
-          buscando: false
+          buscando: false,
+          totalPages
         });
-      }else{
-        this.setState({
-          buscando: false
-        });
-      }
     })
 
     fetch(localStorage.getItem('url') + 'prestamos/totalesGeneralesFiltro',{
@@ -148,43 +146,10 @@ export default class PrestamoList extends React.Component {
     })
   }
 
-  cargarTotalesPrestamos(){
-    fetch(localStorage.getItem('url') + 'prestamos/totalesGenerales',{
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin':'*',
-        'Authorization': localStorage.getItem('tokenSesion')
-      }
-    }).then((res)=> res.json())
-    .then((response) =>{
-      utils.evalResponse(response, () => {
-        this.setState({totalesPrestamos: response.data});
-      });
-    })
-  }
-
-  cargarTotalesPrestamosFiltro(filtro){
-    fetch(localStorage.getItem('url') + 'prestamos/totalesGeneralesFiltro',{
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin':'*',
-        'Authorization': localStorage.getItem('tokenSesion')
-      }
-    }).then((res)=> res.json())
-    .then((response) =>{
-      utils.evalResponse(response, () => {
-        this.setState({totalesPrestamos: response.data});
-      });
-    })
-  }
-
-
   renderPrestamosList(){
-    return this.state.prestamos.map((prestamo) =>{
+    const limiteSuperior = this.state.activePage * 10;
+    let prestamos = this.state.prestamos.slice(limiteSuperior - 10, limiteSuperior);
+    return prestamos.map((prestamo) =>{
       return(
         <Table.Row key={prestamo.id}>
           <Modal trigger={
@@ -196,7 +161,7 @@ export default class PrestamoList extends React.Component {
             }>
             <Modal.Header>Detalle Prestamo</Modal.Header>
             <Modal.Content>
-              <PrestamoDetalle prestamo={prestamo} update={this.cargarTotalesPrestamos}>
+              <PrestamoDetalle prestamo={prestamo} update={this.cargarPrestamos}>
               </PrestamoDetalle>
             </Modal.Content>
           </Modal>
@@ -224,26 +189,27 @@ export default class PrestamoList extends React.Component {
   }
 
   renderPrestamos(){
-    if (this.state.prestamos.length > 0) {
         return(
-          <Table celled selectable striped>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
-              <Table.HeaderCell>Cliente</Table.HeaderCell>
-              <Table.HeaderCell>Cobrador</Table.HeaderCell>
-              <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
-              <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
-              <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
-              <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {this.renderPrestamosList()}
-          </Table.Body>
-        </Table>
+          <div>
+            <Table celled selectable striped>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell textAlign='center'>Id</Table.HeaderCell>
+                  <Table.HeaderCell>Cliente</Table.HeaderCell>
+                  <Table.HeaderCell>Cobrador</Table.HeaderCell>
+                  <Table.HeaderCell textAlign='right'>Cantidad</Table.HeaderCell>
+                  <Table.HeaderCell textAlign='right'>Cantidad a Pagar</Table.HeaderCell>
+                  <Table.HeaderCell>Fecha/Hora Prestamo</Table.HeaderCell>
+                  <Table.HeaderCell>Fecha Limite</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {this.renderPrestamosList()}
+              </Table.Body>
+            </Table>
+            <Pagination activePage={this.state.activePage} onPageChange={this.handlePaginationChange} totalPages={this.state.totalPages} />
+          </div>
         )
-    }
   }
 
   renderTotalesPrestamosList(){
@@ -379,7 +345,7 @@ export default class PrestamoList extends React.Component {
             checked={this.state.filtro.acreditados} />
         </Form.Field>
 
-
+        <Form.Group>
         <Form.Field>
           {this.renderButtonBuscar()}
         </Form.Field>
@@ -395,6 +361,24 @@ export default class PrestamoList extends React.Component {
           }
           this.setState({filtro});
         }}>Limpiar filtros</Form.Field>
+
+        <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
+          onClose={this.handleCloseAgregar}
+          open={this.state.modalOpenAgregar}>
+          <Header content='Agregar prestamo' />
+          <Modal.Content>
+              <PrestamoForm getData={this.onCreateHandler}></PrestamoForm>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button color='green' onClick={this.agregarPrestamo}>
+              Guardar
+            </Button>
+            <Button color='red' onClick={this.handleCloseAgregar}>
+              Cancelar
+            </Button>
+          </Modal.Actions>
+        </Modal>
+        </Form.Group>
       </Form>
     );
   }
@@ -418,23 +402,6 @@ export default class PrestamoList extends React.Component {
     return (
       <div>
         <Segment>
-          <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
-            onClose={this.handleCloseAgregar}
-            open={this.state.modalOpenAgregar}>
-            <Header content='Agregar prestamo' />
-            <Modal.Content>
-                <PrestamoForm getData={this.onCreateHandler}></PrestamoForm>
-            </Modal.Content>
-            <Modal.Actions>
-              <Button color='green' onClick={this.agregarPrestamo}>
-                Guardar
-              </Button>
-              <Button color='red' onClick={this.handleCloseAgregar}>
-                Cancelar
-              </Button>
-            </Modal.Actions>
-          </Modal>
-
           <Divider horizontal>Filtros</Divider>
           {this.renderFiltros()}
         </Segment>

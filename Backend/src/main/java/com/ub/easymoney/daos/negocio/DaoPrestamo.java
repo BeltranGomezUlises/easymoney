@@ -102,7 +102,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      * @return lista de prestamos asignados al cobrador
      */
     public List<Prestamo> prestamosDelCobrador(int cobradorId) {
-        return getEM().createQuery("SELECT t FROM Prestamo t WHERE t.cobrador.id = :cobradorId", Prestamo.class)
+        return getEMInstance().createQuery("SELECT t FROM Prestamo t WHERE t.cobrador.id = :cobradorId", Prestamo.class)
                 .setParameter("cobradorId", cobradorId)
                 .getResultList();
     }

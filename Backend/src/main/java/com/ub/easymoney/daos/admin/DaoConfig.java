@@ -13,10 +13,10 @@ import com.ub.easymoney.utils.UtilsDB;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class DaoConfig extends DaoSQLFacade<Config, Integer>{
-    
+public class DaoConfig extends DaoSQLFacade<Config, Integer> {
+
     public DaoConfig() {
         super(UtilsDB.getEMFactoryCG(), Config.class, Integer.class);
     }
-    
+
 }

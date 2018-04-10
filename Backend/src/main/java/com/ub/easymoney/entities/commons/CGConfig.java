@@ -21,7 +21,7 @@ package com.ub.easymoney.entities.commons;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class CGConfig{
+public class CGConfig {
 
     private JwtsConfig jwtConfig;
     private MailsConfig mailConfig;

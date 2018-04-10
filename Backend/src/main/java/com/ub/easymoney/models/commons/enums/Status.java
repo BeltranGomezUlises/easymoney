@@ -7,8 +7,9 @@ package com.ub.easymoney.models.commons.commons.enums;
 
 /**
  * enumerador de estado de operacion
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 public enum Status {
-    OK,ERROR,WARNING, ACCES_DENIED, INVALID_PARAM, PARCIAL_ACCESS
+    OK, ERROR, WARNING, ACCES_DENIED, INVALID_PARAM, PARCIAL_ACCESS
 }

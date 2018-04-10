@@ -14,13 +14,10 @@ import com.ub.easymoney.utils.UtilsDB;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class DaoAbono extends DaoSQLFacade<Abono, AbonoPK>{
-    
+public class DaoAbono extends DaoSQLFacade<Abono, AbonoPK> {
+
     public DaoAbono() {
         super(UtilsDB.getEMFactoryCG(), Abono.class, AbonoPK.class);
     }
-    
-    
-    
-    
+
 }

@@ -2,11 +2,15 @@ package com.easymoney.data.dataSources;
 
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
-import com.easymoney.utils.UtilsPreferences;
+import com.easymoney.models.services.Response;
+
+import org.reactivestreams.Publisher;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 import static com.easymoney.utils.UtilsPreferences.loadLogedUser;
 import static com.easymoney.utils.UtilsPreferences.loadToken;
@@ -41,8 +45,7 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
 
         @Override
         public Flowable<Prestamo> update(Prestamo prestamo) {
-            return webServices().actualizarPrestamo(UtilsPreferences.loadToken(), prestamo)
-                    .map(r -> r.getData());
+            return null;
         }
 
         @Override
@@ -65,15 +68,11 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
 
         }
 
-        public Flowable<List<Prestamo>> findAll(EnumPrestamos enumPrestamos) {
+        public Flowable<Response<List<Prestamo>, Object>> findAll(EnumPrestamos enumPrestamos) {
             if (enumPrestamos == EnumPrestamos.POR_COBRAR) {
-                return webServices().prestamosPorCobrar(loadToken(), loadLogedUser().getId())
-                        .flatMap(r -> Flowable.fromIterable(r.getData()))
-                        .toList().toFlowable();
+                return webServices().prestamosPorCobrar(loadToken(), loadLogedUser().getId());
             } else {
-                return webServices().prestamosDelCobrador(loadToken(), loadLogedUser().getId())
-                        .flatMap(r -> Flowable.fromIterable(r.getData()))
-                        .toList().toFlowable();
+                return webServices().prestamosDelCobrador(loadToken(), loadLogedUser().getId());
             }
         }
     }

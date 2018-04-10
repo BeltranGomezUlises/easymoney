@@ -13,13 +13,14 @@ import javax.ws.rs.Path;
 
 /**
  * servicios para registros de multas de los dias de abonos
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Path("/multas")
-public class Multas extends ServiceFacade<Multa, MultaPK>{
-    
+public class Multas extends ServiceFacade<Multa, MultaPK> {
+
     public Multas() {
         super(new ManagerMulta());
     }
-    
+
 }

@@ -14,16 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ub.easymoney.models.commons.exceptions;;
+package com.ub.easymoney.models.commons.exceptions;
+
+;
 
 /**
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class ProfundidadNoAsignadaException extends Exception{
+public class ProfundidadNoAsignadaException extends Exception {
 
     public ProfundidadNoAsignadaException() {
-        super("No asignó profundidad de acceso al manejador");        
+        super("No asignó profundidad de acceso al manejador");
     }
-       
+
 }

@@ -14,10 +14,10 @@ import com.ub.easymoney.managers.commons.ManagerSQL;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class ManagerMulta extends ManagerSQL<Multa, MultaPK>{
-    
+public class ManagerMulta extends ManagerSQL<Multa, MultaPK> {
+
     public ManagerMulta() {
         super(new DaoMulta());
     }
-    
+
 }

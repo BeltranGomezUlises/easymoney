@@ -22,12 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Created by ulises on 16/01/2018.
  */
-public class AbonoFragment extends Fragment implements DetallePrestamoContract.View{
+public class AbonoFragment extends Fragment implements DetallePrestamoContract.View {
 
     ListView listView;
     AbonoAdapter abonoAdapter;
@@ -47,7 +46,7 @@ public class AbonoFragment extends Fragment implements DetallePrestamoContract.V
         View rootView = inflater.inflate(R.layout.fragment_detalle_prestamo_abonos, container, false);
 
         listView = rootView.findViewById(R.id.abonoList);
-        abonoAdapter = new AbonoAdapter(new ArrayList<>());
+        abonoAdapter = new AbonoAdapter(new ArrayList<Abono>());
         listView.setAdapter(abonoAdapter);
 
         return rootView;
@@ -57,13 +56,17 @@ public class AbonoFragment extends Fragment implements DetallePrestamoContract.V
         return presenter;
     }
 
+    @Override
+    public void setPresenter(DetallePrestamoContract.Presenter presenter) {
+        this.presenter = (DetallePrestamoPresenter) presenter;
+    }
 
     @Override
     public void showLoading(boolean active) {
-        if (active){
-            dialog = ProgressDialog.show(getActivity(), "Cargando","Por favor espere...", true);
-        }else{
-            if (dialog != null){
+        if (active) {
+            dialog = ProgressDialog.show(getActivity(), "Cargando", "Por favor espere...", true);
+        } else {
+            if (dialog != null) {
                 dialog.cancel();
             }
         }
@@ -73,14 +76,12 @@ public class AbonoFragment extends Fragment implements DetallePrestamoContract.V
         Snackbar.make(this.getView(), message, LENGTH_LONG).show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void replaceData(List<Abono> abonos) {
-        abonoAdapter.replaceData(abonos.stream().filter(a -> a.isAbonado()).collect(toList()));
-    }
-
-    @Override
-    public void setPresenter(DetallePrestamoContract.Presenter presenter) {
-        this.presenter = (DetallePrestamoPresenter) presenter;
+        List<Abono> abonosFiltrado = new ArrayList<>();
+        for (Abono abono : abonos) {
+            if (abono.isAbonado()) abonosFiltrado.add(abono);
+        }
+        abonoAdapter.replaceData(abonosFiltrado);
     }
 
     private static class AbonoAdapter extends BaseAdapter {

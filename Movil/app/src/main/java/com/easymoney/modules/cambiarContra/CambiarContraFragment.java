@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.easymoney.R;
 import com.easymoney.entities.Usuario;
@@ -45,16 +47,24 @@ public class CambiarContraFragment extends Fragment implements CambiarContraCont
         tvContraAcutal = root.findViewById(R.id.tvContraActual);
         tvContraNueva = root.findViewById(R.id.tvNuevaContraseña);
         tvContraNuevaConfirmacion = root.findViewById(R.id.tvNuevaContraseñaConfirmacion);
-        tvContraNuevaConfirmacion.setOnEditorActionListener((textView, id, keyEvent) -> {
-            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                cambiarContra();
-                return true;
+        tvContraNuevaConfirmacion.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_NULL) {
+                    cambiarContra();
+                    return true;
+                }
+                return false;
             }
-            return false;
         });
 
         Button btnLogin = root.findViewById(R.id.btnCambiarContra);
-        btnLogin.setOnClickListener(view -> cambiarContra());
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cambiarContra();
+            }
+        });
 
         return root;
     }

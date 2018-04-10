@@ -120,11 +120,11 @@ public class Multa implements Serializable, IEntity<MultaPK> {
     @Override
     public String toString() {
         return "com.ub.easymoney.entities.negocio.Multa[ multaPK=" + multaPK + " ]";
-    }   
+    }
 
     @Override
     public MultaPK obtenerIdentificador() {
         return multaPK;
     }
-    
+
 }

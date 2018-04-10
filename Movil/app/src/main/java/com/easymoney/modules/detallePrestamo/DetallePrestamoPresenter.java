@@ -7,25 +7,26 @@ import android.view.View;
 
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Abono;
-import com.easymoney.entities.AbonoPK;
 import com.easymoney.entities.Multa;
-import com.easymoney.entities.MultaPK;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.models.ModelAbonarPrestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.ModelTotalAPagar;
+import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import io.reactivex.disposables.CompositeDisposable;
-
-import static java.util.stream.Collectors.toList;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by ulises on 15/01/2018.
@@ -58,23 +59,29 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         compositeDisposable.add(repository.totalesPrestamo(prestamo.getId())
                 .observeOn(SchedulerProvider.uiT())
                 .subscribeOn(SchedulerProvider.ioT())
-                .subscribe(r -> {
-                    consultaFragment.showLoading(false);
-                    switch (r.getMeta().getStatus()) {
-                        case OK:
-                            consultaFragment.setTotales(r.getData());
-                            break;
-                        case WARNING:
-                            showMessage(r.getMeta().getMessage());
-                            break;
-                        case ERROR:
-                            showMessage("Existió un error de programación");
-                            break;
+                .subscribe(new Consumer<Response<ModelPrestamoTotales, Object>>() {
+                    @Override
+                    public void accept(Response<ModelPrestamoTotales, Object> r) throws Exception {
+                        consultaFragment.showLoading(false);
+                        switch (r.getMeta().getStatus()) {
+                            case OK:
+                                consultaFragment.setTotales(r.getData());
+                                break;
+                            case WARNING:
+                                showMessage(r.getMeta().getMessage());
+                                break;
+                            case ERROR:
+                                showMessage("Existió un error de programación");
+                                break;
+                        }
                     }
-                }, ex -> {
-                    showLoading(false);
-                    showMessage("Existió un error de comunicación");
-                    ex.printStackTrace();
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        showLoading(false);
+                        showMessage("Existió un error de comunicación");
+                        throwable.printStackTrace();
+                    }
                 }));
     }
 
@@ -85,23 +92,29 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 repository.abonosPrestamo(prestamo.getId())
                         .observeOn(SchedulerProvider.uiT())
                         .subscribeOn(SchedulerProvider.ioT())
-                        .subscribe(r -> {
-                            switch (r.getMeta().getStatus()) {
-                                case OK:
-                                    proccessAbonos(r.getData());
-                                    break;
-                                case WARNING:
-                                    showMessage(r.getMeta().getMessage());
-                                    break;
-                                case ERROR:
-                                    showMessage("Existió un error de programación");
-                                    break;
-                                default:
+                        .subscribe(new Consumer<Response<List<Abono>, Object>>() {
+                            @Override
+                            public void accept(Response<List<Abono>, Object> r) throws Exception {
+                                switch (r.getMeta().getStatus()) {
+                                    case OK:
+                                        proccessAbonos(r.getData());
+                                        break;
+                                    case WARNING:
+                                        showMessage(r.getMeta().getMessage());
+                                        break;
+                                    case ERROR:
+                                        showMessage("Existió un error de programación");
+                                        break;
+                                    default:
+                                }
                             }
-                        }, ex -> {
-                            showMessage("Existió un error de comunicación");
-                            showLoading(false);
-                            ex.printStackTrace();
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                showMessage("Existió un error de comunicación");
+                                showLoading(false);
+                                throwable.printStackTrace();
+                            }
                         })
         );
     }
@@ -112,7 +125,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         this.consultaFragment.showLoading(active);
     }
 
-    public final void showMessage(final String message){
+    public final void showMessage(final String message) {
         this.consultaFragment.showMessage(message);
         this.abonoFragment.showMessage(message);
     }
@@ -178,7 +191,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         this.consultaFragment.llenarDatosGenerales(prestamo);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public ModelTotalAPagar calcularTotalesPagar() {
         int abonoAPagar = 0;
         int multaAPagar = 0;
@@ -189,10 +201,19 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         Date fechaActual = new Date();
         cal.setTime(fechaActual);
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
-        List<Abono> abonos = prestamo.getAbonos().stream()
-                .filter(a -> !a.isAbonado() && a.getAbonoPK().getFecha().getTime() <= fechaActual.getTime())
-                .sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()))
-                .collect(toList());
+
+        List<Abono> abonos = new ArrayList<>();
+        for (Abono a : prestamo.getAbonos()) {
+            if (!a.isAbonado() && a.getAbonoPK().getFecha().getTime() <= fechaActual.getTime()) {
+                abonos.add(a);
+            }
+        }
+        Collections.sort(abonos, new Comparator<Abono>() {
+            @Override
+            public int compare(Abono a1, Abono a2) {
+                return a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha());
+            }
+        });
         int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
         for (Abono abono : abonos) {
             cal.setTime(abono.getAbonoPK().getFecha());
@@ -213,8 +234,16 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             multaAPagarMes = multaMes * cantidadDeDiasDespuesDelMes;
         }
 
-        if (prestamo.getAbonos().stream().allMatch(a -> a.isAbonado())) {
-            int sumaPagos = prestamo.getAbonos().stream().mapToInt(a -> a.getCantidad()).sum();
+        boolean todosAbonado = true;
+        for (Abono a : prestamo.getAbonos()) {
+            if (!a.isAbonado()) todosAbonado = false;
+        }
+
+        if (todosAbonado) {
+            int sumaPagos = 0;
+            for (Abono a : prestamo.getAbonos()) {
+                sumaPagos += a.getCantidad();
+            }
             if (sumaPagos < prestamo.getCantidadPagar()) {
                 ajusteDePago = prestamo.getCantidadPagar() - sumaPagos;
             }
@@ -229,17 +258,24 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      *
      * @param abono cantidad de dinero a abonar por el cliente, intresado en el dialog
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void abonarAlPrestamo(int abono, final String multaDes, final ModelTotalAPagar model) {
+        final int abonoTotal = abono;
         Calendar cal = new GregorianCalendar();
         cal.setTime(new Date());
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
         int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
         //distribuir pago con prioridad en multa y abonos anteriores e ir cubriendo la cantidad del abono
-        List<Abono> abonos = prestamo.getAbonos().stream()
-                .sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()))
-                .collect(toList());
 
+        List<Abono> abonos = new ArrayList<>();
+        for (Abono a : prestamo.getAbonos()) {
+            abonos.add(a);
+        }
+        Collections.sort(abonos, new Comparator<Abono>() {
+            @Override
+            public int compare(Abono a1, Abono a2) {
+                return a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha());
+            }
+        });
         for (Abono abonoActual : abonos) {
             if (!abonoActual.isAbonado()) {
                 cal.setTime(abonoActual.getAbonoPK().getFecha());
@@ -299,12 +335,12 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
         if (abono > 0 && model.getAjusteDePago() > 0) {
             //si ya hay uno del dia de hoy
-            Abono ultimoAbono = abonos.get(abonos.size() -1);
+            Abono ultimoAbono = abonos.get(abonos.size() - 1);
             cal.setTime(ultimoAbono.getAbonoPK().getFecha());
             int diaPrestamo = cal.get(Calendar.DAY_OF_YEAR);
-            if (diaPrestamo == diaActual){
+            if (diaPrestamo == diaActual) {
                 ultimoAbono.setCantidad(ultimoAbono.getCantidad() + model.getAjusteDePago());
-            }else{
+            } else {
                 Abono abonoAjuste = new Abono(prestamo.getId(), fechaActual);
                 abonoAjuste.setCantidad(abono);
                 abonoAjuste.setAbonado(true);
@@ -314,18 +350,35 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
         prestamo.setAbonos(abonos);
         this.showLoading(true);
-        repository.update(prestamo).subscribeOn(SchedulerProvider.ioT())
-                .observeOn(SchedulerProvider.uiT())
-                .subscribe(p -> {
-                    proccessAbonos(prestamo.getAbonos());
-                    cargarTotalesPrestamo();
-                    showLoading(false);
-                }, ex -> {
-                    showLoading(false);
-                    showMessage("Existió un error de comunicación");
-                    ex.printStackTrace();
-                });
 
+        ModelAbonarPrestamo modelAbonarPrestamo = new ModelAbonarPrestamo(abonoTotal, prestamo.getCliente().getId(), UtilsPreferences.loadLogedUser().getId(), prestamo);
+
+        repository.abonarPrestamo(modelAbonarPrestamo)
+                .subscribeOn(SchedulerProvider.ioT())
+                .observeOn(SchedulerProvider.uiT())
+                .subscribe(new Consumer<Response<Prestamo, Object>>() {
+                    @Override
+                    public void accept(Response<Prestamo, Object> r) throws Exception {
+                        switch (r.getMeta().getStatus()){
+                            case OK:
+                                proccessAbonos(prestamo.getAbonos());
+                                cargarTotalesPrestamo();
+                                break;
+                            case ERROR:
+                                showMessage("Existió un error de programación del lado del servidor");
+                                break;
+                        }
+
+                        showLoading(false);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        showLoading(false);
+                        showMessage("Existió un error de comunicación");
+                        throwable.printStackTrace();
+                    }
+                });
     }
 
     /**
@@ -333,12 +386,17 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      *
      * @param abonos abonos del prestamo con los cuales trabajar
      */
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void proccessAbonos(final List<Abono> abonos) {
         prestamo.setAbonos(abonos);
         this.calcularTotalesPagar();
         abonoFragment.replaceData(abonos);
-        final int sumaAbonos = abonos.stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
+
+        int sumaAbonos = 0;
+        for (Abono abono : abonos) {
+            if (abono.isAbonado()){
+                sumaAbonos += abono.getCantidad();
+            }
+        }
         Calendar cal = new GregorianCalendar();
         int diaDelAñoAcutal = cal.get(Calendar.DAY_OF_YEAR);
         cal.setTime(prestamo.getFecha());

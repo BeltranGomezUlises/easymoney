@@ -3,6 +3,9 @@ package com.easymoney.utils.services;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -21,6 +24,13 @@ public class SingletonRetrofit {
         if (instancia == null){
             instancia = new Retrofit.Builder()
                     .baseUrl(IService.END_POINT)
+                    .client(
+                            new OkHttpClient().newBuilder()
+                                    .connectTimeout(60, TimeUnit.SECONDS)
+                                    .writeTimeout(60, TimeUnit.SECONDS)
+                                    .readTimeout(60, TimeUnit.SECONDS)
+                                    .build()
+                    )
                     .addConverterFactory(JacksonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();

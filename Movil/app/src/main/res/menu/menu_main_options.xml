@@ -6,7 +6,7 @@
         android:title="Buscar"
         android:icon="@drawable/ic_search"
         app:showAsAction="always"
-        app:actionViewClass="android.widget.SearchV|iew" />
+        app:actionViewClass="android.widget.SearchView" />
 
     <item
         android:id="@+id/action_filter"

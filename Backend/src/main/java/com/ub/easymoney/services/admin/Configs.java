@@ -31,13 +31,13 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/configs")
-public class Configs{
-            
-    public Configs() {        
+public class Configs {
+
+    public Configs() {
     }
-        
-    @GET        
-    public Config getConf(@HeaderParam("Authorization") String token) throws Exception{
+
+    @GET
+    public Config getConf(@HeaderParam("Authorization") String token) throws Exception {
         try {
             ManagerConfig manager = new ManagerConfig();
             return manager.findFirst();
@@ -46,9 +46,9 @@ public class Configs{
             throw ex;
         }
     }
-    
+
     @PUT
-    public Config updateConfig(@HeaderParam("Authorization") String token, Config conf) throws Exception{
+    public Config updateConfig(@HeaderParam("Authorization") String token, Config conf) throws Exception {
         try {
             ManagerConfig manager = new ManagerConfig();
             manager.setToken(token);
@@ -59,41 +59,41 @@ public class Configs{
             throw ex;
         }
     }
-    
+
     @GET
     @Path("/reset")
-    public Response<List> resetConfig(){
+    public Response<List> resetConfig() {
         Response<List> r = new Response();
-        
+
         List res = new ArrayList();
-        try {            
-            ManagerConfig manager = new ManagerConfig();            
+        try {
+            ManagerConfig manager = new ManagerConfig();
             Config conf = new Config();
             conf.setContraDefault("1234");
             conf.setDiasPrestamo(30);
             conf.setPorcentajeInteresPrestamo(20);
-            manager.deleteAll(manager.findAll().stream().map( c -> c.getId()).collect(toList()));
+            manager.deleteAll(manager.findAll().stream().map(c -> c.getId()).collect(toList()));
             manager.persist(conf);
             res.add(conf);
-            
+
             ManagerUsuario managerUsuario = new ManagerUsuario();
-            managerUsuario.deleteAll(managerUsuario.findAll().stream().map( u -> u.getId()).collect(toList()));
-            
+            managerUsuario.deleteAll(managerUsuario.findAll().stream().map(u -> u.getId()).collect(toList()));
+
             Usuario u = new Usuario();
             u.setNombre("admin");
             u.setContra("easymoney");
             u.setNombreCompleto("administrador del sistema");
             u.setTipo(true);
-            
+
             managerUsuario.persist(u);
-            
+
             res.add(u);
-            
+
             UtilsService.setOkResponse(r, res, "configuraciones y usuario predeterminado", "configuracion default asignada");
         } catch (Exception ex) {
-            Logger.getLogger(Configs.class.getName()).log(Level.SEVERE, null, ex);            
+            Logger.getLogger(Configs.class.getName()).log(Level.SEVERE, null, ex);
         }
         return r;
-    }       
-    
+    }
+
 }

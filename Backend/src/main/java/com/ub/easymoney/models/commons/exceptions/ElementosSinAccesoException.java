@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ub.easymoney.models.commons.exceptions;;
+package com.ub.easymoney.models.commons.exceptions;
+
+;
 
 import java.util.List;
 
@@ -22,13 +24,15 @@ import java.util.List;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
+
+
 public class ElementosSinAccesoException extends Exception {
 
     List elementosSinAcceso;
 
     public ElementosSinAccesoException() {
     }
-    
+
     public ElementosSinAccesoException(List elementosSinAcceso, String mensaje) {
         super(mensaje);
         this.elementosSinAcceso = elementosSinAcceso;

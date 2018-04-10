@@ -72,17 +72,16 @@ public class ManagerUsuario extends ManagerSQL<Usuario, Integer> {
         }
         return usuarioCobradores;
     }
-    
-    public Usuario cambiarContraseña(ModelCambiarContra modelCambiarContra) throws ParametroInvalidoException, Exception{
+
+    public Usuario cambiarContraseña(ModelCambiarContra modelCambiarContra) throws ParametroInvalidoException, Exception {
         Usuario u = this.dao.findOne(modelCambiarContra.getUsuarioId());
         if (UtilsSecurity.decifrarMD5(u.getContra()).equals(modelCambiarContra.getContraActual())) {
             u.setContra(UtilsSecurity.cifrarMD5(modelCambiarContra.getNuevaContra()));
             this.update(u);
-        }else{
+        } else {
             throw new ParametroInvalidoException("Credenciales inválidas");
-        }                
+        }
         return u;
     }
-    
 
 }

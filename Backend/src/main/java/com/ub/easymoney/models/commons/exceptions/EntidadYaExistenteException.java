@@ -14,5 +14,5 @@ public class EntidadYaExistenteException extends Exception {
     public EntidadYaExistenteException(String string) {
         super(string);
     }
-            
+
 }

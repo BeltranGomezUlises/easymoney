@@ -26,7 +26,6 @@ public class UtilsDate {
     private static final SimpleDateFormat SDF_D_MM_YYYY_HH_MM = new SimpleDateFormat("d/MM/yyyy HH:mm   ");
     private static final SimpleDateFormat SDF_HM = new SimpleDateFormat("HH:mm");
     private static final SimpleDateFormat SDF_NDOW = new SimpleDateFormat("EEEE");
-    private static final SimpleDateFormat SDF_YYYY_MM_DD_T_HH_MM_SS_sssssssX = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSX");
     private static final SimpleDateFormat SDF_UTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /**
@@ -113,16 +112,6 @@ public class UtilsDate {
      */
     public static String format_HH_MM(Date date) {
         return SDF_HM.format(date);
-    }
-
-    /**
-     * convierte date en su representacion texto en formato yyyy-MM-dd'T'HH:mm:ss.SSSSSSSX
-     *
-     * @param date fecha a convertir
-     * @return
-     */
-    public static String format_YYYY_MM_DD_T_HH_MM_SS_sssssss(Date date) {
-        return SDF_YYYY_MM_DD_T_HH_MM_SS_sssssssX.format(date);
     }
 
     /**

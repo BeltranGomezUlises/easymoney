@@ -14,10 +14,10 @@ import com.ub.easymoney.utils.UtilsDB;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class DaoMulta extends DaoSQLFacade<Multa, MultaPK>{
-    
+public class DaoMulta extends DaoSQLFacade<Multa, MultaPK> {
+
     public DaoMulta() {
         super(UtilsDB.getEMFactoryCG(), Multa.class, MultaPK.class);
     }
-    
+
 }

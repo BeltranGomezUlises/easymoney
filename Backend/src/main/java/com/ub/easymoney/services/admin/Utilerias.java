@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * servicios de utilerias
+ *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 @Consumes(MediaType.APPLICATION_JSON)
@@ -24,6 +25,7 @@ public class Utilerias {
 
     /**
      * servicio para obtener la fecha hora del servidor
+     *
      * @return instancia DateClass
      */
     @Path("/date")
@@ -31,5 +33,5 @@ public class Utilerias {
     public DateClass fechaServidor() {
         return new DateClass(new Date());
     }
-    
+
 }

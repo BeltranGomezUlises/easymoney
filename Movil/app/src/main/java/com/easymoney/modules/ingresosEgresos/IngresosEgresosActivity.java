@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.easymoney.R;
 import com.easymoney.data.repositories.MovimientoRepository;
@@ -32,7 +33,12 @@ public class IngresosEgresosActivity extends AppCompatActivity {
         presenter.setView(ingresosEgresosFragment);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(v -> lanzarModalMovimiento());
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                lanzarModalMovimiento();
+            }
+        });
     }
 
     @Override
@@ -49,8 +55,8 @@ public class IngresosEgresosActivity extends AppCompatActivity {
     }
 
     private void lanzarModalFiltro(){
-        IngresoEgresoFiltroDialogFragment dialog = new IngresoEgresoFiltroDialogFragment(presenter);
-        dialog.show(getFragmentManager(), "menu_ingresos_egresos");
+        IngresoEgresoFiltroDialogFragment dialog = new IngresoEgresoFiltroDialogFragment(presenter, IngresosEgresosActivity.this.getApplicationContext());
+        dialog.show(getFragmentManager(), "filtro");
     }
 
     private void lanzarModalMovimiento() {

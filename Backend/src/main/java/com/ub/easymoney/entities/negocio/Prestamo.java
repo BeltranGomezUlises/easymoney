@@ -5,7 +5,6 @@
  */
 package com.ub.easymoney.entities.negocio;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.entities.commons.commons.IEntity;
@@ -61,7 +60,7 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @Temporal(TemporalType.DATE)
     private Date fechaLimite;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "prestamo1", fetch = FetchType.LAZY)
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Abono> abonos;
     @JoinColumn(name = "cliente_id", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)

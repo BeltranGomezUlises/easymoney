@@ -83,5 +83,5 @@ public class AbonoPK implements Serializable {
     public String toString() {
         return "com.ub.easymoney.entities.negocio.AbonoPK[ prestamo=" + prestamo + ", fecha=" + fecha + " ]";
     }
-    
+
 }

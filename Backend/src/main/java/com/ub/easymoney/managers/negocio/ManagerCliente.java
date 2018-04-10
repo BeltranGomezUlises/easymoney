@@ -30,6 +30,7 @@ public class ManagerCliente extends ManagerSQL<Cliente, Integer> {
 
     /**
      * consulta los clientes que cumplan con el criterio de las propiedades del objeto filtro
+     *
      * @param filtro objeto de propiedades a filtrar
      * @return lista de clientes filtrados
      * @throws Exception si ocurre una excepcion de consulta

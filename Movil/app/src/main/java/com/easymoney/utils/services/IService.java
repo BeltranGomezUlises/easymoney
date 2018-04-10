@@ -5,6 +5,7 @@ import com.easymoney.entities.Abono;
 import com.easymoney.entities.Movimiento;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.entities.Usuario;
+import com.easymoney.models.ModelAbonarPrestamo;
 import com.easymoney.models.ModelCambiarContra;
 import com.easymoney.models.ModelFiltroMovimiento;
 import com.easymoney.models.ModelPrestamoTotales;
@@ -18,7 +19,6 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -30,8 +30,8 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-//    String END_POINT = "http://201.165.0.142:8383/em/api/";
-    String END_POINT = "http://192.168.1.72:8383/EasyMoney/api/";
+    String END_POINT = "http://201.165.0.142:8383/em/api/";
+//    String END_POINT = "http://192.168.1.69:8383/EasyMoney/api/";
 
     /**
      * Inicio de sesion
@@ -55,7 +55,7 @@ public interface IService {
     /**
      * Obtiene los prestamos que le corresponden al cobrador
      *
-     * @param token token de sesion
+     * @param token      token de sesion
      * @param cobradorId identificador del cobrador
      * @return respuesta con la lista de prestamos
      */
@@ -93,16 +93,6 @@ public interface IService {
     Flowable<Response<Abono, Object>> agregarAbonoAjuste(@Header("Authorization") final String token, @Body final Abono abono);
 
     /**
-     * actualiza un prestamo
-     *
-     * @param token    token de sesion
-     * @param prestamo prestamo a actualizar
-     * @return prestamo actualizado
-     */
-    @PUT("prestamos")
-    Flowable<Response<Prestamo, Object>> actualizarPrestamo(@Header("Authorization") final String token, @Body final Prestamo prestamo);
-
-    /**
      * Cambia la contraseña del usuario
      *
      * @param token         token de sesion
@@ -115,11 +105,11 @@ public interface IService {
     /**
      * Consulta todos los movimientos con un menu_ingresos_egresos proporcionado
      *
-     * @param token token de sesion
+     * @param token  token de sesion
      * @param filtro modelo con el menu_ingresos_egresos a consultar los movimientos
      * @return lista de movimientos
      */
-    @POST("movimientos/menu_ingresos_egresos")
+    @POST("movimientos/filtro")
     Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") final String token, @Body final ModelFiltroMovimiento filtro);
 
     /**
@@ -132,4 +122,13 @@ public interface IService {
     @POST("movimientos")
     Flowable<Response<Movimiento, Object>> altaMovimientos(@Header("Authorization") final String token, @Body final Movimiento movimiento);
 
+    /**
+     * Genera el abono del prestamo y actualiza el estado del prestamo con la distribucion de su pago
+     *
+     * @param token token de sesion
+     * @param model modelo contenedor de los datos para generar el abono
+     * @return prestamo actualizado
+     */
+    @POST("cobros/generarAbono")
+    Flowable<Response<Prestamo, Object>> abonarPrestamo(@Header("Authorization") final String token, @Body final ModelAbonarPrestamo model);
 }
