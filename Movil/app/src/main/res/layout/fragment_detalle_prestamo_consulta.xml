@@ -18,7 +18,7 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/ic_social_person" />
 
@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:text="Nombre Cliente:"
-                    android:textSize="10sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvNombreCliente"
@@ -42,7 +42,7 @@
                     android:paddingLeft="4dp"
                     android:text="Fulano Mengano"
                     android:textColor="@color/darkGray"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </android.support.v7.widget.LinearLayoutCompat>
 
@@ -54,7 +54,7 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/ic_monery_circle" />
 
@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:text="Cantidad préstamo:"
-                    android:textSize="10sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvCantidad"
@@ -78,7 +78,7 @@
                     android:paddingLeft="4dp"
                     android:text="$0"
                     android:textColor="@color/darkGray"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </android.support.v7.widget.LinearLayoutCompat>
 
@@ -90,7 +90,7 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/ic_money_square" />
 
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:text="Cantidad pagar:"
-                    android:textSize="10sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvCantidadPagar"
@@ -114,7 +114,7 @@
                     android:paddingLeft="4dp"
                     android:text="$0"
                     android:textColor="@color/darkGray"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </android.support.v7.widget.LinearLayoutCompat>
 
@@ -126,7 +126,7 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/ic_time_lapse" />
 
@@ -140,7 +140,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:text="Fecha y hora préstamo:"
-                    android:textSize="10sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvFechaPrestamo"
@@ -150,7 +150,7 @@
                     android:paddingLeft="4dp"
                     android:text="D/MM/YYYY HH:MM"
                     android:textColor="@color/darkGray"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </android.support.v7.widget.LinearLayoutCompat>
 
@@ -162,7 +162,7 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/ic_calendar" />
 
@@ -176,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
                     android:text="Fecha límite:"
-                    android:textSize="10sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvFechaLimite"
@@ -186,7 +186,7 @@
                     android:paddingLeft="4dp"
                     android:text="D/MM/YYYY"
                     android:textColor="@color/darkGray"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </android.support.v7.widget.LinearLayoutCompat>
 
@@ -206,7 +206,8 @@
             android:layout_height="wrap_content"
             android:text="Totales"
             android:textAlignment="center"
-            android:textColor="@color/darkGray" />
+            android:textSize="14dp"
+            android:textColor="@color/black" />
 
         <View
             android:layout_width="match_parent"
@@ -223,6 +224,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
+                android:textSize="16dp"
                 android:text="Total abonado:" />
 
             <TextView
@@ -232,6 +234,7 @@
                 android:layout_weight="1"
                 android:gravity="end"
                 android:text="$0"
+                android:textSize="16dp"
                 android:textColor="@color/darkGray"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -246,6 +249,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
+                android:textSize="16dp"
                 android:text="Total multado:" />
 
             <TextView
@@ -254,6 +258,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="end"
+                android:textSize="16dp"
                 android:text="$0"
                 android:textColor="@color/darkGray"
                 android:textStyle="bold" />
@@ -274,6 +279,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
+                android:textSize="16dp"
                 android:text="Total recuperado:" />
 
             <TextView
@@ -283,6 +289,7 @@
                 android:layout_weight="1"
                 android:gravity="end"
                 android:text="$0"
+                android:textSize="16dp"
                 android:textColor="@color/darkGray"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -297,6 +304,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
+                android:textSize="16dp"
                 android:text="Total por pagar:" />
 
             <TextView
@@ -306,6 +314,7 @@
                 android:layout_weight="1"
                 android:gravity="end"
                 android:text="$0"
+                android:textSize="16dp"
                 android:textColor="@color/darkGray"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -320,6 +329,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
+                android:textSize="16dp"
                 android:text="Total porcentaje abonado:" />
 
             <TextView
@@ -329,6 +339,7 @@
                 android:layout_weight="1"
                 android:gravity="end"
                 android:text="0%"
+                android:textSize="16dp"
                 android:textColor="@color/darkGray"
                 android:textStyle="bold" />
         </LinearLayout>

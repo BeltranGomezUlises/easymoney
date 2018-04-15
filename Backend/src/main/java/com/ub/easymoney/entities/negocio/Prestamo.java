@@ -68,6 +68,10 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @JoinColumn(name = "cobrador", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario cobrador;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "cobro_diario")
+    private int cobroDiario;
 
     public Prestamo() {
     }
@@ -168,6 +172,14 @@ public class Prestamo implements Serializable, IEntity<Integer> {
 
     public void setCobrador(Usuario cobrador) {
         this.cobrador = cobrador;
+    }
+
+    public int getCobroDiario() {
+        return cobroDiario;
+    }
+
+    public void setCobroDiario(int cobroDiario) {
+        this.cobroDiario = cobroDiario;
     }
 
 }
