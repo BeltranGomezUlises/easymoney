@@ -64,15 +64,17 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
         cal.setTime(d);
         cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
-        int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
+        final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
+        final int cantidadPagarPorAbono = p.getCantidadPagar() / diasPlazo;
         for (int i = 0; i < diasPlazo; i++) {
             abono = new Abono(p.getId(), cal.getTime());
-            abono.setCantidad(p.getCantidadPagar() / diasPlazo);
+            abono.setCantidad(cantidadPagarPorAbono);
             abono.setAbonado(false);
             abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));
             listaAbonos.add(abono);
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
+        entity.setCobroDiario(cantidadPagarPorAbono);
         entity.setAbonos(listaAbonos);
         super.update(entity);
 

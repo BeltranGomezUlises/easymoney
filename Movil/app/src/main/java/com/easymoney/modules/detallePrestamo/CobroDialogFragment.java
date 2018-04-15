@@ -28,7 +28,6 @@ public class CobroDialogFragment extends DialogFragment {
     private TextView tvAbono;
     private TextView tvMulta;
     private TextView tvMultaMes;
-    private TextView tvAjuste;
     private EditText txtAbonar;
     private EditText txtDescripcion;
 
@@ -50,7 +49,6 @@ public class CobroDialogFragment extends DialogFragment {
         tvAbono = rootView.findViewById(R.id.tvAbono);
         tvMulta = rootView.findViewById(R.id.tvMulta);
         tvMultaMes = rootView.findViewById(R.id.tvMultaMes);
-        tvAjuste = rootView.findViewById(R.id.tvAjuste);
         txtAbonar = rootView.findViewById(R.id.txtAbonar);
         txtDescripcion = rootView.findViewById(R.id.txtDes);
 
@@ -59,7 +57,6 @@ public class CobroDialogFragment extends DialogFragment {
         tvAbono.setText("$" + String.valueOf(model.getTotalAbonar()));
         tvMulta.setText("$" + String.valueOf(model.getTotalMultar()));
         tvMultaMes.setText("$" + String.valueOf(model.getTotalMultarMes()));
-        tvAjuste.setText("$" + String.valueOf(model.getAjusteDePago()));
 
         txtAbonar.setText(String.valueOf(model.getTotalPagar()));
 

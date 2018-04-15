@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class Prestamo implements Serializable{
+public class Prestamo implements Serializable {
 
 
     private Integer id;
@@ -18,6 +18,7 @@ public class Prestamo implements Serializable{
     private List<Abono> abonos;
     private Cliente cliente;
     private Usuario cobrador;
+    private int cobroDiario;
 
     public Prestamo() {
     }
@@ -88,6 +89,14 @@ public class Prestamo implements Serializable{
 
     public void setCobrador(Usuario cobrador) {
         this.cobrador = cobrador;
+    }
+
+    public int getCobroDiario() {
+        return cobroDiario;
+    }
+
+    public void setCobroDiario(int cobroDiario) {
+        this.cobroDiario = cobroDiario;
     }
 
     @Override

@@ -8,21 +8,11 @@ public class ModelTotalAPagar {
     private int totalAbonar;
     private int totalMultar;
     private int totalMultarMes;
-    private int ajusteDePago;
 
-    public ModelTotalAPagar(int totalAbonar, int totalMultar, int totalMultarMes, int ajusteDePago) {
+    public ModelTotalAPagar(int totalAbonar, int totalMultar, int totalMultarMes) {
         this.totalAbonar = totalAbonar;
         this.totalMultar = totalMultar;
         this.totalMultarMes = totalMultarMes;
-        this.ajusteDePago = ajusteDePago;
-    }
-
-    public int getAjusteDePago() {
-        return ajusteDePago;
-    }
-
-    public void setAjusteDePago(int ajusteDePago) {
-        this.ajusteDePago = ajusteDePago;
     }
 
     public int getTotalMultarMes() {
@@ -50,7 +40,7 @@ public class ModelTotalAPagar {
     }
 
     public int getTotalPagar() {
-        return totalAbonar + totalMultar + totalMultarMes + ajusteDePago;
+        return totalAbonar + totalMultar + totalMultarMes;
     }
 
 

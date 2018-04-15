@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Abono:" />
+            android:text="Abono:"
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/tvAbono"
@@ -24,6 +25,7 @@
             android:layout_gravity="right"
             android:layout_weight="1"
             android:text="$200"
+            android:textSize="16sp"
             android:textAlignment="viewEnd"
             tools:ignore="RtlCompat" />
 
@@ -38,6 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="16sp"
             android:text="Multa diaria:" />
 
         <TextView
@@ -47,6 +50,7 @@
             android:layout_gravity="right"
             android:layout_weight="1"
             android:text="$40"
+            android:textSize="16sp"
             android:textAlignment="viewEnd"
             tools:ignore="RtlCompat" />
 
@@ -61,6 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="16sp"
             android:text="Multa post-plazo:" />
 
         <TextView
@@ -70,31 +75,11 @@
             android:layout_gravity="right"
             android:layout_weight="1"
             android:text="$40"
+            android:textSize="16sp"
             android:textAlignment="viewEnd"
             tools:ignore="RtlCompat" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Ajuste necesario:" />
-
-        <TextView
-            android:id="@+id/tvAjuste"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_weight="1"
-            android:text="$40"
-            android:textAlignment="viewEnd"
-            tools:ignore="RtlCompat" />
-    </LinearLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"

@@ -1,7 +1,5 @@
 package com.easymoney.modules.detallePrestamo;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 
@@ -85,7 +83,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 }));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void cargarAbonosPrestamo() {
         compositeDisposable.add(
@@ -130,7 +127,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         this.abonoFragment.showMessage(message);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void subscribe() {
         this.llenarDatosGenerales();
@@ -195,18 +191,16 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         int abonoAPagar = 0;
         int multaAPagar = 0;
         int multaAPagarMes = 0;
-        int ajusteDePago = 0;
 
         Calendar cal = new GregorianCalendar();
         Date fechaActual = new Date();
         cal.setTime(fechaActual);
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
+        int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
 
         List<Abono> abonos = new ArrayList<>();
         for (Abono a : prestamo.getAbonos()) {
-            if (!a.isAbonado() && a.getAbonoPK().getFecha().getTime() <= fechaActual.getTime()) {
-                abonos.add(a);
-            }
+            abonos.add(a);
         }
         Collections.sort(abonos, new Comparator<Abono>() {
             @Override
@@ -214,41 +208,39 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 return a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha());
             }
         });
-        int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
+
         for (Abono abono : abonos) {
             cal.setTime(abono.getAbonoPK().getFecha());
             //si llegamos al dia de hoy solo sumar lo que corresponde pagar al dia
-            if (cal.get(Calendar.DAY_OF_YEAR) == diaActual) {
-                abonoAPagar += abono.getCantidad();
-                break;
+            if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) { //anteriores al dia de hoy
+                if (!abono.isAbonado()) {
+                    abonoAPagar += this.prestamo.getCobroDiario();
+                    multaAPagar += multaDiaria;
+                } else {
+                    //si esta abonado y no abono mas o igual que el cobro diario es multa
+                    if (abono.getCantidad() < this.prestamo.getCobroDiario()) {
+                        abonoAPagar += (this.prestamo.getCobroDiario() - abono.getCantidad());
+                        multaAPagar += multaDiaria;
+                    }
+                }
             } else {
-                abonoAPagar += abono.getCantidad();
-                multaAPagar += multaDiaria;
+                if (cal.get(Calendar.DAY_OF_YEAR) == diaActual && !abono.isAbonado()) { //al dia actual
+                    abonoAPagar += this.prestamo.getCobroDiario();
+                    break;
+                }
             }
         }
 
-        //buscar si tiene dias sin pago despues de la fecha limite de pago y tiene algo por abonas
+        //buscar si tiene dias sin pago despues de la fecha limite de pago y tiene algo por abonar
         if (prestamo.getFechaLimite().compareTo(fechaActual) < 0) {
             int multaMes = UtilsPreferences.loadConfig().getCantidadMultaMes();
             int cantidadDeDiasDespuesDelMes = (int) UtilsDate.diasEntreFechas(prestamo.getFechaLimite(), fechaActual);
-            multaAPagarMes = multaMes * cantidadDeDiasDespuesDelMes;
-        }
-
-        boolean todosAbonado = true;
-        for (Abono a : prestamo.getAbonos()) {
-            if (!a.isAbonado()) todosAbonado = false;
-        }
-
-        if (todosAbonado) {
-            int sumaPagos = 0;
-            for (Abono a : prestamo.getAbonos()) {
-                sumaPagos += a.getCantidad();
-            }
-            if (sumaPagos < prestamo.getCantidadPagar()) {
-                ajusteDePago = prestamo.getCantidadPagar() - sumaPagos;
+            if (cantidadDeDiasDespuesDelMes > 1) {
+                multaAPagarMes = multaMes * (cantidadDeDiasDespuesDelMes - 1);
             }
         }
-        ModelTotalAPagar modelTotalAPagar = new ModelTotalAPagar(abonoAPagar, multaAPagar, multaAPagarMes, ajusteDePago);
+
+        ModelTotalAPagar modelTotalAPagar = new ModelTotalAPagar(abonoAPagar, multaAPagar, multaAPagarMes);
         this.setModelTotalAPagar(modelTotalAPagar);
         return modelTotalAPagar;
     }
@@ -276,40 +268,57 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 return a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha());
             }
         });
-        for (Abono abonoActual : abonos) {
-            if (!abonoActual.isAbonado()) {
-                cal.setTime(abonoActual.getAbonoPK().getFecha());
+
+        //comparar si el total abonado es el que deberia de tener abonado hasta hoy
+        //si -> esta al corriente y puede pagar sin abonos
+        //no -> no esta al corriente y debe de pagas las multas de los dias no pagados hasta hoy
+        for (Abono a : abonos) {
+            if (abono == 0) {
+                break;
+            }
+            if (!a.isAbonado()) {
+                cal.setTime(a.getAbonoPK().getFecha());
                 if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) {
                     if (abono > multaDiaria) {
-                        abonoActual.getMulta().setMulta(multaDiaria);
-                        abonoActual.getMulta().setMultaDes(multaDes);
+                        a.getMulta().setMulta(multaDiaria);
                         abono -= multaDiaria;
                     } else {
-                        abonoActual.getMulta().setMultaDes(multaDes);
-                        abonoActual.getMulta().setMulta(abono);
+                        a.getMulta().setMulta(abono);
                         abono = 0;
-                        break; //se acabo el abono
                     }
                 }
-                if (cal.get(Calendar.DAY_OF_YEAR) == diaActual) {
-                    //si es el dia de hoy, poner el restante del abono como abono
-                    abonoActual.setCantidad(abono);
-                    abonoActual.setAbonado(true);
-                    abono = 0;
-                    break;
-                }
-                if (abono > abonoActual.getCantidad()) {
-                    abonoActual.setAbonado(true);
-                    abono -= abonoActual.getCantidad();
+                if (abono > this.prestamo.getCobroDiario()) {
+                    a.setAbonado(true);
+                    abono -= this.prestamo.getCobroDiario();
                 } else {
-                    abonoActual.setAbonado(true);
-                    abonoActual.setCantidad(abono);
+                    a.setAbonado(true);
+                    a.setCantidad(abono);
                     abono = 0;
-                    break; //se acabo el abono
+                }
+            } else {
+                //si esta abonado y no abono mas o igual que el cobro diario es multa
+                if (a.getCantidad() < this.prestamo.getCobroDiario()) {
+                    int difAbonado = (this.prestamo.getCobroDiario() - a.getCantidad());
+                    int difMulta = multaDiaria - a.getMulta().getMulta();
+                    if (abono > difMulta) {
+                        a.getMulta().setMulta(multaDiaria);
+                        abono -= difMulta;
+                    } else {
+                        a.getMulta().setMulta(a.getMulta().getMulta() + abono);
+                        abono = 0;
+                    }
+                    if (abono > difAbonado) {
+                        a.setCantidad(this.prestamo.getCobroDiario());
+                        abono -= difAbonado;
+                    } else {
+                        a.setCantidad(a.getCantidad() + abono);
+                        abono = 0;
+                    }
                 }
             }
         }
 
+        //multa postPlazo
         Date fechaActual = new Date();
         if (abono > 0) {
             if (model.getTotalMultarMes() > 0) {
@@ -333,21 +342,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             }
         }
 
-        if (abono > 0 && model.getAjusteDePago() > 0) {
-            //si ya hay uno del dia de hoy
-            Abono ultimoAbono = abonos.get(abonos.size() - 1);
-            cal.setTime(ultimoAbono.getAbonoPK().getFecha());
-            int diaPrestamo = cal.get(Calendar.DAY_OF_YEAR);
-            if (diaPrestamo == diaActual) {
-                ultimoAbono.setCantidad(ultimoAbono.getCantidad() + model.getAjusteDePago());
-            } else {
-                Abono abonoAjuste = new Abono(prestamo.getId(), fechaActual);
-                abonoAjuste.setCantidad(abono);
-                abonoAjuste.setAbonado(true);
-                abonos.add(abonoAjuste);
-            }
-        }
-
         prestamo.setAbonos(abonos);
         this.showLoading(true);
 
@@ -359,7 +353,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 .subscribe(new Consumer<Response<Prestamo, Object>>() {
                     @Override
                     public void accept(Response<Prestamo, Object> r) throws Exception {
-                        switch (r.getMeta().getStatus()){
+                        switch (r.getMeta().getStatus()) {
                             case OK:
                                 proccessAbonos(prestamo.getAbonos());
                                 cargarTotalesPrestamo();
@@ -393,7 +387,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
         int sumaAbonos = 0;
         for (Abono abono : abonos) {
-            if (abono.isAbonado()){
+            if (abono.isAbonado()) {
                 sumaAbonos += abono.getCantidad();
             }
         }
@@ -408,6 +402,23 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             this.fab.setVisibility(View.GONE);
         }
 
+    }
+
+    /**
+     * verifica si el prestamo va al corriente en sus pagos
+     *
+     * @param prestamo prestamo a validar
+     * @return true, si el prestamo va al corriente, false, si el prestamo no va al corriente
+     */
+    private boolean prestamoAlCorriente(Prestamo prestamo) {
+        int totalAbonadoActual = 0;
+        for (Abono a : prestamo.getAbonos()) {
+            if (a.isAbonado()) totalAbonadoActual += a.getCantidad();
+        }
+        //sacar el total que deberia de tener abonado, el dia de hoy, restar a la fecha del presamo, los dias de diferencia de hoy a la fecha de prestamos son los dias que van
+        int dif = (int) UtilsDate.diasEntreFechas(this.prestamo.getFecha(), new Date());
+        int totalDeberiaTener = dif * prestamo.getCobroDiario();
+        return totalAbonadoActual >= totalDeberiaTener;
     }
 
 }
