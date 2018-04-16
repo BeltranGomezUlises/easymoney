@@ -3,7 +3,6 @@ package com.easymoney.entities;
 import java.io.Serializable;
 
 /**
- *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 public class Cliente implements Serializable {
@@ -13,6 +12,7 @@ public class Cliente implements Serializable {
     private String direccion;
     private String telefono;
     private String apodo;
+    private String diasSinMulta;
 
     public Cliente() {
     }
@@ -64,6 +64,15 @@ public class Cliente implements Serializable {
 
     public void setApodo(String apodo) {
         this.apodo = apodo;
+    }
+
+
+    public String getDiasSinMulta() {
+        return diasSinMulta;
+    }
+
+    public void setDiasSinMulta(String diasSinMulta) {
+        this.diasSinMulta = diasSinMulta;
     }
 
     @Override

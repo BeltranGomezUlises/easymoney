@@ -45,32 +45,28 @@ export default class Clientes extends React.Component{
   }
 
   agregarCliente(){
-    if (this.state.nuevoCliente.nombre) {
-        fetch(localStorage.getItem('url') + 'clientes',{
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin':'*',
-            'Authorization': localStorage.getItem('tokenSesion')
-          },
-          body:JSON.stringify(this.state.nuevoCliente)
-        })
-        .then((res)=> res.json())
-        .then((response) =>{
-          //agregar nuevoCliente a la lista actual
-          let clientes = [...this.state.clientes, response.data];
-          //limpiar nuevo cliente
-          this.setState({
-            clientes,
-            nuevoCliente:{},
-            conClientes:true
-          });
-          this.handleCloseAgregar();
-        })
-    }else{
-      this.setState({modalOpenWarning:true});
-    }
+      fetch(localStorage.getItem('url') + 'clientes',{
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin':'*',
+          'Authorization': localStorage.getItem('tokenSesion')
+        },
+        body:JSON.stringify(this.state.nuevoCliente)
+      })
+      .then((res)=> res.json())
+      .then((response) =>{
+        //agregar nuevoCliente a la lista actual
+        let clientes = [...this.state.clientes, response.data];
+        //limpiar nuevo cliente
+        this.setState({
+          clientes,
+          nuevoCliente:{},
+          conClientes:true
+        });
+        this.handleCloseAgregar();
+      })
   }
 
   cargarClientes(){

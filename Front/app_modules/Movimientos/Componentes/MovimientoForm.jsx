@@ -19,6 +19,7 @@ export default class MovimientoForm extends Component{
     this.state.isLoading = false;
     this.state.tipoMovimiento = false; //false == movimiento positivc
     this.handleSumbit = this.handleSumbit.bind(this);
+    this.updateInputCantidad = this.updateInputCantidad.bind(this);
   }
 
   handleSumbit(){
@@ -28,6 +29,13 @@ export default class MovimientoForm extends Component{
     }else{ //agregar
       this.agregarMovimiento();
     }
+  }
+
+  updateInputCantidad(evt){
+    const cantidad = (evt.target.validity.valid) ? evt.target.value : this.state.movimiento.cantidad;
+    let {movimiento} = this.state;
+    movimiento.cantidad = cantidad;
+    this.setState({movimiento})
   }
 
   agregarMovimiento(){
@@ -73,7 +81,7 @@ export default class MovimientoForm extends Component{
         <Form.Field>
           <label pointing='right'>Fecha:</label>
           <input type='date' required onInput={(evt) =>{
-                const fecha = evt.target.value;                
+                const fecha = evt.target.value;
                 let {movimiento} = this.state;
                 movimiento.fecha = fecha;
                 this.setState({movimiento});
@@ -87,13 +95,7 @@ export default class MovimientoForm extends Component{
         </Form.Field>
         <Form.Field>
           <label>Cantidad:</label>
-          <input type="text" pattern="[0-9]*" required onInput={(evt)=>{
-              if (evt.target.validity.valid) {
-                let {movimiento} = this.state;
-                movimiento.cantidad = evt.target.value;
-                this.setState({movimiento});
-              };
-            }} value={this.state.movimiento.cantidad}/>
+          <input required type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.movimiento.cantidad} />
         </Form.Field>
         <Form.Field>
           <label pointing='right'>Descripción:</label>
