@@ -51,6 +51,11 @@ public class Cliente implements Serializable, IEntity<Integer> {
     private String apodo;
     @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
     private List<Prestamo> prestamoList;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2147483647)
+    @Column(name = "dias_sin_multa")
+    private String diasSinMulta;
 
     public Cliente() {
     }
@@ -111,6 +116,14 @@ public class Cliente implements Serializable, IEntity<Integer> {
 
     public void setPrestamoList(List<Prestamo> prestamoList) {
         this.prestamoList = prestamoList;
+    }
+
+    public String getDiasSinMulta() {
+        return diasSinMulta;
+    }
+
+    public void setDiasSinMulta(String diasSinMulta) {
+        this.diasSinMulta = diasSinMulta;
     }
 
     @Override

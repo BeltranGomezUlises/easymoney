@@ -118,7 +118,7 @@ export default class PrestamoForm extends Component{
                {this.renderCobradores()}
              </select>
           </Form.Group>
-          <input type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.nuevoPrestamo.cantidad} />
+          <input required type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.nuevoPrestamo.cantidad} />
         </Form>
       );
     }

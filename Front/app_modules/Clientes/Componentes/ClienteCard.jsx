@@ -48,23 +48,19 @@ export default class ClienteCard extends React.Component{
   }
 
   editarCliente(){
-    if (this.state.cliente.nombre !== '') {
-        fetch(localStorage.getItem('url') + 'clientes',{
-          method: 'PUT',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin':'*',
-            'Authorization': localStorage.getItem('tokenSesion')
-          },
-          body: JSON.stringify(this.state.cliente)
-        }).then((res)=> res.json())
-        .then((response) =>{
-            this.setState({modalOpenEditar:false});
-        })
-    }else{
-        this.setState({modalOpenWarning:true});
-    }
+      fetch(localStorage.getItem('url') + 'clientes',{
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin':'*',
+          'Authorization': localStorage.getItem('tokenSesion')
+        },
+        body: JSON.stringify(this.state.cliente)
+      }).then((res)=> res.json())
+      .then((response) =>{
+          this.setState({modalOpenEditar:false});
+      })
   }
 
   eliminarCliente(){
