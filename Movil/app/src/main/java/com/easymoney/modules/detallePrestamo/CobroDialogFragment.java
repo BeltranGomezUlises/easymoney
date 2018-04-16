@@ -4,9 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -36,7 +34,6 @@ public class CobroDialogFragment extends DialogFragment {
         this.presenter = presenter;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -93,7 +90,6 @@ public class CobroDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void abonar(final ModelTotalAPagar model) {
         final int abono = Integer.parseInt(txtAbonar.getText().toString());
         final String multaDes = txtDescripcion.getText().toString();
