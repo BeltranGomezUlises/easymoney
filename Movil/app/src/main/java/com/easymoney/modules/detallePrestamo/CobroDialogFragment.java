@@ -27,6 +27,7 @@ public class CobroDialogFragment extends DialogFragment {
     private TextView tvMulta;
     private TextView tvMultaMes;
     private EditText txtAbonar;
+
     private EditText txtDescripcion;
 
     @SuppressLint("ValidFragment")

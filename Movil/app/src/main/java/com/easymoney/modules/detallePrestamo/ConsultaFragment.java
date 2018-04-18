@@ -27,6 +27,8 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
 
     private DetallePrestamoPresenter presenter;
     private TextView tvNombreCliente;
+    private TextView tvNumPrestamo;
+    private TextView tvAbonoDiario;
     private TextView tvCantidadPrestamo;
     private TextView tvCantidadPagar;
     private TextView tvFechaHoraPrestamo;
@@ -50,7 +52,6 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         return instance;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,6 +67,8 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         tvTotalRecuperado = rootView.findViewById(R.id.tvTotalRecuperado);
         tvTotalPorcentaje = rootView.findViewById(R.id.tvTotalPorcentaje);
         tvTotalPorPagar = rootView.findViewById(R.id.tvTotalporPagar);
+        tvNumPrestamo = rootView.findViewById(R.id.tvNumPrestamo);
+        tvAbonoDiario = rootView.findViewById(R.id.tvAbonoDiario);
 
         this.presenter.subscribe();
 
@@ -94,8 +97,10 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
 
     public void llenarDatosGenerales(Prestamo prestamo) {
         this.tvNombreCliente.setText(prestamo.getCliente().getNombre());
+        tvNumPrestamo.setText(String.valueOf(prestamo.getId()));
         tvCantidadPrestamo.setText("$" + prestamo.getCantidad());
         tvCantidadPagar.setText("$" + prestamo.getCantidadPagar());
+        tvAbonoDiario.setText("$" + prestamo.getCobroDiario());
         tvFechaHoraPrestamo.setText(UtilsDate.format_D_MM_YYYY_HH_MM(prestamo.getFecha()));
         tvFechaLimite.setText(UtilsDate.format_D_MM_YYYY(prestamo.getFechaLimite()));
     }

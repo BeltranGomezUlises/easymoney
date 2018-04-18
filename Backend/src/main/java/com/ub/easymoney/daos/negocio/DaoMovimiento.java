@@ -31,7 +31,7 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
      * @return lista de movimientos del cobrador
      */
     public List<Movimiento> movimientosDelCobrador(final int cobradorId) {
-        return this.stream().filter(mov -> mov.getUsuarioCreador().getId() == cobradorId).collect(toList());
+        return this.stream().where(mov -> mov.getUsuarioCreador().getId() == cobradorId).collect(toList());
     }
 
     /**
@@ -67,6 +67,20 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
             stream = stream.where(m -> !m.getFecha().before(fechaInicial));
         }
         return stream.collect(toList());
+    }
+
+    /**
+     * Consulta las cantidades de los movimientos con un rango de fechas
+     * @param fechaInicial fecha inicial del rango
+     * @param fechaFinal fecha final del rango
+     * @return lista de cantidades de movimientos dentro del rango
+     */
+    public List<Double> cantidadesDesdeHasta(final Date fechaInicial, final Date fechaFinal) {
+        return this.getEMInstance().createQuery("SELECT t.cantidad FROM Movimiento t WHERE t.fecha >= :fechaInicial AND t.fecha < :fechaFinal", Double.class)
+                .setParameter("fechaInicial", fechaInicial)
+                .setParameter("fechaFinal", fechaFinal)
+                .getResultList();
+
     }
 
 }

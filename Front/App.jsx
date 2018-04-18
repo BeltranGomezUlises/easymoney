@@ -10,6 +10,8 @@ import Movimientos from './app_modules/Movimientos/Movimientos.jsx'
 import Login from './app_modules/Login.jsx';
 import Configuraciones from './app_modules/Configuraciones.jsx';
 import Cobros from './app_modules/Reportes/Cobros/Cobros.jsx'
+import ClientesLiquidados from './app_modules/Reportes/ClientesLiquidados/ClientesLiquidados.jsx'
+import CapitalFisico from './app_modules/Reportes/CapitalFisico/CapitalFisico.jsx'
 import config from './config.json';
 
 const App =()=>(
@@ -44,8 +46,8 @@ class MainContainer extends React.Component{
              <Dropdown.Menu>
                <Dropdown.Item as={Link} to='/cobros'>Cobros</Dropdown.Item>
                <Dropdown.Divider />
-               <Dropdown.Item>Clientes liquidados</Dropdown.Item>
-               <Dropdown.Item>Prestamos general</Dropdown.Item>
+               <Dropdown.Item as={Link} to='/capitalFisico'>Capital físico</Dropdown.Item>
+               <Dropdown.Item as={Link} to='/clientesLiquidados'>Clientes liquidados</Dropdown.Item>
              </Dropdown.Menu>
            </Dropdown>
 
@@ -72,6 +74,8 @@ class MainContainer extends React.Component{
              <Route path="/login" component={Login}/>
              <Route path="/configuraciones" component={Configuraciones}/>
              <Route path="/cobros" component={Cobros}/>
+             <Route path="/clientesLiquidados" component={ClientesLiquidados}/>
+             <Route path="/capitalFisico" component={CapitalFisico}/>
            </div>
           </div>
       );

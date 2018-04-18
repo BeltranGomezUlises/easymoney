@@ -44,6 +44,7 @@ public class ApplicationConfig extends Application {
         resources.add(com.ub.easymoney.services.negocio.Movimientos.class);
         resources.add(com.ub.easymoney.services.negocio.Multas.class);
         resources.add(com.ub.easymoney.services.negocio.Prestamos.class);
+        resources.add(com.ub.easymoney.services.negocio.Reportes.class);
     }
 
 }
