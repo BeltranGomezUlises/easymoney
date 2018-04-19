@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Segment, Dimmer, Loader } from 'semantic-ui-react';
+import { Segment, Dimmer, Loader, Table} from 'semantic-ui-react';
 import * as utils from '../../../utils.js';
 
 
@@ -17,7 +17,35 @@ export default class ClientesLiquidados extends React.Component{
   }
 
   componentWillMount(){
-    console.log("hola")
+    fetch(localStorage.getItem('url') + 'reportes/clientesLiquidados',{
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      }
+    }).then((res)=> res.json())
+    .then((response) =>{
+      this.setState({buscando:false})
+      utils.evalResponse(response, () => {
+        this.setState({clientesLiquidados: response.data})
+      });
+    })
+  }
+
+  renderClientesLiquidadosRow(){
+    return this.state.clientesLiquidados.map( c => {
+      return (
+        <Table.Row>
+          <Table.Cell>{c.id}</Table.Cell>
+          <Table.Cell>{c.nombre}</Table.Cell>
+          <Table.Cell>{c.apodo}</Table.Cell>
+          <Table.Cell>{c.telefono}</Table.Cell>
+          <Table.Cell>{new Date(c.fechaUltimoAbono).toLocaleDateString()}</Table.Cell>
+        </Table.Row>
+      );
+    })
   }
 
   renderClientesLiquidados(){
@@ -34,19 +62,13 @@ export default class ClientesLiquidados extends React.Component{
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              <Table.Row>
-                <Table.Cell>c1</Table.Cell>
-                <Table.Cell>c2</Table.Cell>
-                <Table.Cell>c3</Table.Cell>
-                <Table.Cell>c4</Table.Cell>
-                <Table.Cell>c4</Table.Cell>
-              </Table.Row>
+              {this.renderClientesLiquidadosRow()}
             </Table.Body>
           </Table>
         );
     }else{
       return(
-        <h2>Sin clientes liquidados</h2>
+        <h2>Sín clientes liquidados</h2>
       )
     }
   }
@@ -55,9 +77,7 @@ export default class ClientesLiquidados extends React.Component{
     if (this.state.buscando) {
       return(
           <Segment style={{'height':'350px'}}>
-              <Dimmer active inverted>
-                <Loader size='large'>Descargando...</Loader>
-              </Dimmer>
+                <Loader active size='large'>Descargando...</Loader>
           </Segment>
       );
     }else{

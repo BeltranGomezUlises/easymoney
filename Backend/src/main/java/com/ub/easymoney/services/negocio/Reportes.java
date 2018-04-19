@@ -89,6 +89,7 @@ public class Reportes {
 
     /**
      * Consulta los clientes que ya no tienen prestamos activos, llamados liquidados
+     *
      * @param token token de sesion
      * @return obtiene la lista de clientes que ya tienen todos sus prestamos liquidados
      */
@@ -97,26 +98,48 @@ public class Reportes {
     public Response<List<ModelClienteLiquidado>> reporteClientesLiquidados(@HeaderParam("Authorization") final String token) {
         Response<List<ModelClienteLiquidado>> res = new Response<>();
         try {
-            //UtilsJWT.validateSessionToken(token);
+            UtilsJWT.validateSessionToken(token);
 
             DaoCliente daoCliente = new DaoCliente();
             List<Cliente> clientes = daoCliente.findAll();
             List<ModelClienteLiquidado> clientesLiquidados = new ArrayList<>();
 
             ModelClienteLiquidado mcl;
+            boolean clienteLiquidado;
+            Date fechaUltimoAbono = null;
             for (Cliente cliente : clientes) {
+                clienteLiquidado = true;
+                if (cliente.getPrestamoList().isEmpty()) {
+                    clienteLiquidado = false;
+                }
                 for (Prestamo prestamo : cliente.getPrestamoList()) {
                     boolean todosAbonados = prestamo.getAbonos().stream().allMatch(a -> a.isAbonado());
                     if (todosAbonados) {
                         int totalCantidadAbonada = prestamo.getAbonos().stream().mapToInt(a -> a.getCantidad()).sum();
                         if (totalCantidadAbonada == prestamo.getCantidadPagar()) {
                             prestamo.getAbonos().sort((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()));
-                            Date fechaUltimoAbono = prestamo.getAbonos().get(prestamo.getAbonos().size() - 1).getAbonoPK().getFecha();
-                            mcl = new ModelClienteLiquidado(cliente.getId(), cliente.getNombre(), cliente.getApodo(), cliente.getTelefono(), fechaUltimoAbono);
-                            clientesLiquidados.add(mcl);
+                            if (fechaUltimoAbono == null) {
+                                fechaUltimoAbono = prestamo.getAbonos().get(prestamo.getAbonos().size() - 1).getAbonoPK().getFecha();
+                            } else {
+                                Date fechaUltimoAbonoPrestamoActual = fechaUltimoAbono = prestamo.getAbonos().get(prestamo.getAbonos().size() - 1).getAbonoPK().getFecha();
+                                if (fechaUltimoAbonoPrestamoActual.after(fechaUltimoAbono)) {
+                                    fechaUltimoAbono = fechaUltimoAbonoPrestamoActual;
+                                }
+                            }
+                        } else {
+                            clienteLiquidado = false;
+                            break;
                         }
+                    } else {
+                        clienteLiquidado = false;
+                        break;
                     }
                 }
+                if (clienteLiquidado) {
+                    mcl = new ModelClienteLiquidado(cliente.getId(), cliente.getNombre(), cliente.getApodo(), cliente.getTelefono(), fechaUltimoAbono);
+                    clientesLiquidados.add(mcl);
+                }
+                fechaUltimoAbono = null;
             }
             UtilsService.setOkResponse(res, clientesLiquidados, "Clientes liquidados");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
