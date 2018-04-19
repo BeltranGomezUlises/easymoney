@@ -16,6 +16,7 @@ import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -188,6 +189,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     }
 
     public ModelTotalAPagar calcularTotalesPagar() {
+        System.out.println("Dias sin multa: " + this.prestamo.getCliente().getDiasSinMulta());
         int abonoAPagar = 0;
         int multaAPagar = 0;
         int multaAPagarMes = 0;
@@ -209,18 +211,37 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             }
         });
 
+        //considerar si los dias no abonados son todos dias sin multa, si hay un dia no abonado y que no esta en dias sin multa, entonces ignorar dias sin multa
+        boolean ignorarMulta = false;
+        for (Abono abono : abonos) {
+            cal.setTime(abono.getAbonoPK().getFecha());
+            if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) { //anteriores al dia de hoy
+                if (!abono.isAbonado()) {
+                    if (this.ignorarDiaDeMulta(cal.get(Calendar.DAY_OF_WEEK))){
+                        ignorarMulta = true;
+                    }else{
+                        ignorarMulta = false;
+                    }
+                }
+            }
+        }
+
         for (Abono abono : abonos) {
             cal.setTime(abono.getAbonoPK().getFecha());
             //si llegamos al dia de hoy solo sumar lo que corresponde pagar al dia
             if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) { //anteriores al dia de hoy
                 if (!abono.isAbonado()) {
                     abonoAPagar += this.prestamo.getCobroDiario();
-                    multaAPagar += multaDiaria;
+                    if (!ignorarMulta){
+                        multaAPagar += multaDiaria;
+                    }
                 } else {
                     //si esta abonado y no abono mas o igual que el cobro diario es multa
                     if (abono.getCantidad() < this.prestamo.getCobroDiario()) {
                         abonoAPagar += (this.prestamo.getCobroDiario() - abono.getCantidad());
-                        multaAPagar += multaDiaria;
+                        if (!ignorarMulta) {
+                            multaAPagar += multaDiaria;
+                        }
                     }
                 }
             } else {
@@ -419,6 +440,27 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         int dif = (int) UtilsDate.diasEntreFechas(this.prestamo.getFecha(), new Date());
         int totalDeberiaTener = dif * prestamo.getCobroDiario();
         return totalAbonadoActual >= totalDeberiaTener;
+    }
+
+
+    /**
+     * Verifica si el dia de la fecha del abono existe en los dias sin multa
+     *
+     * @param diaSemanaDelABono indice del dia de la semana obtenido por Calendar con la fecha del abono
+     * @return true si debe de ser ignorado la multa del abono, false si no debe de ser ignorado
+     */
+    private boolean ignorarDiaDeMulta(int diaSemanaDelABono) {
+        diaSemanaDelABono -= 1;
+        System.out.println("Dia de la semana del abono: " + diaSemanaDelABono);
+        boolean res = false;
+        if (this.prestamo.getCliente().getDiasSinMulta() != null
+                && !this.prestamo.getCliente().getDiasSinMulta().isEmpty()) {
+            List<String> numDias = Arrays.asList(this.prestamo.getCliente().getDiasSinMulta().split(","));
+            if (numDias.contains(String.valueOf(diaSemanaDelABono))) {
+                res = true;
+            }
+        }
+        return res;
     }
 
 }

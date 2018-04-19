@@ -166,7 +166,7 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
             paramInicial = false;
         }
         if (fechaFinal != null) {
-            query += paramInicial ? " WHERE c.fecha <= :fechaFinal" : " AND c.fecha <= :fechaFinal" ; 
+            query += paramInicial ? " WHERE c.fecha <= :fechaFinal" : " AND c.fecha <= :fechaFinal";
         }
         //creacion de Query
         Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class);
@@ -178,6 +178,26 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
             q.setParameter("fechaFinal", fechaFinal);
         }
         return q.getResultList();
+    }
+
+    /**
+     * Consulta la cantidad total cobrada con un rango de fechas
+     *
+     * @param fechaInicial fecha inicial de rango
+     * @param fechaFinal fecha final del rango
+     * @return suma de las cantidades de los cobros encontrados en ese rango de fechas
+     */
+    public long totalCobradoDesdeHasta(Date fechaInicial, Date fechaFinal) {
+        long res = 0;
+        try {
+            res = this.getEMInstance().createQuery("SELECT SUM(c.cantidad) FROM Cobro c WHERE c.fecha >= :fechaInicial AND c.fecha < :fechaFinal", Long.class)
+                    .setParameter("fechaInicial", fechaInicial)
+                    .setParameter("fechaFinal", fechaFinal)
+                    .getSingleResult();
+        } catch (Exception e) {
+        }
+
+        return res;
     }
 
 }

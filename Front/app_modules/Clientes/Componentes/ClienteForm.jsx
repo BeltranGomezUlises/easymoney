@@ -145,52 +145,52 @@ export default class ClienteForm extends Component{
           <Form.Field>
             <Checkbox
             label='Lunes'
-            checked={this.state.checks[0]}
-            onChange={ (evt, data) => {
-              console.log(this.state.checks)
-              this.updateDiasSinMulta(0);
-            }}/>
-            <label></label>
-            <Checkbox
-            label='Martes'
             checked={this.state.checks[1]}
             onChange={ (evt, data) => {
+              console.log(this.state.checks)
               this.updateDiasSinMulta(1);
             }}/>
             <label></label>
             <Checkbox
-            label='Miercoles'
+            label='Martes'
             checked={this.state.checks[2]}
             onChange={ (evt, data) => {
               this.updateDiasSinMulta(2);
             }}/>
             <label></label>
             <Checkbox
-            label='Jueves'
+            label='Miercoles'
             checked={this.state.checks[3]}
             onChange={ (evt, data) => {
               this.updateDiasSinMulta(3);
             }}/>
             <label></label>
             <Checkbox
-            label='Viernes'
+            label='Jueves'
             checked={this.state.checks[4]}
             onChange={ (evt, data) => {
               this.updateDiasSinMulta(4);
             }}/>
             <label></label>
             <Checkbox
-            label='Sabado'
+            label='Viernes'
             checked={this.state.checks[5]}
             onChange={ (evt, data) => {
               this.updateDiasSinMulta(5);
             }}/>
             <label></label>
             <Checkbox
-            label='Domingo'
+            label='Sabado'
             checked={this.state.checks[6]}
             onChange={ (evt, data) => {
               this.updateDiasSinMulta(6);
+            }}/>
+            <label></label>
+            <Checkbox
+            label='Domingo'
+            checked={this.state.checks[0]}
+            onChange={ (evt, data) => {
+              this.updateDiasSinMulta(0);
             }}/>
           </Form.Field>
           {this.renderButton()}

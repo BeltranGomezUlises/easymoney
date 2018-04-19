@@ -9,7 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -181,5 +183,5 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     public void setCobroDiario(int cobroDiario) {
         this.cobroDiario = cobroDiario;
     }
-
+    
 }
