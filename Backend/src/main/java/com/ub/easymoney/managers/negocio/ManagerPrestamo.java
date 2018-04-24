@@ -6,13 +6,13 @@
 package com.ub.easymoney.managers.negocio;
 
 import com.ub.easymoney.daos.negocio.DaoAbono;
-import com.ub.easymoney.daos.negocio.DaoMulta;
 import com.ub.easymoney.daos.negocio.DaoPrestamo;
 import com.ub.easymoney.entities.negocio.Abono;
 import com.ub.easymoney.entities.negocio.Multa;
 import com.ub.easymoney.entities.negocio.MultaPK;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.commons.ManagerSQL;
+import com.ub.easymoney.models.ModelCargarPrestamos;
 import com.ub.easymoney.models.ModeloPrestamoTotales;
 import com.ub.easymoney.models.ModeloPrestamoTotalesGenerales;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
@@ -55,30 +55,9 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
         cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
         entity.setFechaLimite(cal.getTime());
+        this.dao.persist(entity);
 
-        Prestamo p = super.persist(entity);
-
-        ManagerAbono managerAbono = new ManagerAbono();
-        List<Abono> listaAbonos = new ArrayList<>();
-        Abono abono;
-
-        cal.setTime(d);
-        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
-        final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
-        final int cantidadPagarPorAbono = p.getCantidadPagar() / diasPlazo;
-        for (int i = 0; i < diasPlazo; i++) {
-            abono = new Abono(p.getId(), cal.getTime());
-            abono.setCantidad(cantidadPagarPorAbono);
-            abono.setAbonado(false);
-            abono.setMulta(new Multa(new MultaPK(p.getId(), cal.getTime()), 0, ""));
-            listaAbonos.add(abono);
-            cal.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        entity.setCobroDiario(cantidadPagarPorAbono);
-        entity.setAbonos(listaAbonos);
-        super.update(entity);
-
-        return p;//To change body of generated methods, choose Tools | Templates.
+        return entity;//To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -131,8 +110,43 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @param filtro objecto con las propiedaes a filtrar
      * @return lista de prestamos filtrados
      */
-    public List<Prestamo> findAll(FiltroPrestamo filtro) {
-        return new DaoPrestamo().findAll(filtro);
+    public List<ModelCargarPrestamos> cargarPrestamos(FiltroPrestamo filtro) {
+        List<ModelCargarPrestamos> models = new ArrayList<>();
+        List<Prestamo> prestamosFiltrados = new DaoPrestamo().findAll(filtro);
+        //filtrar los 100% acreditados
+        if (!filtro.isAcreditados()) {
+            prestamosFiltrados = prestamosFiltrados.stream()
+                    .filter(t -> {
+                        float totalAbonado = t.getAbonos().stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
+                        float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
+                        return porcentajeAbonado < 100;
+                    }).collect(toList());
+            //no hay prestamos acreditados
+            prestamosFiltrados.forEach(p -> {
+                ModelCargarPrestamos model = new ModelCargarPrestamos(p.getId(), p.getCliente().getNombre(), p.getCobrador().getNombre(), p.getCantidad(), p.getCantidadPagar(), p.getFecha(), p.getFechaLimite());
+                if (p.getFechaLimite().getTime() < System.currentTimeMillis()) {
+                    model.setEstado(ModelCargarPrestamos.EstadoPrestamo.VENCIDO);
+                }
+                models.add(model);
+            });
+        } else {
+            prestamosFiltrados.forEach(p -> {
+                ModelCargarPrestamos model = new ModelCargarPrestamos(p.getId(), p.getCliente().getNombre(), p.getCobrador().getNombre(), p.getCantidad(), p.getCantidadPagar(), p.getFecha(), p.getFechaLimite());
+                float totalAbonado = p.getAbonos().stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
+                float porcentajeAbonado = (totalAbonado / (float) p.getCantidadPagar() * 100f);
+                if (porcentajeAbonado == 100) {
+                    model.setEstado(ModelCargarPrestamos.EstadoPrestamo.ACREDITADO);
+                }
+                if (p.getFechaLimite().getTime() < System.currentTimeMillis()) {
+                    if (porcentajeAbonado < 100) {
+                        model.setEstado(ModelCargarPrestamos.EstadoPrestamo.VENCIDO);
+                    }
+                }
+                models.add(model);
+            });
+        }
+
+        return models;
     }
 
     public List<Prestamo> prestamosPorCobrar(final int cobradorId) {
@@ -150,7 +164,16 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @return modelo del resultado de los totales generales del prestamo
      */
     public ModeloPrestamoTotalesGenerales totalesPrestamosGenerales(FiltroPrestamo filtro) throws Exception {
-        List<Prestamo> prestamos = this.findAll(filtro);
+        List<Prestamo> prestamos = new DaoPrestamo().findAll(filtro);
+        if (!filtro.isAcreditados()) {
+            prestamos = prestamos.stream()
+                    .filter(t -> {
+                        float totalAbonado = t.getAbonos().stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
+                        float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
+                        return porcentajeAbonado < 100;
+                    }).collect(toList());
+        }
+
         List<Abono> abonos = new ArrayList<>();
         prestamos.forEach(p -> abonos.addAll(p.getAbonos()));
 

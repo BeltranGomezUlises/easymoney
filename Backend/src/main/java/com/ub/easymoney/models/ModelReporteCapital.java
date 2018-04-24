@@ -14,16 +14,14 @@ public class ModelReporteCapital {
     private long totalRecuperado;
     private long totalMovsIngreso;
     private long totalMovsEgreso;
-    private long capital;
 
     public ModelReporteCapital() {
     }
 
-    public ModelReporteCapital(long totalRecuperado, long totalMovsIngreso, long totalMovsEgreso, long capital) {
+    public ModelReporteCapital(long totalRecuperado, long totalMovsIngreso, long totalMovsEgreso) {
         this.totalRecuperado = totalRecuperado;
         this.totalMovsIngreso = totalMovsIngreso;
         this.totalMovsEgreso = totalMovsEgreso;
-        this.capital = capital;
     }
 
     public long getTotalRecuperado() {
@@ -48,14 +46,6 @@ public class ModelReporteCapital {
 
     public void setTotalMovsEgreso(long totalMovsEgreso) {
         this.totalMovsEgreso = totalMovsEgreso;
-    }
-
-    public long getCapital() {
-        return capital;
-    }
-
-    public void setCapital(long capital) {
-        this.capital = capital;
     }
 
 }

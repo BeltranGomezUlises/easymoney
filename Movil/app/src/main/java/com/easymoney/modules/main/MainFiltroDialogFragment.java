@@ -45,6 +45,7 @@ public class MainFiltroDialogFragment extends DialogFragment {
         spTipoPrestamo = rootView.findViewById(R.id.spTipoPrestamo);
 
         List<String> listaTiposPrestamos = new ArrayList<String>();
+        listaTiposPrestamos.add("Por cobrar hoy");
         listaTiposPrestamos.add("Por cobrar");
         listaTiposPrestamos.add("Todos");
 
@@ -72,9 +73,12 @@ public class MainFiltroDialogFragment extends DialogFragment {
                         EnumPrestamos enumPrestamos = EnumPrestamos.POR_COBRAR;
                         switch (spTipoPrestamo.getSelectedItemPosition()) {
                             case 0:
-                                enumPrestamos = EnumPrestamos.POR_COBRAR;
+                                enumPrestamos = EnumPrestamos.POR_COBRAR_HOY;
                                 break;
                             case 1:
+                                enumPrestamos = EnumPrestamos.POR_COBRAR;
+                                break;
+                            case 2:
                                 enumPrestamos = EnumPrestamos.TODOS;
                                 break;
                         }

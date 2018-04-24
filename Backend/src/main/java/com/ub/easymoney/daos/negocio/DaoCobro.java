@@ -7,6 +7,7 @@ package com.ub.easymoney.daos.negocio;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
 import com.ub.easymoney.entities.admin.Usuario;
+import com.ub.easymoney.entities.negocio.Capital;
 import com.ub.easymoney.entities.negocio.Cliente;
 import com.ub.easymoney.entities.negocio.Cobro;
 import com.ub.easymoney.entities.negocio.Prestamo;
@@ -50,7 +51,11 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
         //persistir el cobro y actualizare el prestamo
         em.persist(cobro);
         em.merge(model.getPrestamo());
-
+        
+        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
+        capital.setCapital(capital.getCapital() + model.getCantidadAbono());
+        em.merge(capital);
+        
         em.getTransaction().commit();
 
         return model.getPrestamo();

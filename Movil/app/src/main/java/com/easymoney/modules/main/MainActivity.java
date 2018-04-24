@@ -8,6 +8,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +31,7 @@ import com.easymoney.modules.detallePrestamo.DetallePrestamoActivity;
 import com.easymoney.modules.ingresosEgresos.IngresosEgresosActivity;
 import com.easymoney.modules.login.LoginActivity;
 import com.easymoney.utils.UtilsDate;
+import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.ArrayList;
@@ -97,7 +99,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         prestamoRepository = PrestamoRepository.getINSTANCE();
-        this.cargarPrestamos(EnumPrestamos.POR_COBRAR);
+        this.cargarPrestamos(EnumPrestamos.POR_COBRAR_HOY);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (this.prestamos != null){
+            if (!this.prestamos.isEmpty()){
+                setPrestamos(filtrarPorCobrarHoy(this.prestamos));
+                adapterPrestamo.replaceData(this.prestamos);
+            }
+        }
     }
 
     @Override
@@ -139,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void cargarPrestamos(EnumPrestamos enumPrestamos) {
+    public void cargarPrestamos(final EnumPrestamos enumPrestamos) {
         prestamoRepository.findAll(enumPrestamos)
                 .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT())
@@ -148,7 +161,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                public void accept(Response<List<Prestamo>, Object> r) throws Exception {
                                    if (!r.getData().isEmpty()) {
                                        tvInfo.setVisibility(View.GONE);
-                                       setPrestamos(r.getData());
+                                       if (enumPrestamos == EnumPrestamos.POR_COBRAR_HOY) {
+                                           setPrestamos(filtrarPorCobrarHoy(r.getData()));
+                                       } else {
+                                           setPrestamos(r.getData());
+                                       }
+
                                        adapterPrestamo.replaceData(getPrestamos());
                                    } else {
                                        tvInfo.setText("Sin préstamos por cobrar");
@@ -180,6 +198,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * filtra los prestamos que ya fueron cobrados, dejando como resultado los prestamos por cobrar el dia de hoy
+     * @param prestamos prestamos cargados
+     * @return lista de prestamos por cobrar hoy
+     */
+    private List<Prestamo> filtrarPorCobrarHoy(List<Prestamo> prestamos){
+        List<Prestamo> prestamosAMostrar = new ArrayList<>();
+        for (Prestamo prestamo : prestamos) {
+            if (!UtilsPreferences.prestamoCobradoHoy(prestamo.getId())){
+                prestamosAMostrar.add(prestamo);
+            }
+        }
+        return prestamosAMostrar;
+    }
     /**
      * resetea los prestamos mostrados con todos los existentes
      */
@@ -276,6 +308,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tvDireccion = rowView.findViewById(R.id.tvDireccion);
             tvTelefono = rowView.findViewById(R.id.tvTelefono);
             tvFechaPrestamo = rowView.findViewById(R.id.tvFechaPrestamo);
+
+
+            View barrita = rowView.findViewById(R.id.barrita);
+            if (UtilsPreferences.prestamoCobradoHoy(prestamo.getId())){
+                barrita.setBackgroundResource(R.color.positive);
+            }else{
+                barrita.setBackgroundResource(R.color.warning);
+            }
 
             tvNombre.setText(prestamo.getCliente().getNombre());
             tvDireccion.setText(prestamo.getCliente().getDireccion());

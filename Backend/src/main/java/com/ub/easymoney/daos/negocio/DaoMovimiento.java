@@ -6,12 +6,14 @@
 package com.ub.easymoney.daos.negocio;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
+import com.ub.easymoney.entities.negocio.Capital;
 import com.ub.easymoney.entities.negocio.Movimiento;
 import com.ub.easymoney.models.filtros.FiltroMovimientos;
 import com.ub.easymoney.utils.UtilsDB;
 import java.util.Date;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
+import javax.persistence.EntityManager;
 import org.jinq.jpa.JPAJinqStream;
 
 /**
@@ -24,6 +26,21 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
         super(UtilsDB.getEMFactoryCG(), Movimiento.class, Integer.class);
     }
 
+    @Override
+    public void persist(Movimiento entity) throws Exception {
+        EntityManager em = this.getEMInstance();
+        em.getTransaction().begin();
+        
+        em.persist(entity);
+        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
+        capital.setCapital(capital.getCapital() + (int) entity.getCantidad());
+        em.merge(capital);
+                
+        em.getTransaction().commit();
+    }
+
+    
+    
     /**
      * filtra los movimientos de un cobrador en especifico
      *

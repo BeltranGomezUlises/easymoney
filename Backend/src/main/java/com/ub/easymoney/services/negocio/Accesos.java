@@ -18,8 +18,6 @@ import com.ub.easymoney.utils.UtilsJWT;
 import static com.ub.easymoney.utils.UtilsService.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static java.util.stream.Collectors.toList;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

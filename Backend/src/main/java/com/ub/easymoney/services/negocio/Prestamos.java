@@ -9,6 +9,7 @@ import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.admin.ManagerUsuario;
 import com.ub.easymoney.managers.negocio.ManagerCliente;
 import com.ub.easymoney.managers.negocio.ManagerPrestamo;
+import com.ub.easymoney.models.ModelCargarPrestamos;
 import com.ub.easymoney.models.ModeloPrestamoTotales;
 import com.ub.easymoney.models.ModeloPrestamoTotalesGenerales;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
@@ -89,12 +90,12 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
 
     @POST
     @Path("/cargarPrestamos")
-    public Response<List<Prestamo>> listarFiltrados(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro) {
-        Response response = new Response();
+    public Response<List<ModelCargarPrestamos>> listarFiltrados(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro) {
+        Response<List<ModelCargarPrestamos>> response = new Response();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
             managerPrestamo.setToken(token);
-            setOkResponse(response, managerPrestamo.findAll(filtro), "Entidades encontradas");
+            setOkResponse(response, managerPrestamo.cargarPrestamos(filtro), "Entidades encontradas");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(response);
         } catch (Exception ex) {

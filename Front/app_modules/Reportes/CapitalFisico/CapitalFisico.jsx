@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Segment, Form, Button, Table} from 'semantic-ui-react';
+import { Segment, Form, Button, Table, Label, Divider} from 'semantic-ui-react';
 import * as utils from '../../../utils.js';
 
 export default class CapitalFisico extends React.Component{
@@ -15,11 +15,26 @@ export default class CapitalFisico extends React.Component{
       reporte:{
         totalRecuperado:0,
         totalMovsIngreso:0,
-        totalMovsEgreso:0,
-        capital:0
-      }
+        totalMovsEgreso:0
+      },
+      capitalFisico:0
     }
     this.handleSumbit = this.handleSumbit.bind(this);
+  }
+
+  componentWillMount(){
+    fetch(localStorage.getItem('url') + 'reportes/capitalFisico',{
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Authorization': localStorage.getItem('tokenSesion')
+      }
+    }).then((res)=> res.json())
+    .then((response) =>{
+      this.setState({buscando:false, capitalFisico:response.capital})
+    })
   }
 
   handleSumbit(){
@@ -68,6 +83,7 @@ export default class CapitalFisico extends React.Component{
           </Segment>
           {/*filtros*/}
           <Segment>
+            <Divider horizontal>Filtros busqueda movimientos</Divider>
             <Form onSubmit={this.handleSumbit}>
               <Form.Group>
                 {/*fechas*/}
@@ -100,7 +116,15 @@ export default class CapitalFisico extends React.Component{
                 {this.renderButtonBuscar()}
               </Form.Field>
             </Form>
-
+            <br></br>
+            <Label>
+              <h3>
+                Capital físico total
+              </h3>
+              <h2>
+                ${this.state.capitalFisico}
+              </h2>
+            </Label>
           </Segment>
           {/*tabla de reporte*/}
           <Table celled>
@@ -109,7 +133,6 @@ export default class CapitalFisico extends React.Component{
                 <Table.HeaderCell textAlign='center'>Total recuperado</Table.HeaderCell>
                 <Table.HeaderCell textAlign='center'>Total movs. ingreso</Table.HeaderCell>
                 <Table.HeaderCell textAlign='center'>Total movs. egreso</Table.HeaderCell>
-                <Table.HeaderCell textAlign='center'>Capital</Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -117,7 +140,6 @@ export default class CapitalFisico extends React.Component{
                 <Table.Cell textAlign='right'>${this.state.reporte.totalRecuperado}</Table.Cell>
                 <Table.Cell textAlign='right'>${this.state.reporte.totalMovsIngreso}</Table.Cell>
                 <Table.Cell textAlign='right'>${this.state.reporte.totalMovsEgreso}</Table.Cell>
-                <Table.Cell textAlign='right'>${this.state.reporte.capital}</Table.Cell>
               </Table.Row>
             </Table.Body>
           </Table>

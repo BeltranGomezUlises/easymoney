@@ -69,7 +69,7 @@ public interface PrestamoDataSource extends DataSource<Prestamo, Integer> {
         }
 
         public Flowable<Response<List<Prestamo>, Object>> findAll(EnumPrestamos enumPrestamos) {
-            if (enumPrestamos == EnumPrestamos.POR_COBRAR) {
+            if (enumPrestamos == EnumPrestamos.POR_COBRAR || enumPrestamos == EnumPrestamos.POR_COBRAR_HOY) {
                 return webServices().prestamosPorCobrar(loadToken(), loadLogedUser().getId());
             } else {
                 return webServices().prestamosDelCobrador(loadToken(), loadLogedUser().getId());

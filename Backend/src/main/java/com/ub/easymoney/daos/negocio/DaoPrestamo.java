@@ -6,13 +6,22 @@
 package com.ub.easymoney.daos.negocio;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
+import com.ub.easymoney.entities.negocio.Abono;
+import com.ub.easymoney.entities.negocio.Capital;
+import com.ub.easymoney.entities.negocio.Multa;
+import com.ub.easymoney.entities.negocio.MultaPK;
 import com.ub.easymoney.entities.negocio.Prestamo;
+import com.ub.easymoney.managers.negocio.ManagerAbono;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
+import com.ub.easymoney.utils.UtilsConfig;
 import com.ub.easymoney.utils.UtilsDB;
 import java.util.Date;
 import java.util.List;
 import org.jinq.jpa.JPAJinqStream;
 import static com.ub.easymoney.utils.UtilsValidations.isNotNullOrEmpty;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import static java.util.stream.Collectors.toList;
 import javax.persistence.EntityManager;
 
@@ -24,6 +33,43 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
 
     public DaoPrestamo() {
         super(UtilsDB.getEMFactoryCG(), Prestamo.class, Integer.class);
+    }
+
+    @Override
+    public void persist(Prestamo entity) throws Exception {
+        EntityManager em = this.getEMInstance();
+        ManagerAbono managerAbono = new ManagerAbono();
+        Calendar cal = new GregorianCalendar();
+
+        em.getTransaction().begin();
+
+        em.persist(entity);
+        em.flush(); //para obtener el id del prestamo
+
+        List<Abono> listaAbonos = new ArrayList<>();
+        Abono abono;
+
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
+        final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
+        final int cantidadPagarPorAbono = entity.getCantidadPagar() / diasPlazo;
+        for (int i = 0; i < diasPlazo; i++) {
+            abono = new Abono(entity.getId(), cal.getTime());
+            abono.setCantidad(cantidadPagarPorAbono);
+            abono.setAbonado(false);
+            abono.setMulta(new Multa(new MultaPK(entity.getId(), cal.getTime()), 0, ""));
+            listaAbonos.add(abono);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        entity.setCobroDiario(cantidadPagarPorAbono);
+        entity.setAbonos(listaAbonos);
+        em.merge(entity);
+        //generar la actualización del capital        
+        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
+        capital.setCapital(capital.getCapital() - entity.getCantidad());
+        em.merge(capital);
+
+        em.getTransaction().commit();
     }
 
     /**
@@ -63,18 +109,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         if (fechaLimiteFinal != null) {
             stream = stream.where(t -> t.getFechaLimite().before(fechaLimiteFinal));
         }
-        //filtrar los que esten acreditados en un 100%
-        List<Prestamo> prestamosFiltrados = stream.toList();
-        if (!filtro.isAcreditados()) {
-            prestamosFiltrados = prestamosFiltrados.stream()
-                    .filter(t -> {
-                        float totalAbonado = t.getAbonos().stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
-                        float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
-                        return porcentajeAbonado < 100;
-                    }).collect(toList());
-        }
-
-        return prestamosFiltrados;
+        return stream.toList();
     }
 
     /**

@@ -6,6 +6,10 @@ package com.easymoney.models;
 
 public enum EnumPrestamos {
     /**
+     * identifica que los prestamos no deben de tener un cobro el dia de hoy
+     */
+    POR_COBRAR_HOY,
+    /**
      * identifica que los prestamos deben de ser solo por cobrar
      */
     POR_COBRAR,

@@ -189,7 +189,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     }
 
     public ModelTotalAPagar calcularTotalesPagar() {
-        System.out.println("Dias sin multa: " + this.prestamo.getCliente().getDiasSinMulta());
         int abonoAPagar = 0;
         int multaAPagar = 0;
         int multaAPagarMes = 0;
@@ -212,19 +211,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         });
 
         //considerar si los dias no abonados son todos dias sin multa, si hay un dia no abonado y que no esta en dias sin multa, entonces ignorar dias sin multa
-        boolean ignorarMulta = false;
-        for (Abono abono : abonos) {
-            cal.setTime(abono.getAbonoPK().getFecha());
-            if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) { //anteriores al dia de hoy
-                if (!abono.isAbonado()) {
-                    if (this.ignorarDiaDeMulta(cal.get(Calendar.DAY_OF_WEEK))){
-                        ignorarMulta = true;
-                    }else{
-                        ignorarMulta = false;
-                    }
-                }
-            }
-        }
+        boolean ignorarMulta = this.ignorarMulta(abonos);
 
         for (Abono abono : abonos) {
             cal.setTime(abono.getAbonoPK().getFecha());
@@ -232,7 +219,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) { //anteriores al dia de hoy
                 if (!abono.isAbonado()) {
                     abonoAPagar += this.prestamo.getCobroDiario();
-                    if (!ignorarMulta){
+                    if (!ignorarMulta) {
                         multaAPagar += multaDiaria;
                     }
                 } else {
@@ -245,8 +232,12 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                     }
                 }
             } else {
-                if (cal.get(Calendar.DAY_OF_YEAR) == diaActual && !abono.isAbonado()) { //al dia actual
-                    abonoAPagar += this.prestamo.getCobroDiario();
+                if (cal.get(Calendar.DAY_OF_YEAR) == diaActual) { //al dia actual
+                    if (!abono.isAbonado()) {
+                        abonoAPagar += this.prestamo.getCobroDiario();
+                    } else {
+                        abonoAPagar += this.prestamo.getCobroDiario() - abono.getCantidad();
+                    }
                     break;
                 }
             }
@@ -290,6 +281,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             }
         });
 
+        boolean ignorarMulta = this.ignorarMulta(abonos);
         //comparar si el total abonado es el que deberia de tener abonado hasta hoy
         //si -> esta al corriente y puede pagar sin abonos
         //no -> no esta al corriente y debe de pagas las multas de los dias no pagados hasta hoy
@@ -300,12 +292,14 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             if (!a.isAbonado()) {
                 cal.setTime(a.getAbonoPK().getFecha());
                 if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) {
-                    if (abono > multaDiaria) {
-                        a.getMulta().setMulta(multaDiaria);
-                        abono -= multaDiaria;
-                    } else {
-                        a.getMulta().setMulta(abono);
-                        abono = 0;
+                    if (!ignorarMulta) {
+                        if (abono > multaDiaria) {
+                            a.getMulta().setMulta(multaDiaria);
+                            abono -= multaDiaria;
+                        } else {
+                            a.getMulta().setMulta(abono);
+                            abono = 0;
+                        }
                     }
                 }
                 if (abono > this.prestamo.getCobroDiario()) {
@@ -317,23 +311,34 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                     abono = 0;
                 }
             } else {
-                //si esta abonado y no abono mas o igual que el cobro diario es multa
-                if (a.getCantidad() < this.prestamo.getCobroDiario()) {
-                    int difAbonado = (this.prestamo.getCobroDiario() - a.getCantidad());
-                    int difMulta = multaDiaria - a.getMulta().getMulta();
-                    if (abono > difMulta) {
-                        a.getMulta().setMulta(multaDiaria);
-                        abono -= difMulta;
-                    } else {
-                        a.getMulta().setMulta(a.getMulta().getMulta() + abono);
-                        abono = 0;
-                    }
+                int difAbonado = (this.prestamo.getCobroDiario() - a.getCantidad());
+                cal.setTime(a.getAbonoPK().getFecha());
+                if (cal.get(Calendar.DAY_OF_YEAR) == diaActual) {
                     if (abono > difAbonado) {
                         a.setCantidad(this.prestamo.getCobroDiario());
                         abono -= difAbonado;
                     } else {
                         a.setCantidad(a.getCantidad() + abono);
                         abono = 0;
+                    }
+                } else {
+                    //si esta abonado y no abono mas o igual que el cobro diario es multa
+                    if (a.getCantidad() < this.prestamo.getCobroDiario()) {
+                        int difMulta = multaDiaria - a.getMulta().getMulta();
+                        if (abono > difMulta) {
+                            a.getMulta().setMulta(multaDiaria);
+                            abono -= difMulta;
+                        } else {
+                            a.getMulta().setMulta(a.getMulta().getMulta() + abono);
+                            abono = 0;
+                        }
+                        if (abono > difAbonado) {
+                            a.setCantidad(this.prestamo.getCobroDiario());
+                            abono -= difAbonado;
+                        } else {
+                            a.setCantidad(a.getCantidad() + abono);
+                            abono = 0;
+                        }
                     }
                 }
             }
@@ -366,7 +371,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         prestamo.setAbonos(abonos);
         this.showLoading(true);
 
-        ModelAbonarPrestamo modelAbonarPrestamo = new ModelAbonarPrestamo(abonoTotal, prestamo.getCliente().getId(), UtilsPreferences.loadLogedUser().getId(), prestamo);
+        final ModelAbonarPrestamo modelAbonarPrestamo = new ModelAbonarPrestamo(abonoTotal, prestamo.getCliente().getId(), UtilsPreferences.loadLogedUser().getId(), prestamo);
 
         repository.abonarPrestamo(modelAbonarPrestamo)
                 .subscribeOn(SchedulerProvider.ioT())
@@ -378,6 +383,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                             case OK:
                                 proccessAbonos(prestamo.getAbonos());
                                 cargarTotalesPrestamo();
+                                UtilsPreferences.setPrestamoCobradoHoy(modelAbonarPrestamo.getPrestamo().getId());
                                 break;
                             case ERROR:
                                 showMessage("Existió un error de programación del lado del servidor");
@@ -412,12 +418,8 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 sumaAbonos += abono.getCantidad();
             }
         }
-        Calendar cal = new GregorianCalendar();
-        int diaDelAñoAcutal = cal.get(Calendar.DAY_OF_YEAR);
-        cal.setTime(prestamo.getFecha());
-        int diaDelAñoFechaPrestamo = cal.get(Calendar.DAY_OF_YEAR);
 
-        if (sumaAbonos < prestamo.getCantidadPagar() && (diaDelAñoAcutal > diaDelAñoFechaPrestamo) && this.getModelTotalAPagar().getTotalPagar() > 0) {
+        if (sumaAbonos < prestamo.getCantidadPagar() && this.getModelTotalAPagar().getTotalPagar() > 0) {
             this.fab.setVisibility(View.VISIBLE);
         } else {
             this.fab.setVisibility(View.GONE);
@@ -426,22 +428,27 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     }
 
     /**
-     * verifica si el prestamo va al corriente en sus pagos
+     * Decide si una lista de abonos del prestamo deberia de ignorarse la multa o no
      *
-     * @param prestamo prestamo a validar
-     * @return true, si el prestamo va al corriente, false, si el prestamo no va al corriente
+     * @param abonos lista de abonos de un prestamo
+     * @return true si deberia de ignorarce la multa, false si deberria aplicarse la multa
      */
-    private boolean prestamoAlCorriente(Prestamo prestamo) {
-        int totalAbonadoActual = 0;
-        for (Abono a : prestamo.getAbonos()) {
-            if (a.isAbonado()) totalAbonadoActual += a.getCantidad();
-        }
-        //sacar el total que deberia de tener abonado, el dia de hoy, restar a la fecha del presamo, los dias de diferencia de hoy a la fecha de prestamos son los dias que van
-        int dif = (int) UtilsDate.diasEntreFechas(this.prestamo.getFecha(), new Date());
-        int totalDeberiaTener = dif * prestamo.getCobroDiario();
-        return totalAbonadoActual >= totalDeberiaTener;
-    }
+    private boolean ignorarMulta(List<Abono> abonos) {
+        Calendar cal = new GregorianCalendar();
+        int diaActual = cal.get((Calendar.DAY_OF_YEAR));
+        for (Abono abono : abonos) {
+            cal.setTime(abono.getAbonoPK().getFecha());
+            if (cal.get(Calendar.DAY_OF_YEAR) < diaActual) { //anteriores al dia de hoy
+                if (!abono.isAbonado()) {
+                    if (!this.ignorarDiaDeMulta(cal.get(Calendar.DAY_OF_WEEK))) {
+                        return false;
+                    }
 
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * Verifica si el dia de la fecha del abono existe en los dias sin multa
@@ -451,7 +458,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      */
     private boolean ignorarDiaDeMulta(int diaSemanaDelABono) {
         diaSemanaDelABono -= 1;
-        System.out.println("Dia de la semana del abono: " + diaSemanaDelABono);
         boolean res = false;
         if (this.prestamo.getCliente().getDiasSinMulta() != null
                 && !this.prestamo.getCliente().getDiasSinMulta().isEmpty()) {

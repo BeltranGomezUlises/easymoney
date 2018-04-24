@@ -15,7 +15,6 @@ export default class PrestamoDetalle extends Component{
     }
 
     componentWillMount(){
-      //obtener el detalle del prestamo
       fetch(localStorage.getItem('url') + 'abonos/prestamo/' + this.props.prestamo.id,{
         method: 'GET',
         headers: {
@@ -29,6 +28,7 @@ export default class PrestamoDetalle extends Component{
         this.setState({abonos: response.data})
       });
       this.cargarTotales();
+      this.cargarDetallePrestamo();
     }
 
     cargarTotales(){
@@ -44,6 +44,21 @@ export default class PrestamoDetalle extends Component{
       .then((response) =>{
         this.setState({totales: response.data})
       })
+    }
+
+    cargarDetallePrestamo(){
+      fetch(localStorage.getItem('url') + 'prestamos/' + this.props.prestamo.id,{
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin':'*',
+          'Authorization': localStorage.getItem('tokenSesion')
+        }
+      }).then((res)=> res.json())
+      .then((response) =>{
+        this.setState({prestamo:response.data})
+      });
     }
 
     actualizarPrestamo(){

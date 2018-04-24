@@ -5,9 +5,11 @@
  */
 package com.ub.easymoney.services.negocio;
 
+import com.ub.easymoney.daos.negocio.DaoCapital;
 import com.ub.easymoney.daos.negocio.DaoCliente;
 import com.ub.easymoney.daos.negocio.DaoCobro;
 import com.ub.easymoney.daos.negocio.DaoMovimiento;
+import com.ub.easymoney.entities.negocio.Capital;
 import com.ub.easymoney.entities.negocio.Cliente;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.models.ModelClienteLiquidado;
@@ -74,8 +76,6 @@ public class Reportes {
             }
             mrc.setTotalMovsIngreso(totalIngreso);
             mrc.setTotalMovsEgreso(totalEgreso);
-            mrc.setCapital(mrc.getTotalRecuperado() + mrc.getTotalMovsIngreso() - mrc.getTotalMovsEgreso());
-
             UtilsService.setOkResponse(res, mrc, "Reporte de capital generado en un rango de fechas");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             UtilsService.setInvalidTokenResponse(res);
@@ -148,6 +148,20 @@ public class Reportes {
             UtilsService.setErrorResponse(res, e);
         }
         return res;
+    }
+
+    /**
+     * Consulta el capital fisico que existe
+     *
+     * @param token token de sesion
+     * @return Objecto de capital fisico
+     * @throws Exception
+     */
+    @GET
+    @Path("/capitalFisico")
+    public Capital consultaCapitaFisico(@HeaderParam("Authorization") final String token) throws Exception {
+        UtilsJWT.validateSessionToken(token);
+        return new DaoCapital().findFirst();
     }
 
 }

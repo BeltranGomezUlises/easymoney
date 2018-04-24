@@ -50,5 +50,11 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/barrita"
+        android:background="@color/positive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="3px" />
 
 </LinearLayout>
