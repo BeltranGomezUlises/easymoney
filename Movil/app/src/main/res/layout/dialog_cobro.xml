@@ -92,6 +92,7 @@
             android:layout_height="wrap_content"
             android:hint="Abonar"
             android:inputType="number"
+            android:maxLength="5"
             android:maxLines="1"
             android:singleLine="true" />
 

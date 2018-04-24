@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:hint="Cantidad"
             android:inputType="number"
+            android:maxLength="4"
             android:maxLines="1"
             android:singleLine="true" />
 
