@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Table, Loader, Header, Segment, Checkbox, Form, Button} from 'semantic-ui-react';
+import * as utils from '../../../utils.js';
 
 export default class PrestamoDetalle extends Component{
 
@@ -9,12 +10,40 @@ export default class PrestamoDetalle extends Component{
         prestamo: this.props.prestamo,
         abonos:[],
         totales: null,
-        loading: false
+        loading: false,
+        renovando:false
       }
       this.actualizarPrestamo = this.actualizarPrestamo.bind(this);
+      this.renovarPrestamo = this.renovarPrestamo.bind(this);
     }
 
     componentWillMount(){
+      this.cargarAbonosPrestamo();
+      this.cargarTotales();
+      this.cargarDetallePrestamo();
+    }
+
+
+    renovarPrestamo(){
+      this.setState({renovando:true});
+      fetch(localStorage.getItem('url') + 'prestamos/renovar/' + this.props.prestamo.id,{
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin':'*',
+          'Authorization': localStorage.getItem('tokenSesion')
+        }
+      }).then((res)=> res.json())
+      .then((response) =>{
+        this.setState({renovando: false})
+        utils.evalResponse(response, () => {
+          this.props.update();
+        });
+      })
+    }
+
+    cargarAbonosPrestamo(){
       fetch(localStorage.getItem('url') + 'abonos/prestamo/' + this.props.prestamo.id,{
         method: 'GET',
         headers: {
@@ -27,8 +56,6 @@ export default class PrestamoDetalle extends Component{
       .then((response) =>{
         this.setState({abonos: response.data})
       });
-      this.cargarTotales();
-      this.cargarDetallePrestamo();
     }
 
     cargarTotales(){
@@ -200,18 +227,42 @@ export default class PrestamoDetalle extends Component{
     }
 
     renderButton(){
-      if (this.state.loading) {
+      if (this.state.loading) { //actualizando el prestamo
         return(
-          <Button color='green' loading>
-            Actualizar
-          </Button>
+          <div>
+            <Button color='green' loading>
+              Actualizar
+            </Button>
+            <Button color='blue' disabled>
+              Renovar
+            </Button>
+          </div>
         );
       }else{
-        return(
-          <Button color='green' onClick={this.actualizarPrestamo}>
-            Actualizar
-          </Button>
-        );
+        console.log(this.state.renovando);
+        if (this.state.renovando) { //renovando el prestamo
+          return (
+            <div>
+              <Button color='green' disabled>
+                Actualizar
+              </Button>
+              <Button color='blue' loading>
+                Renovar
+              </Button>
+            </div>
+          );
+        }else{ //estado pasivo
+          return(
+            <div>
+              <Button color='green' onClick={this.actualizarPrestamo}>
+                Actualizar
+              </Button>
+              <Button color='blue' onClick={this.renovarPrestamo}>
+                Renovar
+              </Button>
+            </div>
+          );
+        }
       }
     }
 

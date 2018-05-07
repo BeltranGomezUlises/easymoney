@@ -17,6 +17,7 @@ import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.services.commos.ServiceFacade;
+import com.ub.easymoney.utils.UtilsJWT;
 import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
@@ -197,6 +198,24 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             e.printStackTrace();
         }
         return prestamos;
+    }
+
+    @GET
+    @Path("/renovar/{prestamoId}")
+    public Response renovarPrestamo(@HeaderParam("Authorization") final String token, @PathParam("prestamoId") final int prestamoId) {
+        Response res = new Response();
+        try {
+            UtilsJWT.validateSessionToken(token);
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            managerPrestamo.renovarPrestamo(prestamoId);
+            setOkResponse(res, "prestamoRenovado");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            UtilsService.setWarningResponse(res, e.getMessage(), "token inválido");
+        } catch (Exception e) {
+            setErrorResponse(res, e);
+        }
+
+        return res;
     }
 
 }

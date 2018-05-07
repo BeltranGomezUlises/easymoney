@@ -141,4 +141,54 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
                 .setParameter("cobradorId", cobradorId)
                 .getResultList();
     }
+
+    public void renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo) throws Exception {
+        EntityManager em = this.getEMInstance();
+        em.getTransaction().begin();
+
+        //obtener lo que falta por abonar para dejar ese saldo 
+        int cantidadPorSaldar = 0;
+        for (Abono abono : prestamoRenovar.getAbonos()) {
+            if (!abono.isAbonado()) {
+                cantidadPorSaldar += prestamoRenovar.getCobroDiario();
+            } else {
+                if (abono.getCantidad() < prestamoRenovar.getCobroDiario()) {
+                    cantidadPorSaldar += (prestamoRenovar.getCobroDiario() - abono.getCantidad());
+                }
+            }
+            abono.setAbonado(true);
+            abono.setCantidad(prestamoRenovar.getCobroDiario());
+        }
+        em.merge(prestamoRenovar);
+
+        Calendar cal = new GregorianCalendar();
+
+        em.persist(nuevoPrestamo);
+        em.flush(); //para obtener el id del prestamo
+
+        List<Abono> listaAbonos = new ArrayList<>();
+        Abono abono;
+        cal.setTime(nuevoPrestamo.getFecha());
+        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
+        final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
+        final int cantidadPagarPorAbono = nuevoPrestamo.getCantidadPagar() / diasPlazo;
+        for (int i = 0; i < diasPlazo; i++) {
+            abono = new Abono(nuevoPrestamo.getId(), cal.getTime());
+            abono.setCantidad(cantidadPagarPorAbono);
+            abono.setAbonado(false);
+            abono.setMulta(new Multa(new MultaPK(nuevoPrestamo.getId(), cal.getTime()), 0, ""));
+            listaAbonos.add(abono);
+            cal.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        nuevoPrestamo.setCobroDiario(cantidadPagarPorAbono);
+        nuevoPrestamo.setAbonos(listaAbonos);
+        em.merge(nuevoPrestamo);
+
+        //generar la actualización del capital        
+        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
+        capital.setCapital(capital.getCapital() - (nuevoPrestamo.getCantidadPagar() - cantidadPorSaldar));
+        em.merge(capital);
+
+        em.getTransaction().commit();
+    }
 }

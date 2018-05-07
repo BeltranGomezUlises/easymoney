@@ -94,10 +94,10 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
      */
     public JPAJinqStream<T> stream() {
         JPAJinqStream<T> stream = streamProvider.streamAll(eMFactory.createEntityManager(), claseEntity);
-        stream.setHint(
-                "queryLogger", (JPAQueryLogger) (String query, Map<Integer, Object> positionParameters, Map<String, Object> namedParameters) -> {
-                    System.out.println("queryLogr -> " + query);
-                });
+//        stream.setHint(
+//                "queryLogger", (JPAQueryLogger) (String query, Map<Integer, Object> positionParameters, Map<String, Object> namedParameters) -> {
+//                    System.out.println("queryLogr -> " + query);
+//                });
         return stream;
     }
 
