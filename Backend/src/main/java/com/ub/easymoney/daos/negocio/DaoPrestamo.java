@@ -142,7 +142,15 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
                 .getResultList();
     }
 
-    public void renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo) throws Exception {
+    /**
+     * persiste la actualizacion del prestamoa a renovar y el nuevo prestamo
+     *
+     * @param prestamoRenovar
+     * @param nuevoPrestamo
+     * @return cantidad a entregar de dinero fisico al cliente
+     * @throws Exception
+     */
+    public int renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo) throws Exception {
         EntityManager em = this.getEMInstance();
         em.getTransaction().begin();
 
@@ -186,9 +194,10 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
 
         //generar la actualización del capital        
         Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
-        capital.setCapital(capital.getCapital() - (nuevoPrestamo.getCantidadPagar() - cantidadPorSaldar));
+        capital.setCapital(capital.getCapital() - (nuevoPrestamo.getCantidad() - cantidadPorSaldar));
         em.merge(capital);
 
         em.getTransaction().commit();
+        return (nuevoPrestamo.getCantidad() - cantidadPorSaldar);
     }
 }

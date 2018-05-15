@@ -308,15 +308,17 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * Renueva un prestamo, generando un nuevo prestamos con la cantidad anteriormente prestada, salda el prestamoa anterior y genera un de lo prestado menos la cantidad saldada del prestamo anterior
      *
      * @param prestamoId identificador del prestamos a renovar
+     * @param cantNuevoPrestamo cantidad a prestar en el nuevo prestamo
+     * @return cantidad a entregar de dinero fisico al cliente 
      * @throws Exception
      */
-    public void renovarPrestamo(int prestamoId) throws Exception {
+    public int renovarPrestamo(final int prestamoId, final int cantNuevoPrestamo) throws Exception {
         Prestamo prestamoRenovar = this.findOne(prestamoId);
         Prestamo nuevoPrestamo = new Prestamo();
 
         nuevoPrestamo.setCliente(prestamoRenovar.getCliente());
         nuevoPrestamo.setCobrador(prestamoRenovar.getCobrador());
-        nuevoPrestamo.setCantidad(prestamoRenovar.getCantidad());
+        nuevoPrestamo.setCantidad(cantNuevoPrestamo);
 
         int cantImpuesto = nuevoPrestamo.getCantidad();
         cantImpuesto *= ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f);
@@ -325,13 +327,12 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         nuevoPrestamo.setFecha(new Date());
 
         GregorianCalendar cal = new GregorianCalendar();
-        Date d = cal.getTime(); //guardamos la fecha actual
         cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
 
         nuevoPrestamo.setFechaLimite(cal.getTime());
 
         DaoPrestamo daoPrestamo = new DaoPrestamo();
-        daoPrestamo.renovarPrestamo(prestamoRenovar, nuevoPrestamo);
+        return daoPrestamo.renovarPrestamo(prestamoRenovar, nuevoPrestamo);
     }
 
 }

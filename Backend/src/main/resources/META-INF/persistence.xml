@@ -15,10 +15,12 @@
             <!-- jdbc -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.user" value="postgres"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5532/em"/>
-            <property name="javax.persistence.jdbc.password" value="postgres.90Y9B8yh$123"/>           
-            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
-            <property name="javax.persistence.jdbc.password" value="2424"/>-->
+            
+            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5532/em"/>
+     <property name="javax.persistence.jdbc.password" value="postgres.90Y9B8yh$123"/>    
+            -->
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
+            <property name="javax.persistence.jdbc.password" value="2424"/>
         </properties>
     </persistence-unit>
 </persistence>

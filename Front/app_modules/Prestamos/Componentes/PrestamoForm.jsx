@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { Input, Button, Label, Form, Select} from 'semantic-ui-react';
+import { Input, Button, Label, Form, Select, Dropdown, Segment} from 'semantic-ui-react';
+import * as utils from '../../../utils.js';
 
 export default class PrestamoForm extends Component{
 
@@ -16,29 +17,52 @@ export default class PrestamoForm extends Component{
           cobrador:{
             id:0
           }
-        }
+        },
+        optionsClientes:[],
+        optionsUsuarios:[],
+        loading:false,
+        warning:false
       }
-      this.cargarClientes = this.cargarClientes.bind(this);
-      this.cargarCobradores = this.cargarCobradores.bind(this);
       this.updateInputCantidad = this.updateInputCantidad.bind(this);
-      this.updateInputCliente = this.updateInputCliente.bind(this);
-      this.updateInputCobrador = this.updateInputCobrador.bind(this);
-      this.renderClientes = this.renderClientes.bind(this);
-      this.renderCobradores = this.renderCobradores.bind(this);
+      this.handleUpdateCliente = this.handleUpdateCliente.bind(this);
+      this.handleUpdateUsuarios = this.handleUpdateUsuarios.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    updateInputCliente(e){
+    handleUpdateCliente(e, {value}){
       let {nuevoPrestamo} = this.state;
-      nuevoPrestamo.cliente.id = e.target.value;
-      this.setState({nuevoPrestamo})
-      this.props.getData({nuevoPrestamo})
+      nuevoPrestamo.cliente.id = value;
+      this.setState(nuevoPrestamo);
     }
 
-    updateInputCobrador(e){
+    handleUpdateUsuarios(e, {value}){
       let {nuevoPrestamo} = this.state;
-      nuevoPrestamo.cobrador.id = e.target.value;
-      this.setState({nuevoPrestamo})
-      this.props.getData({nuevoPrestamo})
+      nuevoPrestamo.cobrador.id = value;
+      this.setState(nuevoPrestamo);
+    }
+
+    handleSubmit(){
+      const np = this.state.nuevoPrestamo;
+      console.log(np)
+      if (np.cantidad == 0 || np.cliente.id == 0 || np.cobrador.id == 0) {
+        this.setState({warning:true});
+      }else{
+        this.setState({loading:true, warning:false});
+        fetch(localStorage.getItem('url') + 'prestamos',{
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin':'*',
+            'Authorization': localStorage.getItem('tokenSesion')
+          },
+          body:JSON.stringify(this.state.nuevoPrestamo)
+        }).then((res)=> res.json())
+        .then((response) =>{
+          this.setState({loading:false});
+          this.props.close();
+        })
+      }
     }
 
     updateInputCantidad(evt){
@@ -51,7 +75,7 @@ export default class PrestamoForm extends Component{
 
     componentWillMount(){
       this.cargarClientes();
-      this.cargarCobradores()
+      this.cargarUsuarios()
     }
 
     cargarClientes(){
@@ -65,18 +89,18 @@ export default class PrestamoForm extends Component{
           }
         }).then((res)=> res.json())
         .then((response) =>{
-          let {nuevoPrestamo} = this.state;
-          nuevoPrestamo.cliente.id = response.data[0].id;
-          this.setState({
-            clientes:response.data,
-            nuevoPrestamo
+          utils.evalResponse(response, () => {
+            let optionsClientes = [];
+            response.data.forEach((c)=>{
+              optionsClientes.push({ key: c.id, text: c.nombre, value: c.id});
+            })
+            this.setState({optionsClientes})
           });
-          this.props.getData({nuevoPrestamo})
         })
     }
 
-    cargarCobradores(){
-        fetch(localStorage.getItem('url') + 'usuarios/usuariosCobradores',{
+    cargarUsuarios(){
+        fetch(localStorage.getItem('url') + 'usuarios',{
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -86,40 +110,78 @@ export default class PrestamoForm extends Component{
           }
         }).then((res)=> res.json())
         .then((response) =>{
-          let {nuevoPrestamo} = this.state;
-          nuevoPrestamo.cobrador.id = response.data[0].id;
-          this.setState({cobradores:response.data, nuevoPrestamo});
-          this.props.getData({nuevoPrestamo})
+          utils.evalResponse(response, () => {
+            let optionsUsuarios = [];
+            response.data.forEach((c)=>{
+              optionsUsuarios.push({ key: c.id, text: c.nombre, value: c.id});
+            })
+            this.setState({optionsUsuarios})
+          });
         })
     }
 
-    renderClientes(){
-          return this.state.clientes.map((c) =>{
-            return <option key={c.id} value={c.id}>{c.nombre}</option>
-          })
+    renderButton(){
+      if (this.state.loading) {
+        return(
+          <Button color='green' loading>Agregar</Button>
+        );
+      }else{
+        return(
+          <Button color='green' type='submit'>Agregar</Button>
+        );
+      }
     }
 
-    renderCobradores(){
-      return this.state.cobradores.map((c) =>{
-        return <option key={c.id} value={c.id}>{c.nombre}</option>
-      })
+    renderWarning(){
+      if (this.state.warning){
+        return(
+          <Segment color='yellow'>
+            <p>Verifique que tiene todos los campos llenos</p>
+          </Segment>
+        );
+      }
     }
 
     render(){
       return(
-        <Form>
-          <Form.Group widths='equal'>
-             <Label>Cliente:</Label>
-             <select value={this.state.nuevoPrestamo.cliente.id} onChange={this.updateInputCliente}>
-               {this.renderClientes()}
-             </select>
-             <Label>Cobrador:</Label>
-             <select value={this.state.nuevoPrestamo.cobrador.id} onChange={this.updateInputCobrador}>
-               {this.renderCobradores()}
-             </select>
-          </Form.Group>
-          <input required type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.nuevoPrestamo.cantidad} />
-        </Form>
+        <div>
+          {this.renderWarning()}
+          <Form onSubmit={this.handleSubmit}>
+            <Form.Group widths='equal'>
+              <Form.Field required>
+                <label>Cliente:</label>
+                <Dropdown
+                  search
+                  required
+                  options={this.state.optionsClientes}
+                  selection
+                  placeholder='Cliente'
+                  onChange={this.handleUpdateCliente}
+                />
+              </Form.Field>
+              <Form.Field required>
+              <label>Usuario:</label>
+              <Dropdown
+                search
+                required
+                options={this.state.optionsUsuarios}
+                selection
+                placeholder='Usuario'
+                onChange={this.handleUpdateUsuarios}
+                />
+              </Form.Field>
+            </Form.Group>
+            <Form.Field required>
+              <label>Cantidad a prestar:</label>
+              <input type='number' min='0' step='1' max='99999'
+                required
+                placeholder='Cantidad a prestar en el nuevo prestamo'
+                value={this.state.nuevoPrestamo.cantidad}
+                onInput={this.updateInputCantidad} />
+            </Form.Field>
+            {this.renderButton()}
+          </Form>
+        </div>
       );
     }
 }

@@ -15,15 +15,6 @@ export default class PrestamoList extends React.Component {
       prestamos:[],
       totalesPrestamos:{},
       modalOpenAgregar:false,
-      nuevoPrestamo:{
-        cantidad:0,
-        cliente:{
-          id:0
-        },
-        cobrador:{
-          id:0
-        }
-      },
       filtro:{
         nombreCliente:'',
         nombreCobrador:'',
@@ -38,10 +29,10 @@ export default class PrestamoList extends React.Component {
 
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
     this.handleOpenAgregar = this.handleOpenAgregar.bind(this);
-    this.agregarPrestamo = this.agregarPrestamo.bind(this);
-    this.onCreateHandler = this.onCreateHandler.bind(this);
+    this.handleCreate = this.handleCreate.bind(this);
     this.cargarPrestamos = this.cargarPrestamos.bind(this);
     this.handlePaginationChange = this.handlePaginationChange.bind(this);
+    this.cargarPrestamos = this.cargarPrestamos.bind(this);
   }
 
   handlePaginationChange(e, { activePage }){
@@ -56,35 +47,9 @@ export default class PrestamoList extends React.Component {
     this.setState({modalOpenAgregar: true});
   }
 
-  agregarPrestamo(){
-    let {nuevoPrestamo} = this.state.nuevoPrestamo;
-    if (nuevoPrestamo.cantidad > 0) {
-        fetch(localStorage.getItem('url') + 'prestamos',{
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin':'*',
-            'Authorization': localStorage.getItem('tokenSesion')
-          },
-          body:JSON.stringify({
-            cantidad: nuevoPrestamo.cantidad,
-            cliente: nuevoPrestamo.cliente,
-            cobrador: nuevoPrestamo.cobrador
-          })
-        }).then((res)=> res.json())
-        .then((response) =>{
-          this.handleCloseAgregar();
-          this.cargarPrestamos();
-          this.cargarTotalesPrestamos();
-        })
-    }else{
-      this.handleOpenWarning();
-    }
-  }
-
-  onCreateHandler(nuevoPrestamo){
-    this.setState({nuevoPrestamo});
+  handleCreate(){
+    this.handleCloseAgregar();
+    this.cargarPrestamos();
   }
 
   cargarPrestamos(){
@@ -444,16 +409,8 @@ export default class PrestamoList extends React.Component {
           open={this.state.modalOpenAgregar}>
           <Header content='Agregar prestamo' />
           <Modal.Content>
-              <PrestamoForm getData={this.onCreateHandler}></PrestamoForm>
+              <PrestamoForm close={this.handleCreate}></PrestamoForm>
           </Modal.Content>
-          <Modal.Actions>
-            <Button color='green' onClick={this.agregarPrestamo}>
-              Guardar
-            </Button>
-            <Button color='red' onClick={this.handleCloseAgregar}>
-              Cancelar
-            </Button>
-          </Modal.Actions>
         </Modal>
         </Form.Group>
       </Form>

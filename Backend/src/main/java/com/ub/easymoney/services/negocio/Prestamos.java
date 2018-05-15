@@ -200,15 +200,23 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         return prestamos;
     }
 
+    /**
+     * Genera una renovacion de prestamo, salda el prestamoa actual y genera uno nuevo por la cantidad establecida
+     *
+     * @param token token de sesion
+     * @param prestamoId identificador del prestamo
+     * @param cantNuevoPrestamo cantidad a prestamor en el nuevo prestamo
+     * @return
+     */
     @GET
-    @Path("/renovar/{prestamoId}")
-    public Response renovarPrestamo(@HeaderParam("Authorization") final String token, @PathParam("prestamoId") final int prestamoId) {
+    @Path("/renovar/{prestamoId}/{cantidadNuevoPrestamo}")
+    public Response renovarPrestamo(@HeaderParam("Authorization") final String token, @PathParam("prestamoId") final int prestamoId, @PathParam("cantidadNuevoPrestamo") final int cantNuevoPrestamo) {
         Response res = new Response();
         try {
             UtilsJWT.validateSessionToken(token);
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
-            managerPrestamo.renovarPrestamo(prestamoId);
-            setOkResponse(res, "prestamoRenovado");
+            int cantEntregar = managerPrestamo.renovarPrestamo(prestamoId, cantNuevoPrestamo);
+            setOkResponse(res, cantEntregar, "prestamoRenovado");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             UtilsService.setWarningResponse(res, e.getMessage(), "token inválido");
         } catch (Exception e) {
