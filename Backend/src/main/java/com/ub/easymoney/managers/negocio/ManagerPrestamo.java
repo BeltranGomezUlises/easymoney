@@ -113,6 +113,8 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     public List<ModelCargarPrestamos> cargarPrestamos(FiltroPrestamo filtro) {
         List<ModelCargarPrestamos> models = new ArrayList<>();
         List<Prestamo> prestamosFiltrados = new DaoPrestamo().findAll(filtro);
+        GregorianCalendar cal = new GregorianCalendar();
+        final int dayOfTheYear = cal.get(Calendar.DAY_OF_YEAR); //dia del año en el que estamos
         //filtrar los 100% acreditados
         if (!filtro.isAcreditados()) {
             prestamosFiltrados = prestamosFiltrados.stream()
@@ -124,7 +126,8 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
             //no hay prestamos acreditados
             prestamosFiltrados.forEach(p -> {
                 ModelCargarPrestamos model = new ModelCargarPrestamos(p.getId(), p.getCliente().getNombre(), p.getCobrador().getNombre(), p.getCantidad(), p.getCantidadPagar(), p.getFecha(), p.getFechaLimite());
-                if (p.getFechaLimite().getTime() < System.currentTimeMillis()) {
+                cal.setTime(p.getFechaLimite());
+                if (cal.get(Calendar.DAY_OF_YEAR) < dayOfTheYear) {
                     model.setEstado(ModelCargarPrestamos.EstadoPrestamo.VENCIDO);
                 }
                 models.add(model);
@@ -136,12 +139,15 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
                 float porcentajeAbonado = (totalAbonado / (float) p.getCantidadPagar() * 100f);
                 if (porcentajeAbonado == 100) {
                     model.setEstado(ModelCargarPrestamos.EstadoPrestamo.ACREDITADO);
-                }
-                if (p.getFechaLimite().getTime() < System.currentTimeMillis()) {
-                    if (porcentajeAbonado < 100) {
-                        model.setEstado(ModelCargarPrestamos.EstadoPrestamo.VENCIDO);
+                } else {
+                    cal.setTime(p.getFechaLimite());
+                    if (cal.get(Calendar.DAY_OF_YEAR) < dayOfTheYear) {
+                        if (porcentajeAbonado < 100) {
+                            model.setEstado(ModelCargarPrestamos.EstadoPrestamo.VENCIDO);
+                        }
                     }
                 }
+
                 models.add(model);
             });
         }
@@ -296,6 +302,37 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         super.update(entity);
 
         return p;//To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Renueva un prestamo, generando un nuevo prestamos con la cantidad anteriormente prestada, salda el prestamoa anterior y genera un de lo prestado menos la cantidad saldada del prestamo anterior
+     *
+     * @param prestamoId identificador del prestamos a renovar
+     * @param cantNuevoPrestamo cantidad a prestar en el nuevo prestamo
+     * @return cantidad a entregar de dinero fisico al cliente 
+     * @throws Exception
+     */
+    public int renovarPrestamo(final int prestamoId, final int cantNuevoPrestamo) throws Exception {
+        Prestamo prestamoRenovar = this.findOne(prestamoId);
+        Prestamo nuevoPrestamo = new Prestamo();
+
+        nuevoPrestamo.setCliente(prestamoRenovar.getCliente());
+        nuevoPrestamo.setCobrador(prestamoRenovar.getCobrador());
+        nuevoPrestamo.setCantidad(cantNuevoPrestamo);
+
+        int cantImpuesto = nuevoPrestamo.getCantidad();
+        cantImpuesto *= ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f);
+
+        nuevoPrestamo.setCantidadPagar(nuevoPrestamo.getCantidad() + cantImpuesto);
+        nuevoPrestamo.setFecha(new Date());
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
+
+        nuevoPrestamo.setFechaLimite(cal.getTime());
+
+        DaoPrestamo daoPrestamo = new DaoPrestamo();
+        return daoPrestamo.renovarPrestamo(prestamoRenovar, nuevoPrestamo);
     }
 
 }

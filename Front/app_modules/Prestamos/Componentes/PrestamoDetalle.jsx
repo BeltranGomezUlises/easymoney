@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import { Table, Loader, Header, Segment, Checkbox, Form, Button} from 'semantic-ui-react';
+import ModalRenovar from './ModalRenovar.jsx';
+import * as utils from '../../../utils.js';
 
 export default class PrestamoDetalle extends Component{
 
@@ -9,12 +11,19 @@ export default class PrestamoDetalle extends Component{
         prestamo: this.props.prestamo,
         abonos:[],
         totales: null,
-        loading: false
+        loading: false,
+        renovando:false
       }
       this.actualizarPrestamo = this.actualizarPrestamo.bind(this);
     }
 
     componentWillMount(){
+      this.cargarAbonosPrestamo();
+      this.cargarTotales();
+      this.cargarDetallePrestamo();
+    }
+
+    cargarAbonosPrestamo(){
       fetch(localStorage.getItem('url') + 'abonos/prestamo/' + this.props.prestamo.id,{
         method: 'GET',
         headers: {
@@ -27,8 +36,6 @@ export default class PrestamoDetalle extends Component{
       .then((response) =>{
         this.setState({abonos: response.data})
       });
-      this.cargarTotales();
-      this.cargarDetallePrestamo();
     }
 
     cargarTotales(){
@@ -200,18 +207,26 @@ export default class PrestamoDetalle extends Component{
     }
 
     renderButton(){
-      if (this.state.loading) {
+      if (this.state.loading) { //actualizando el prestamo
         return(
-          <Button color='green' loading>
-            Actualizar
-          </Button>
+          <div>
+            <Button color='green' loading>
+              Actualizar
+            </Button>
+            <Button color='blue' disabled>
+              Renovar
+            </Button>
+          </div>
         );
       }else{
-        return(
-          <Button color='green' onClick={this.actualizarPrestamo}>
-            Actualizar
-          </Button>
-        );
+          return(
+            <div>
+              <Button color='green' onClick={this.actualizarPrestamo}>
+                Actualizar
+              </Button>
+              <ModalRenovar prestamo={this.props.prestamo} update={this.props.update}></ModalRenovar>
+            </div>
+          );
       }
     }
 

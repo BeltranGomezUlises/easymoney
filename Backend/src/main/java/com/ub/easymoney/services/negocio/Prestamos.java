@@ -17,6 +17,7 @@ import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.services.commos.ServiceFacade;
+import com.ub.easymoney.utils.UtilsJWT;
 import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
@@ -197,6 +198,32 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             e.printStackTrace();
         }
         return prestamos;
+    }
+
+    /**
+     * Genera una renovacion de prestamo, salda el prestamoa actual y genera uno nuevo por la cantidad establecida
+     *
+     * @param token token de sesion
+     * @param prestamoId identificador del prestamo
+     * @param cantNuevoPrestamo cantidad a prestamor en el nuevo prestamo
+     * @return
+     */
+    @GET
+    @Path("/renovar/{prestamoId}/{cantidadNuevoPrestamo}")
+    public Response renovarPrestamo(@HeaderParam("Authorization") final String token, @PathParam("prestamoId") final int prestamoId, @PathParam("cantidadNuevoPrestamo") final int cantNuevoPrestamo) {
+        Response res = new Response();
+        try {
+            UtilsJWT.validateSessionToken(token);
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            int cantEntregar = managerPrestamo.renovarPrestamo(prestamoId, cantNuevoPrestamo);
+            setOkResponse(res, cantEntregar, "prestamoRenovado");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            UtilsService.setWarningResponse(res, e.getMessage(), "token inválido");
+        } catch (Exception e) {
+            setErrorResponse(res, e);
+        }
+
+        return res;
     }
 
 }

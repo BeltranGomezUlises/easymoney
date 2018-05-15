@@ -18,7 +18,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import org.jinq.jpa.JPAJinqStream;
 import org.jinq.jpa.JPAQueryLogger;
 import org.jinq.jpa.JinqJPAStreamProvider;
@@ -95,10 +94,10 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
      */
     public JPAJinqStream<T> stream() {
         JPAJinqStream<T> stream = streamProvider.streamAll(eMFactory.createEntityManager(), claseEntity);
-        stream.setHint(
-                "queryLogger", (JPAQueryLogger) (String query, Map<Integer, Object> positionParameters, Map<String, Object> namedParameters) -> {
-                    System.out.println("queryLogr -> " + query);
-                });
+//        stream.setHint(
+//                "queryLogger", (JPAQueryLogger) (String query, Map<Integer, Object> positionParameters, Map<String, Object> namedParameters) -> {
+//                    System.out.println("queryLogr -> " + query);
+//                });
         return stream;
     }
 
