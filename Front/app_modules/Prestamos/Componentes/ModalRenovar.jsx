@@ -71,8 +71,7 @@ export default class PrestamoDetalle extends Component{
   renderButtonCerrar(){
     if (this.state.renovado) {
       return(
-         <Button primary content='Cerrar' onClick={()=>{
-           console.log('hola');
+         <Button primary content='Cerrar' onClick={()=>{        
           this.props.update();
           this.onClose();
          }} />

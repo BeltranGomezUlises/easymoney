@@ -26,6 +26,7 @@ hs_err_pid*
 
 # folders
 Front/node_modules
+Front/builds
 
 /Backend/target/
 /Movil/bin/
@@ -39,15 +40,11 @@ Front/node_modules
 /Movil/.navigation/
 /Movil/captures/
 /Movil/*.iml
-/Movil/.idea/workspace.xml
-/Movil/.idea/tasks.xml
-/Movil/.idea/gradle.xml
-/Movil/.idea/dictionaries
-/Movil/.idea/libraries
+/Movil/.idea/
 /Movil/.externalNativeBuild
 /Movil/google-services.json
 /Movil/freeline.py
 /Movil/freeline/
 /Movil/freeline_project_description.json
 
-
+Front/config\.json
