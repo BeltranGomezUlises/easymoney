@@ -49,7 +49,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         List<Abono> listaAbonos = new ArrayList<>();
         Abono abono;
 
-        cal.setTime(new Date());
+        cal.setTime(entity.getFecha());
         cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
         final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
         final int cantidadPagarPorAbono = entity.getCantidadPagar() / diasPlazo;

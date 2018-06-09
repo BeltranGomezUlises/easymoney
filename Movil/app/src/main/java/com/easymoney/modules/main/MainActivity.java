@@ -37,6 +37,7 @@ import com.easymoney.utils.schedulers.SchedulerProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private PrestamoAdapter adapterPrestamo;
     private PrestamoRepository prestamoRepository;
     private List<Prestamo> prestamos;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public List<Prestamo> getPrestamos() {
         return prestamos;
@@ -153,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void cargarPrestamos(final EnumPrestamos enumPrestamos) {
+        compositeDisposable.add(
         prestamoRepository.findAll(enumPrestamos)
                 .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT())
@@ -178,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                    throwable.printStackTrace();
                                }
                            }
-                );
+                )
+        );
     }
 
     /**
