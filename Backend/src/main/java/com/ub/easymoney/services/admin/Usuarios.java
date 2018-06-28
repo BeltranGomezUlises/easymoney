@@ -13,6 +13,7 @@ import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
 import com.ub.easymoney.services.commos.ServiceFacade;
+import com.ub.easymoney.utils.UtilsSecurity;
 import static com.ub.easymoney.utils.UtilsService.*;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -68,4 +69,11 @@ public class Usuarios extends ServiceFacade<Usuario, Integer> {
         }
         return res;
     }
+
+    @Override
+    public Response<Usuario> modificar(String token, Usuario t) {
+        t.setContra(UtilsSecurity.cifrarMD5(t.getContra()));
+        return super.modificar(token, t); //To change body of generated methods, choose Tools | Templates.
+    }
+        
 }
