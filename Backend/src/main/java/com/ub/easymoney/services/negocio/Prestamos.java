@@ -24,6 +24,7 @@ import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
 import static com.ub.easymoney.utils.UtilsService.setOkResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -224,6 +225,21 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         }
 
         return res;
+    }
+    
+    @POST
+    @Path("/cambiarCobrador")
+    public Response cambiarCobrador(@HeaderParam("Authorization") final String token, Map<String, Object> values){
+        Response r = new Response();
+        try {
+            int prestamoId = (int) values.get("prestamoId");
+            int cobradorId = (int) values.get("cobradorId");
+            new ManagerPrestamo().cambiarCobrador(prestamoId, cobradorId);
+            setOkResponse(r, "actualizado");
+        } catch (Exception e) {
+            setErrorResponse(r, e);
+        }        
+        return r;
     }
 
 }

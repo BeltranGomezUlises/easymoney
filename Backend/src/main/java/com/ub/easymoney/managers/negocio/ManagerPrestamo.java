@@ -5,8 +5,10 @@
  */
 package com.ub.easymoney.managers.negocio;
 
+import com.ub.easymoney.daos.admin.DaoUsuario;
 import com.ub.easymoney.daos.negocio.DaoAbono;
 import com.ub.easymoney.daos.negocio.DaoPrestamo;
+import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.entities.negocio.Abono;
 import com.ub.easymoney.entities.negocio.Multa;
 import com.ub.easymoney.entities.negocio.MultaPK;
@@ -23,6 +25,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
+import javax.persistence.EntityManager;
 import org.jinq.tuples.Pair;
 
 /**
@@ -333,6 +336,14 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
         DaoPrestamo daoPrestamo = new DaoPrestamo();
         return daoPrestamo.renovarPrestamo(prestamoRenovar, nuevoPrestamo);
+    }
+
+    public void cambiarCobrador(int prestamoId, int cobradorId) throws Exception {        
+        Prestamo p = this.dao.findOne(prestamoId);
+        Usuario u = new DaoUsuario().findOne(cobradorId);        
+        p.setCobrador(u);        
+        EntityManager em = this.dao.getEMInstance();
+        em.merge(p);                
     }
 
 }
