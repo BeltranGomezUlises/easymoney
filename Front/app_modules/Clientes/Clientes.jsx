@@ -102,7 +102,12 @@ export default class Clientes extends React.Component{
         return(
           this.state.clientes.map((cliente) =>{
             return (
-              <ClienteCard key={cliente.id} cliente={cliente} removeCliente={this.removeCliente}>
+              <ClienteCard
+                key={cliente.id}
+                cliente={cliente}
+                removeCliente={this.removeCliente}
+                clientes={this.state.clientes}
+              >
               </ClienteCard>
             )
           })
@@ -161,7 +166,7 @@ export default class Clientes extends React.Component{
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Field control={Button} gray onClick={ () => {
+                <Form.Field control={Button} onClick={ () => {
                   let filtro = {
                     nombre:'',
                     apodo:''
@@ -170,12 +175,18 @@ export default class Clientes extends React.Component{
                   this.cargarClientes();
                 }}>Limpiar filtros</Form.Field>
                 <Modal
-                  trigger={<Button color='green'  onClick={this.handleOpenAgregar}>Agregar</Button>}
+                  trigger={
+                    <Button color='green'
+                    onClick={this.handleOpenAgregar}>Agregar</Button>
+                  }
                   onClose={this.handleCloseAgregar}
                   open={this.state.modalOpenAgregar}>
                   <Header content='Agregar cliente' />
                   <Modal.Content>
-                      <ClienteForm getData={this.onCreateHandler} agregarCliente={this.agregarCliente}/>
+                      <ClienteForm
+                      getData={this.onCreateHandler}
+                      agregarCliente={this.agregarCliente}
+                      clientes={this.state.clientes}/>
                   </Modal.Content>
                 </Modal>
               </Form.Group>

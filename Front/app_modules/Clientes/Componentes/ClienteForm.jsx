@@ -88,6 +88,19 @@ export default class ClienteForm extends Component{
       this.setState({checks});
     }
 
+    renderNombresClientes(){
+      let {clientes} = this.props;
+      if (clientes) {
+        if (clientes.length > 0) {
+          return(
+           clientes.map( c => {
+             return   <option value={c.nombre} />
+           })
+          );
+        }
+      }
+    }
+
     render(){
       return(
         <Form onSubmit={this.handleSumbit}>
@@ -96,8 +109,12 @@ export default class ClienteForm extends Component{
             <input
               required
               placeholder='Nombre del cliente'
+              list="nombreClientes"
               value={this.state.cliente.nombre}
               onChange={this.updateName}/>
+              <datalist id='nombreClientes'>
+                {this.renderNombresClientes()}
+              </datalist>
           </Form.Field>
           <Form.Field>
             <label>Apodo:</label>
@@ -109,7 +126,8 @@ export default class ClienteForm extends Component{
                 cliente.apodo = e.target.value;
                 this.setState({cliente});
                 this.props.getData(cliente);
-              }}/>
+              }}>
+              </input>
           </Form.Field>
           <Form.Field>
             <label>Dirección:</label>

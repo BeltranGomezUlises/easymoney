@@ -107,7 +107,12 @@ export default class ClienteCard extends React.Component{
                  open={this.state.modalOpenEditar}>
                  <Header content='Editar cliente' />
                  <Modal.Content>
-                   <ClienteForm cliente={this.state.cliente} getData={this.onEditHandler} editarCliente={this.editarCliente}>
+                   <ClienteForm
+                   cliente={this.state.cliente}
+                   getData={this.onEditHandler}
+                   editarCliente={this.editarCliente}
+                   clientes={this.props.clientes}
+                   >
                    </ClienteForm>
                  </Modal.Content>
                </Modal>

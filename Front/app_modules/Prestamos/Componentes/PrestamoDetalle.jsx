@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Table, Loader, Header, Segment, Checkbox, Form, Button} from 'semantic-ui-react';
 import ModalRenovar from './ModalRenovar.jsx';
+import ModalReasignar from './ModalReasignar.jsx';
 import * as utils from '../../../utils.js';
 
 export default class PrestamoDetalle extends Component{
@@ -225,6 +226,7 @@ export default class PrestamoDetalle extends Component{
                 Actualizar
               </Button>
               <ModalRenovar prestamo={this.props.prestamo} update={this.props.update}></ModalRenovar>
+              <ModalReasignar prestamo={this.props.prestamo} update={this.props.update}></ModalReasignar>
             </div>
           );
       }

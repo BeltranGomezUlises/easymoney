@@ -79,8 +79,11 @@ export default class PrestamoList extends React.Component {
     }).then((res)=> res.json())
     .then((response) => {
         let totalPages = Math.ceil(response.data.length / 10);
+        let prestamosOrdenados = response.data.sort( (p1, p2) => {
+          return p1.id > p2.id
+        })
         this.setState({
-          prestamos:response.data,
+          prestamos:prestamosOrdenados,
           buscando: false,
           totalPages
         });
@@ -392,7 +395,7 @@ export default class PrestamoList extends React.Component {
           {this.renderButtonBuscar()}
         </Form.Field>
 
-        <Form.Field control={Button} secundary onClick={ () => {
+        <Form.Field control={Button} onClick={ () => {
           let filtro = {
             nombreCliente:'',
             nombreCobrador:'',

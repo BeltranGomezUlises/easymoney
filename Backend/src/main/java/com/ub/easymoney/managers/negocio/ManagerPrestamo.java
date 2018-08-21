@@ -343,7 +343,9 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         Usuario u = new DaoUsuario().findOne(cobradorId);        
         p.setCobrador(u);        
         EntityManager em = this.dao.getEMInstance();
+        em.getTransaction().begin();        
         em.merge(p);                
+        em.getTransaction().commit();
     }
 
 }
