@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card , Icon, Input, Button, Modal, Header, Label, Form} from 'semantic-ui-react';
 import CobradorForm from './CobradorForm.jsx';
+import DetalleCobros from './DetalleCobros.jsx';
 import * as utils from '../../../utils.js';
 
 export default class CobradorCard extends React.Component{
@@ -11,17 +12,29 @@ export default class CobradorCard extends React.Component{
       modalOpenEditar: false,
       modalOpenEliminar: false,
       modalOpenWarning: false,
+      modalOpenCobros: false,
       cobrador: this.props.cobrador
     };
 
     this.handleOpenEditar = this.handleOpenEditar.bind(this);
     this.handleOpenEliminar = this.handleOpenEliminar.bind(this);
+
+    this.handleOpenCobros = this.handleOpenCobros.bind(this);
+    this.handleCloseCobros = this.handleCloseCobros.bind(this);
+
     this.handleCloseEditar = this.handleCloseEditar.bind(this);
     this.handleCloseEliminar = this.handleCloseEliminar.bind(this);
     this.onEditHandler = this.onEditHandler.bind(this);
     this.editarCobrador = this.editarCobrador.bind(this);
     this.eliminarCobrador = this.eliminarCobrador.bind(this);
     this.handleCloseWarning = this.handleCloseWarning.bind(this);
+  }
+
+  handleOpenCobros(){
+      this.setState({modalOpenCobros:true});
+  }
+  handleCloseCobros(){
+      this.setState({modalOpenCobros:false});
   }
 
   handleCloseWarning(){
@@ -113,7 +126,7 @@ export default class CobradorCard extends React.Component{
              </Card.Description>
           </Card.Content>
           <Card.Content extra>
-             <div className='ui two buttons'>
+             <div className='ui three buttons'>
                <Modal
                  trigger={<Button basic color='blue' onClick={this.handleOpenEditar}>Editar</Button>}
                  onClose={this.handleCloseEditar}
@@ -141,6 +154,16 @@ export default class CobradorCard extends React.Component{
                    </Button>
                  </Modal.Actions>
                </Modal>
+               <Modal
+                 trigger={<Button basic color='blue' onClick={this.handleOpenCobros}>Cobros</Button>}
+                 onClose={this.handleCloseCobros}
+                 open={this.state.modalOpenCobros}>
+                 <Header content='Cobros de hoy' />
+                 <Modal.Content>
+                   <DetalleCobros cobrador={this.state.cobrador}/>
+                 </Modal.Content>
+               </Modal>
+
                <Modal open={this.state.modalOpenWarning} onClose={this.handleCloseWarning} closeOnRootNodeClick={false}>
                  <Modal.Content>
                    <h3>Es necesario llenar el nombre del cobrador</h3>

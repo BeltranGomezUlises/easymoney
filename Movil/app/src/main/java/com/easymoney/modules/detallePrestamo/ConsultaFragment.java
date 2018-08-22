@@ -27,6 +27,7 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
 
     private DetallePrestamoPresenter presenter;
     private TextView tvNombreCliente;
+    private TextView tvApodoCliente;
     private TextView tvNumPrestamo;
     private TextView tvAbonoDiario;
     private TextView tvCantidadPrestamo;
@@ -58,6 +59,7 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         View rootView = inflater.inflate(R.layout.fragment_detalle_prestamo_consulta, container, false);
 
         tvNombreCliente = rootView.findViewById(R.id.tvNombreCliente);
+        tvApodoCliente = rootView.findViewById(R.id.tvApodoCliente);
         tvCantidadPrestamo = rootView.findViewById(R.id.tvCantidad);
         tvCantidadPagar = rootView.findViewById(R.id.tvCantidadPagar);
         tvFechaHoraPrestamo = rootView.findViewById(R.id.tvFechaPrestamo);
@@ -96,7 +98,8 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
     }
 
     public void llenarDatosGenerales(Prestamo prestamo) {
-        this.tvNombreCliente.setText(prestamo.getCliente().getNombre());
+        tvNombreCliente.setText(prestamo.getCliente().getNombre());
+        tvApodoCliente.setText(prestamo.getCliente().getApodo());
         tvNumPrestamo.setText(String.valueOf(prestamo.getId()));
         tvCantidadPrestamo.setText("$" + prestamo.getCantidad());
         tvCantidadPagar.setText("$" + prestamo.getCantidadPagar());

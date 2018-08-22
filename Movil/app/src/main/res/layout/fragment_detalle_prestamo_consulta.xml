@@ -67,7 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingLeft="4dp"
-                    android:text="Nombre Cliente:"
+                    android:text="Cliente:"
                     android:textSize="12sp" />
 
                 <TextView
@@ -79,7 +79,17 @@
                     android:text="Fulano Mengano"
                     android:textColor="@color/darkGray"
                     android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tvApodoCliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingLeft="4dp"
+                    android:text="Fulano Mengano"
+                    android:textColor="@color/darkGray"
+                    android:textSize="14sp" />
             </LinearLayout>
+
         </android.support.v7.widget.LinearLayoutCompat>
 
         <android.support.v7.widget.LinearLayoutCompat

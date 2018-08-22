@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import org.jinq.jpa.JPAJinqStream;
 
 /**
  *
@@ -71,13 +70,21 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
      */
     public List<Cobro> cobrosDelCobrador(int cobradorId, Date fechaInicial, Date fechaFinal) {
         //construccion de consulta
-        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro(c.id, c.cliente.nombre, c.cobrador.nombre, c.prestamo.id, c.cantidad, c.fecha) From Cobro c WHERE c.cobrador.id = :cobradorId";
+        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro("
+                + "c.id, "
+                + "c.cliente.nombre, "
+                + "c.cobrador.nombre, "
+                + "c.prestamo.id, "
+                + "c.cantidad, "
+                + "c.fecha) "
+                + "From Cobro c "
+                + "WHERE c.cobrador.id = :cobradorId";
         //consulta dinamica
         if (fechaInicial != null) {
             query += " AND c.fecha >= :fechaInicial";
         }
         if (fechaFinal != null) {
-            query += " AND c.fecha <= :fechaFinal";
+            query += " AND c.fecha < :fechaFinal";
         }
         //creacion de Query
         Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class)
@@ -108,7 +115,7 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
             query += " AND c.fecha >= :fechaInicial";
         }
         if (fechaFinal != null) {
-            query += " AND c.fecha <= :fechaFinal";
+            query += " AND c.fecha < :fechaFinal";
         }
         //creacion de Query
         Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class)
@@ -139,7 +146,7 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
             query += " AND c.fecha >= :fechaInicial";
         }
         if (fechaFinal != null) {
-            query += " AND c.fecha <= :fechaFinal";
+            query += " AND c.fecha < :fechaFinal";
         }
         //creacion de Query
         Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class)
@@ -171,7 +178,7 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
             paramInicial = false;
         }
         if (fechaFinal != null) {
-            query += paramInicial ? " WHERE c.fecha <= :fechaFinal" : " AND c.fecha <= :fechaFinal";
+            query += paramInicial ? " WHERE c.fecha < :fechaFinal" : " AND c.fecha < :fechaFinal";
         }
         //creacion de Query
         Query q = this.getEMInstance().createQuery(query, ModelReporteCobro.class);

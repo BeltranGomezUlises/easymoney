@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         private List<Prestamo> prestamos;
 
         private TextView tvNombre;
+        private TextView tvApodo;
         private TextView tvDireccion;
         private TextView tvTelefono;
         private TextView tvFechaPrestamo;
@@ -312,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tvDireccion = rowView.findViewById(R.id.tvDireccion);
             tvTelefono = rowView.findViewById(R.id.tvTelefono);
             tvFechaPrestamo = rowView.findViewById(R.id.tvFechaPrestamo);
-
+            tvApodo = rowView.findViewById(R.id.tvApodo);
 
             View barrita = rowView.findViewById(R.id.barrita);
             if (UtilsPreferences.prestamoCobradoHoy(prestamo.getId())){
@@ -325,6 +326,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tvDireccion.setText(prestamo.getCliente().getDireccion());
             tvTelefono.setText(prestamo.getCliente().getTelefono());
             tvFechaPrestamo.setText(UtilsDate.format_D_MM_YYYY(prestamo.getFecha()));
+            tvApodo.setText(prestamo.getCliente().getApodo());
 
             return rowView;
         }

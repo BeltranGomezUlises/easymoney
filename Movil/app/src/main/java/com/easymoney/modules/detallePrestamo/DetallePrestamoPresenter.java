@@ -371,8 +371,13 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         prestamo.setAbonos(abonos);
         this.showLoading(true);
 
-        final ModelAbonarPrestamo modelAbonarPrestamo = new ModelAbonarPrestamo(abonoTotal, prestamo.getCliente().getId(), UtilsPreferences.loadLogedUser().getId(), prestamo);
+        final ModelAbonarPrestamo modelAbonarPrestamo = new ModelAbonarPrestamo(
+                abonoTotal,
+                prestamo.getCliente().getId(),
+                UtilsPreferences.loadLogedUser().getId(),
+                prestamo);
 
+        compositeDisposable.add(
         repository.abonarPrestamo(modelAbonarPrestamo)
                 .subscribeOn(SchedulerProvider.ioT())
                 .observeOn(SchedulerProvider.uiT())
@@ -389,7 +394,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                 showMessage("Existió un error de programación del lado del servidor");
                                 break;
                         }
-
                         showLoading(false);
                     }
                 }, new Consumer<Throwable>() {
@@ -399,7 +403,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                         showMessage("Existió un error de comunicación");
                         throwable.printStackTrace();
                     }
-                });
+                }));
     }
 
     /**
@@ -418,8 +422,9 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 sumaAbonos += abono.getCantidad();
             }
         }
-
-        if (sumaAbonos < prestamo.getCantidadPagar() && this.getModelTotalAPagar().getTotalPagar() > 0) {
+        //ModelTotalAPagar modelTotalAPagar = this.getModelTotalAPagar();
+        //if (sumaAbonos < prestamo.getCantidadPagar() && modelTotalAPagar.getTotalPagar() > 0) {
+        if (sumaAbonos < prestamo.getCantidadPagar()) {
             this.fab.setVisibility(View.VISIBLE);
         } else {
             this.fab.setVisibility(View.GONE);
