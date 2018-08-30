@@ -188,19 +188,23 @@ export default class PrestamoDetalle extends Component{
       if (this.state.totales !== null) {
         return(
           <Table.Body>
-            <Table.Cell textAlign='center'>${this.state.totales.totalAbonado}</Table.Cell>
-            <Table.Cell textAlign='center'>${this.state.totales.totalMultado}</Table.Cell>
-            <Table.Cell textAlign='center'>${this.state.totales.totalRecuperado}</Table.Cell>
-            <Table.Cell textAlign='center'>{this.state.totales.porcentajePagado}%</Table.Cell>
+            <Table.Row>
+              <Table.Cell textAlign='center'>${this.state.totales.totalAbonado}</Table.Cell>
+              <Table.Cell textAlign='center'>${this.state.totales.totalMultado}</Table.Cell>
+              <Table.Cell textAlign='center'>${this.state.totales.totalRecuperado}</Table.Cell>
+              <Table.Cell textAlign='center'>{this.state.totales.porcentajePagado}%</Table.Cell>
+            </Table.Row>
           </Table.Body>
         );
       }else{
         return(
           <Table.Body>
+          <Table.Row>
             <Table.Cell textAlign='center'>$XXX</Table.Cell>
             <Table.Cell textAlign='center'>$XXX</Table.Cell>
             <Table.Cell textAlign='center'>$XXX</Table.Cell>
             <Table.Cell textAlign='center'>XXX%</Table.Cell>
+            </Table.Row>
           </Table.Body>
         );
       }
@@ -225,7 +229,7 @@ export default class PrestamoDetalle extends Component{
               <Button color='green' onClick={this.actualizarPrestamo}>
                 Actualizar
               </Button>
-              <ModalRenovar prestamo={this.props.prestamo} update={this.props.update}></ModalRenovar>
+              <ModalRenovar prestamo={this.props.prestamo} totales={this.state.totales} update={this.props.update}></ModalRenovar>
               <ModalReasignar prestamo={this.props.prestamo} update={this.props.update}></ModalReasignar>
             </div>
           );

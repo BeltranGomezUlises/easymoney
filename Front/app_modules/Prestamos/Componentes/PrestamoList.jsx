@@ -288,7 +288,7 @@ export default class PrestamoList extends React.Component {
   renderTotalesPrestamos(){
     return(
       <Table celled>
-        <Table.Header celled>
+        <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Total Prestado</Table.HeaderCell>
             <Table.HeaderCell>Total Abonado</Table.HeaderCell>
@@ -380,11 +380,12 @@ export default class PrestamoList extends React.Component {
        </Form.Group>
 
         <Form.Field>
-          <Checkbox label='Préstamos 100% abonados'
+          <Checkbox
+            label='Préstamos 100% abonados'
             value={this.state.filtro.acreditados}
             onChange={ (evt, data) => {
               let {filtro} = this.state;
-              filtro.acreditados = data.checked;
+              filtro.acreditados = data.checked;              
               this.setState({filtro});
             }}
             checked={this.state.filtro.acreditados} />

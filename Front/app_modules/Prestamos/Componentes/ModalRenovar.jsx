@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Modal, Form, Segment, Dimmer, Loader} from 'semantic-ui-react';
+import {Button, Modal, Form, Header, Table,  Icon, Segment, Dimmer, Loader} from 'semantic-ui-react';
 import * as utils from '../../../utils.js';
 
 export default class PrestamoDetalle extends Component{
@@ -21,7 +21,9 @@ export default class PrestamoDetalle extends Component{
 
   handleSubmit(){
     this.setState({loading:true})
-    fetch(localStorage.getItem('url') + 'prestamos/renovar/' + this.props.prestamo.id + '/' + this.state.cantNuevoPrestamo,{
+    fetch(localStorage.getItem('url') + 'prestamos/renovar/'
+    + this.props.prestamo.id + '/'
+    + this.state.cantNuevoPrestamo,{
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -71,7 +73,7 @@ export default class PrestamoDetalle extends Component{
   renderButtonCerrar(){
     if (this.state.renovado) {
       return(
-         <Button primary content='Cerrar' onClick={()=>{        
+         <Button primary content='Cerrar' onClick={()=>{
           this.props.update();
           this.onClose();
          }} />
@@ -93,6 +95,38 @@ export default class PrestamoDetalle extends Component{
     }
   }
 
+  renderTotales(){
+    let {totales, prestamo} = this.props;
+    if (totales !== null) {
+      var paraSaldar = prestamo.cantidadAPagar - totales.totalAbonado;
+      var entregarAlRenovar = this.state.cantNuevoPrestamo - paraSaldar;
+      return(
+        <Table.Body>
+          <Table.Cell textAlign='center'>${totales.totalAbonado}</Table.Cell>
+          <Table.Cell textAlign='center'>${totales.totalMultado}</Table.Cell>
+          <Table.Cell textAlign='center'>${totales.totalRecuperado}</Table.Cell>
+          <Table.Cell textAlign='center'>{totales.porcentajePagado}%</Table.Cell>
+          <Table.Cell textAlign='center'>${prestamo.cantidadAPagar}</Table.Cell>
+          <Table.Cell textAlign='center'>${paraSaldar}</Table.Cell>
+          <Table.Cell textAlign='center'><b>${entregarAlRenovar}</b></Table.Cell>
+        </Table.Body>
+      );
+    }else{
+      return(
+        <Table.Body>
+          <Table.Cell textAlign='center'>$XXX</Table.Cell>
+          <Table.Cell textAlign='center'>$XXX</Table.Cell>
+          <Table.Cell textAlign='center'>$XXX</Table.Cell>
+          <Table.Cell textAlign='center'>XXX%</Table.Cell>
+          <Table.Cell textAlign='center'>$XXX</Table.Cell>
+          <Table.Cell textAlign='center'>$XXX</Table.Cell>
+          <Table.Cell textAlign='center'>$XXX</Table.Cell>
+        </Table.Body>
+      );
+    }
+
+  }
+
   render(){
     return(
       <Modal
@@ -103,7 +137,26 @@ export default class PrestamoDetalle extends Component{
         <Modal.Header>Resumen renovación</Modal.Header>
         <Modal.Content>
         <Form onSubmit={this.handleSubmit}>
-          <p>Cantidad prestada: ${this.props.prestamo.cantidad}</p>
+        <Header as='h2'>          
+          <Header.Content>
+          {this.props.prestamo.id}
+          <Header.Subheader>id</Header.Subheader>
+          </Header.Content>
+        </Header>
+        <Table celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell textAlign='center'>Total Abonado</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Total Multado</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Total Recuperado</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Porcentaje Pagado</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Total a pagar</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Para saldar</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Entregar al renovar</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+          {this.renderTotales()}
+        </Table>
           <Form.Field>
             <label>Cantidad a prestar:</label>
             <input type='number' min='100' step='1' max='99999'
