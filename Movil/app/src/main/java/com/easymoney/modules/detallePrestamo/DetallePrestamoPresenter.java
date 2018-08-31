@@ -38,7 +38,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     private ConsultaFragment consultaFragment;
     private AbonoFragment abonoFragment;
     private Prestamo prestamo;
-    private ModelPrestamoTotales prestamoTotales;
     private ModelTotalAPagar modelTotalAPagar;
 
     public DetallePrestamoPresenter(Prestamo prestamo) {
@@ -166,14 +165,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
     public void setAbonoFragment(AbonoFragment abonoFragment) {
         this.abonoFragment = abonoFragment;
-    }
-
-    public ModelPrestamoTotales getPrestamoTotales() {
-        return prestamoTotales;
-    }
-
-    public void setPrestamoTotales(ModelPrestamoTotales prestamoTotales) {
-        this.prestamoTotales = prestamoTotales;
     }
 
     public Prestamo getPrestamo() {
@@ -313,7 +304,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             } else {
                 int difAbonado = (this.prestamo.getCobroDiario() - a.getCantidad());
                 cal.setTime(a.getAbonoPK().getFecha());
-                if (cal.get(Calendar.DAY_OF_YEAR) == diaActual) {
+                if (cal.get(Calendar.DAY_OF_YEAR) >= diaActual) {
                     if (abono > difAbonado) {
                         a.setCantidad(this.prestamo.getCobroDiario());
                         abono -= difAbonado;

@@ -107,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        if (this.prestamos != null){
-            if (!this.prestamos.isEmpty()){
+        if (this.prestamos != null) {
+            if (!this.prestamos.isEmpty()) {
                 setPrestamos(filtrarPorCobrarHoy(this.prestamos));
                 adapterPrestamo.replaceData(this.prestamos);
             }
@@ -156,32 +156,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void cargarPrestamos(final EnumPrestamos enumPrestamos) {
         compositeDisposable.add(
-        prestamoRepository.findAll(enumPrestamos)
-                .subscribeOn(SchedulerProvider.ioT())
-                .observeOn(SchedulerProvider.uiT())
-                .subscribe(new Consumer<Response<List<Prestamo>, Object>>() {
-                               @Override
-                               public void accept(Response<List<Prestamo>, Object> r) throws Exception {
-                                   if (!r.getData().isEmpty()) {
-                                       tvInfo.setVisibility(View.GONE);
-                                       if (enumPrestamos == EnumPrestamos.POR_COBRAR_HOY) {
-                                           setPrestamos(filtrarPorCobrarHoy(r.getData()));
-                                       } else {
-                                           setPrestamos(r.getData());
-                                       }
+                prestamoRepository.findAll(enumPrestamos)
+                        .subscribeOn(SchedulerProvider.ioT())
+                        .observeOn(SchedulerProvider.uiT())
+                        .subscribe(new Consumer<Response<List<Prestamo>, Object>>() {
+                                       @Override
+                                       public void accept(Response<List<Prestamo>, Object> r) throws Exception {
+                                           if (!r.getData().isEmpty()) {
+                                               tvInfo.setVisibility(View.GONE);
+                                               if (enumPrestamos == EnumPrestamos.POR_COBRAR_HOY) {
+                                                   setPrestamos(filtrarPorCobrarHoy(r.getData()));
+                                               } else {
+                                                   setPrestamos(r.getData());
+                                               }
 
-                                       adapterPrestamo.replaceData(getPrestamos());
-                                   } else {
-                                       tvInfo.setText("Sin préstamos por cobrar");
+                                               adapterPrestamo.replaceData(getPrestamos());
+                                           } else {
+                                               tvInfo.setText("Sin préstamos por cobrar");
+                                           }
+                                       }
+                                   }, new Consumer<Throwable>() {
+                                       @Override
+                                       public void accept(Throwable throwable) throws Exception {
+                                           throwable.printStackTrace();
+                                       }
                                    }
-                               }
-                           }, new Consumer<Throwable>() {
-                               @Override
-                               public void accept(Throwable throwable) throws Exception {
-                                   throwable.printStackTrace();
-                               }
-                           }
-                )
+                        )
         );
     }
 
@@ -194,7 +194,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (this.prestamos != null) {
             List<Prestamo> prestamosBuscados = new ArrayList<>();
             for (Prestamo prestamo : this.prestamos) {
-                if (prestamo.getCliente().getNombre().toLowerCase().contains(nombreCliente.toLowerCase())) {
+                if (prestamo.getCliente().getNombre().toLowerCase().contains(nombreCliente.toLowerCase())
+                        || prestamo.getCliente().getApodo().contains(nombreCliente.toLowerCase())) {
                     prestamosBuscados.add(prestamo);
                 }
             }
@@ -204,18 +205,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * filtra los prestamos que ya fueron cobrados, dejando como resultado los prestamos por cobrar el dia de hoy
+     *
      * @param prestamos prestamos cargados
      * @return lista de prestamos por cobrar hoy
      */
-    private List<Prestamo> filtrarPorCobrarHoy(List<Prestamo> prestamos){
+    private List<Prestamo> filtrarPorCobrarHoy(List<Prestamo> prestamos) {
         List<Prestamo> prestamosAMostrar = new ArrayList<>();
         for (Prestamo prestamo : prestamos) {
-            if (!UtilsPreferences.prestamoCobradoHoy(prestamo.getId())){
+            if (!UtilsPreferences.prestamoCobradoHoy(prestamo.getId())) {
                 prestamosAMostrar.add(prestamo);
             }
         }
         return prestamosAMostrar;
     }
+
     /**
      * resetea los prestamos mostrados con todos los existentes
      */
@@ -316,9 +319,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tvApodo = rowView.findViewById(R.id.tvApodo);
 
             View barrita = rowView.findViewById(R.id.barrita);
-            if (UtilsPreferences.prestamoCobradoHoy(prestamo.getId())){
+            if (UtilsPreferences.prestamoCobradoHoy(prestamo.getId())) {
                 barrita.setBackgroundResource(R.color.positive);
-            }else{
+            } else {
                 barrita.setBackgroundResource(R.color.warning);
             }
 
