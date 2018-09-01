@@ -28,8 +28,8 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
  */
 public class AbonoFragment extends Fragment implements DetallePrestamoContract.View {
 
-    ListView listView;
-    AbonoAdapter abonoAdapter;
+    private ListView listView;
+    private AbonoAdapter abonoAdapter;
     private DetallePrestamoPresenter presenter;
     private ProgressDialog dialog;
 
