@@ -37,7 +37,7 @@ public class PrestamoRepository implements PrestamoDataSource {
      *
      * @return intancia de PrestamoRepository
      */
-    public static PrestamoRepository getINSTANCE() {
+    public static PrestamoRepository getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new PrestamoRepository();
         }

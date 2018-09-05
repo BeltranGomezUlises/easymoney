@@ -1,6 +1,5 @@
 package com.easymoney.modules.detallePrestamo;
 
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 
@@ -38,7 +37,7 @@ import io.reactivex.functions.Consumer;
  */
 public class DetallePrestamoPresenter implements DetallePrestamoContract.Presenter {
 
-    private final PrestamoRepository repository = PrestamoRepository.getINSTANCE();
+    private final PrestamoRepository repository = PrestamoRepository.getInstance();
     private FloatingActionButton fab;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private ConsultaFragment consultaFragment;
@@ -266,7 +265,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      *
      * @param abono cantidad de dinero a abonar por el cliente, intresado en el dialog
      */
-    public void abonarAlPrestamo(int abono, final ModelTotalAPagar model) {
+    public void abonarAlPrestamo(int abono, String multaDes, final ModelTotalAPagar model) {
         final int abonoTotal = abono;
         Calendar cal = new GregorianCalendar();
         cal.setTime(new Date());
@@ -304,11 +303,13 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                     if (!ignorarMulta) {
                         if (abono > multaDiaria) {
                             a.getMulta().setMulta(multaDiaria);
+                            a.getMulta().setMultaDes(multaDes);
                             abono -= multaDiaria;
                             totalDeMulta += multaDiaria;
                         } else {
                             totalDeMulta += abono;
                             a.getMulta().setMulta(abono);
+                            a.getMulta().setMultaDes(multaDes);
                             abono = 0;
                         }
                     }
@@ -342,10 +343,12 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                         int difMulta = multaDiaria - a.getMulta().getMulta();
                         if (abono > difMulta) {
                             a.getMulta().setMulta(multaDiaria);
+                            a.getMulta().setMultaDes(multaDes);
                             abono -= difMulta;
                             totalDeMulta += difMulta;
                         } else {
                             a.getMulta().setMulta(a.getMulta().getMulta() + abono);
+                            a.getMulta().setMultaDes(multaDes);
                             abono = 0;
                             totalDeMulta += abono;
                         }
@@ -412,6 +415,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                         proccessAbonos(prestamo.getAbonos());
                                         cargarTotalesPrestamo();
                                         UtilsPreferences.setPrestamoCobradoHoy(modelAbonarPrestamo.getPrestamo().getId());
+
                                         ModelImpresionAbono modelImpresion =
                                                 crearModelImpresionAbono(prestamo, modelDistribucionDeAbono);
 
