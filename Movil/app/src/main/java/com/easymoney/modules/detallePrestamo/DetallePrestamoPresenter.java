@@ -420,8 +420,16 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                                 crearModelImpresionAbono(prestamo, modelDistribucionDeAbono);
 
                                         //TODO: Aqui jorgais va a mandar imprimir el recibo
-                                        UtilsPrinter.imprimirRecibo(modelImpresion);
-
+                                        String macAddress = UtilsPreferences.loadMacPrinter();
+                                        boolean imprimio = true;
+                                        if(macAddress == null || macAddress.isEmpty()){
+                                            showMessage("No hay impresora configurada...");
+                                        }else{
+                                            imprimio = UtilsPrinter.imprimirRecibo(modelImpresion,macAddress);
+                                        }
+                                        if(!imprimio){
+                                            showMessage("No se pudo establecer una conexión con la impresora, favor de verificar la conexión");
+                                        }
                                         break;
                                     case ERROR:
                                         showMessage("Existió un error de programación del lado del servidor");

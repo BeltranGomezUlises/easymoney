@@ -22,6 +22,7 @@ public class UtilsPreferences {
     private static final String USUARIO = "usuario";
     private static final String CONFIG = "config";
     private static final String COBRADO = "cobrado";
+    private static final String MACIMPRESORA = "macImpresora";
 
     private static Calendar cal;
 
@@ -139,5 +140,37 @@ public class UtilsPreferences {
         String key = COBRADO + "." + getCalendar().get(Calendar.DAY_OF_YEAR);
         SharedPreferences settings = mContext.getSharedPreferences(key, 0);
         return settings.getString(key, "");
+    }
+
+
+    /**
+     * Metodo para guardar en preferencias la mac address de la impresora seleccionada para poder
+     * imprimir los tickets.
+     * @param macAddress
+     */
+    public static void saveMacPrinter(String macAddress) {
+        SharedPreferences settings = mContext.getSharedPreferences(MACIMPRESORA, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        try {
+            editor.putString(MACIMPRESORA, macAddress);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        editor.commit();
+    }
+
+    /**
+     * Metodo para consultar la mac address guardada anteriormente para la impresion del ticket.
+     * @return
+     */
+    public static String loadMacPrinter() {
+        SharedPreferences settings = mContext.getSharedPreferences(MACIMPRESORA, 0);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return settings.getString(MACIMPRESORA, "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

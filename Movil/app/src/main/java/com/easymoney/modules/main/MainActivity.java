@@ -19,18 +19,22 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.easymoney.R;
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
+import com.easymoney.models.ModelImpresionAbono;
 import com.easymoney.models.services.Response;
 import com.easymoney.modules.cambiarContra.CambiarContraActivity;
+import com.easymoney.modules.configuracionImpresoras.DispositivosBTActivity;
 import com.easymoney.modules.detallePrestamo.DetallePrestamoActivity;
 import com.easymoney.modules.ingresosEgresos.IngresosEgresosActivity;
 import com.easymoney.modules.login.LoginActivity;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
+import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.ArrayList;
@@ -101,6 +105,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         prestamoRepository = PrestamoRepository.getInstance();
         this.cargarPrestamos(EnumPrestamos.POR_COBRAR_HOY);
+        String macAddress = UtilsPreferences.loadMacPrinter();
+        if(macAddress == null || macAddress.isEmpty()){
+            Toast.makeText(this,"Impresora no configurada",Toast.LENGTH_SHORT).show();
+        }else{
+            //UtilsPrinter.imprimirRecibo(null,macAddress);
+        }
     }
 
     @Override
@@ -145,6 +155,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent = new Intent(MainActivity.this, CambiarContraActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.configuracionImpresora:
+                intent = new Intent(MainActivity.this, DispositivosBTActivity.class);
+                startActivity(intent);
             default:
                 break;
         }
