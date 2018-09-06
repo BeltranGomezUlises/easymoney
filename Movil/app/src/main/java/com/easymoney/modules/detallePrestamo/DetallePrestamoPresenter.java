@@ -540,10 +540,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         }
 
         ModelTotalAPagar mtp = this.calcularTotalesPagar();
-
-        float porcentajePagado = new BigDecimal(totalAbonado)
-                .divide(new BigDecimal(p.getCantidadPagar()))
-                .multiply(new BigDecimal(100))
+        float porcentajeFormateado = new BigDecimal(totalAbonado / p.getCantidadPagar() * 100)
                 .setScale(2, RoundingMode.HALF_UP)
                 .floatValue();
 
@@ -552,8 +549,8 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 p.getId(),
                 p.getCobrador().getNombre(),
                 p.getCliente().getNombre(),
-                UtilsDate.format_D_MM_YYYY_HH_MM(p.getFecha()),
                 UtilsDate.format_D_MM_YYYY_HH_MM(new Date()),
+                UtilsDate.format_D_MM_YYYY_HH_MM(p.getFecha()),
                 UtilsDate.format_D_MM_YYYY(p.getFechaLimite()),
                 d.getAbonado(),
                 d.getMultado(),
@@ -564,7 +561,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 totalMultado,
                 totalMultadoMes,
                 mtp.getTotalPagar(),
-                porcentajePagado
+                porcentajeFormateado
         );
         return m;
     }
