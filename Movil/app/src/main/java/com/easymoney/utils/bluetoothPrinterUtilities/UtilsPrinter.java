@@ -71,12 +71,13 @@ public class UtilsPrinter {
                     String nombreRenglon2 = "";
                     if(tamañoNombre > 30){
                         nombreRenglon1 = mia.getCliente().substring(0,30);
-                        nombreRenglon2 = mia.getCliente().substring(31,tamañoNombre-1);
+                        nombreRenglon2 = mia.getCliente().substring(30,tamañoNombre);
                     }else{
-                        nombreRenglon1 = mia.getCliente().substring(0,tamañoNombre-1);
+                        nombreRenglon1 = mia.getCliente().substring(0,tamañoNombre);
                     }
+                    int totalImporteAbono = mia.getAbono() + mia.getMulta() + mia.getMultaPosPlazo();
 
-                    String cpclData = "! 0 200 200 1523 1\r\n" +
+                    String cpclData = "! 0 200 200 1533 1\r\n" +
                             "PCX 95 53 !<EASY.PCX\r\n" +
                             "T 5 1 4 1328 Por pagar: \r\n" +
                             "RIGHT\r\n" +
@@ -86,11 +87,11 @@ public class UtilsPrinter {
                             "T 5 1 5 767 Distribucion de pago\r\n" +
                             "T 5 1 7 668 Importe abono: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 1 7 668 $"+mia.getTotalAbonado()+"\r\n" +
+                            "T 5 1 7 668 $"+totalImporteAbono+"\r\n" +
                             "LEFT\r\n" +
                             "T 5 1 6 607 Fecha abono: "+mia.getFechaHoraAbono()+"\r\n" +
                             "T 5 0 6 564 Cobrador: "+mia.getCobrador()+"\r\n" +
-                            "ML 36\r\n" +
+                            "ML 32\r\n" +
                             "T 5 0 8 470 Cliente: \r\n" +
                             ""+nombreRenglon1+"\r\n" +
                             ""+nombreRenglon2+"\r\n" +
@@ -121,8 +122,14 @@ public class UtilsPrinter {
                             "RIGHT\r\n" +
                             "T 5 0 6 1169 $"+mia.getTotalMultado()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 5 1412 --- Mensaje de agradecimiento ---\r\n" +
-                            "T 5 0 7 1134 Porcentaje pagado: "+mia.getPorcentajeAbonado()+"%\r\n" +
+                            "ML 36\r\n" +
+                            "T 5 0 5 1412 Gracias por su interes en saldar\r\n" +
+                            "su cuenta a tiempo en EasyMoney\r\n" +
+                            "ENDML\r\n" +
+                            "T 5 0 7 1134 Porcentaje pagado: \r\n" +
+                            "RIGHT\r\n" +
+                            "T 5 0 6 1134 $"+mia.getPorcentajeAbonado()+"%\r\n" +
+                            "LEFT\r\n" +
                             "T 5 0 5 1097 Total abonado: \r\n" +
                             "RIGHT\r\n" +
                             "T 5 0 5 1097 $"+mia.getTotalAbonado()+"\r\n" +
