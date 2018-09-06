@@ -321,8 +321,8 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 } else {
                     a.setAbonado(true);
                     a.setCantidad(abono);
-                    abono = 0;
                     totalDeAbono += abono;
+                    abono = 0;
                 }
             } else {
                 int difAbonado = (this.prestamo.getCobroDiario() - a.getCantidad());
@@ -334,8 +334,8 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                         totalDeAbono += difAbonado;
                     } else {
                         a.setCantidad(a.getCantidad() + abono);
-                        abono = 0;
                         totalDeAbono += abono;
+                        abono = 0;
                     }
                 } else {
                     //si esta abonado y no abono mas o igual que el cobro diario es multa
@@ -349,8 +349,8 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                         } else {
                             a.getMulta().setMulta(a.getMulta().getMulta() + abono);
                             a.getMulta().setMultaDes(multaDes);
-                            abono = 0;
                             totalDeMulta += abono;
+                            abono = 0;
                         }
                         if (abono > difAbonado) {
                             a.setCantidad(this.prestamo.getCobroDiario());
@@ -358,8 +358,9 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                             totalDeAbono += difAbonado;
                         } else {
                             a.setCantidad(a.getCantidad() + abono);
-                            abono = 0;
                             totalDeAbono += abono;
+                            abono = 0;
+
                         }
                     }
                 }
@@ -531,12 +532,14 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
             }
         }
 
-        ModelTotalAPagar mtp = this.calcularTotalesPagar();
-        float porcentajeFormateado = new BigDecimal(totalAbonado / p.getCantidadPagar() * 100)
+        float porcentajeFormateado = new BigDecimal((float) totalAbonado / (float) p.getCantidadPagar() * 100f)
                 .setScale(2, RoundingMode.HALF_UP)
                 .floatValue();
 
-
+        int totalParaSaldar = p.getCantidadPagar() - totalAbonado;
+        if (totalParaSaldar < 0){
+            totalParaSaldar = 0;
+        }
         ModelImpresionAbono m = new ModelImpresionAbono(
                 p.getId(),
                 p.getCobrador().getNombre(),
@@ -552,7 +555,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 totalAbonado,
                 totalMultado,
                 totalMultadoMes,
-                mtp.getTotalPagar(),
+                totalParaSaldar,
                 porcentajeFormateado
         );
         return m;
