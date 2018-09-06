@@ -66,6 +66,16 @@ public class UtilsPrinter {
                             + "FORM\r\n"
                             + "PRINT\r\n";*/
 
+                    int tamañoNombre = mia.getCliente().length();
+                    String nombreRenglon1 = "";
+                    String nombreRenglon2 = "";
+                    if(tamañoNombre > 30){
+                        nombreRenglon1 = mia.getCliente().substring(0,30);
+                        nombreRenglon2 = mia.getCliente().substring(31,tamañoNombre-1);
+                    }else{
+                        nombreRenglon1 = mia.getCliente().substring(0,tamañoNombre-1);
+                    }
+
                     String cpclData = "! 0 200 200 1523 1\r\n" +
                             "PCX 95 53 !<EASY.PCX\r\n" +
                             "T 5 1 4 1328 Por pagar: \r\n" +
@@ -82,7 +92,8 @@ public class UtilsPrinter {
                             "T 5 0 6 564 Cobrador: "+mia.getCobrador()+"\r\n" +
                             "ML 36\r\n" +
                             "T 5 0 8 470 Cliente: \r\n" +
-                            ""+mia.getCliente()+"\r\n" +
+                            ""+nombreRenglon1+"\r\n" +
+                            ""+nombreRenglon2+"\r\n" +
                             "ENDML\r\n" +
                             "T 5 0 4 371 Cantidad a pagar: \r\n" +
                             "RIGHT\r\n" +
@@ -111,7 +122,7 @@ public class UtilsPrinter {
                             "T 5 0 6 1169 $"+mia.getTotalMultado()+"\r\n" +
                             "LEFT\r\n" +
                             "T 5 0 5 1412 --- Mensaje de agradecimiento ---\r\n" +
-                            "T 5 0 7 1134 Porcentaje pagado: %"+mia.getPorcentajeAbonado()+"\r\n" +
+                            "T 5 0 7 1134 Porcentaje pagado: "+mia.getPorcentajeAbonado()+"%\r\n" +
                             "T 5 0 5 1097 Total abonado: \r\n" +
                             "RIGHT\r\n" +
                             "T 5 0 5 1097 $"+mia.getTotalAbonado()+"\r\n" +
