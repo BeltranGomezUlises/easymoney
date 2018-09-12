@@ -1,15 +1,26 @@
 package com.easymoney.utils.bluetoothPrinterUtilities;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.util.Base64;
 import android.widget.Toast;
 
+import com.easymoney.R;
 import com.easymoney.models.ModelImpresionAbono;
 import com.easymoney.modules.configuracionImpresoras.BTPrinterDevice;
 import com.easymoney.utils.UtilsPreferences;
 import com.zebra.sdk.comm.BluetoothConnection;
+import com.zebra.sdk.comm.BluetoothConnectionInsecure;
 import com.zebra.sdk.comm.Connection;
+import com.zebra.sdk.graphics.ZebraImageFactory;
+import com.zebra.sdk.graphics.ZebraImageI;
+import com.zebra.sdk.printer.PrinterLanguage;
+import com.zebra.sdk.printer.ZebraPrinter;
+import com.zebra.sdk.printer.ZebraPrinterFactory;
 
 import java.io.OutputStream;
 
@@ -53,7 +64,7 @@ public class UtilsPrinter {
      * <p>Mensaje de agradecimiento...</p>
      * @param mia modelo con los atributos a imprimir en el recibo
      */
-    public static boolean imprimirRecibo(@NonNull final ModelImpresionAbono mia,final String macAddress) {
+    public static boolean imprimirRecibo(@NonNull final ModelImpresionAbono mia, final String macAddress, final Context context) {
         //TODO: utileria de conexion TPC para impresoras bluetooth
         //TODO: metodo para armar el recibo con el modelo
         //TODO: metodo para mandar a imprimir el arreglo de bytes, buffer, stream, etc...
@@ -78,7 +89,7 @@ public class UtilsPrinter {
                     int totalImporteAbono = mia.getAbono() + mia.getMulta() + mia.getMultaPosPlazo();
 
                     String cpclData = "! 0 200 200 1533 1\r\n" +
-                            "PCX 95 53 !<EASY.PCX\r\n" +
+                            //"PCX 95 53 !<EASY.PCX\r\n" +
                             "T 5 1 4 1328 Por pagar: \r\n" +
                             "RIGHT\r\n" +
                             "T 5 1 4 1328 $"+mia.getTotalParaSaldar()+"\r\n" +
@@ -128,7 +139,7 @@ public class UtilsPrinter {
                             "ENDML\r\n" +
                             "T 5 0 7 1134 Porcentaje pagado: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 6 1134 $"+mia.getPorcentajeAbonado()+"%\r\n" +
+                            "T 5 0 6 1134 "+mia.getPorcentajeAbonado()+"%\r\n" +
                             "LEFT\r\n" +
                             "T 5 0 5 1097 Total abonado: \r\n" +
                             "RIGHT\r\n" +
@@ -143,13 +154,30 @@ public class UtilsPrinter {
                             "T 4 0 0 971 --------------------------\r\n" +
                             "T 4 0 4 820 --------------------------\r\n"
                             + "PRINT\r\n";
-                    BTPrinterDevice.getInstance().connectToClient(macAddress);
+
+                    Connection thePrinterConn = new BluetoothConnection(macAddress);
+                    thePrinterConn.open();
+                    int x = 95;
+                    int y = 53;
+                    ZebraPrinter zebra = ZebraPrinterFactory.getInstance(thePrinterConn);
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inScaled = false;
+                    Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.easy, options);
+                    com.zebra.sdk.printer.ZebraPrinter printer = ZebraPrinterFactory.getInstance(PrinterLanguage.CPCL,thePrinterConn);
+                    thePrinterConn.write("! U1 setvar \"device.languages\" \"zpl\"\r\n! U1 JOURNAL\r\n! U1 SETFF 20 2\r\n".getBytes());
+                    printer.printImage(ZebraImageFactory.getImage(bm), 0, 0, bm.getWidth(), bm.getHeight(), false);
+                    thePrinterConn.write(cpclData.getBytes());
+                    Thread.sleep(500);
+                    thePrinterConn.close();
+
+                    //CONEXION POR CLASES GENERICAS
+                    /*BTPrinterDevice.getInstance().connectToClient(macAddress);
                     BTPrinterDevice.getInstance().getInputStream();
                     OutputStream output = BTPrinterDevice.getInstance().getOutputString();
                     output.write(cpclData.getBytes());
                     output.flush();
                     Thread.sleep(2000);
-                    BTPrinterDevice.getInstance().disconnectFromClient();
+                    BTPrinterDevice.getInstance().disconnectFromClient();*/
 
                 } catch (Exception e) {
                     // Handle communications error here.

@@ -1,6 +1,7 @@
 package com.easymoney.modules.main;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,13 +20,11 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.easymoney.R;
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
-import com.easymoney.models.ModelImpresionAbono;
 import com.easymoney.models.services.Response;
 import com.easymoney.modules.cambiarContra.CambiarContraActivity;
 import com.easymoney.modules.configuracionImpresoras.DispositivosBTActivity;
@@ -34,7 +33,6 @@ import com.easymoney.modules.ingresosEgresos.IngresosEgresosActivity;
 import com.easymoney.modules.login.LoginActivity;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
-import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.ArrayList;
@@ -105,12 +103,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         prestamoRepository = PrestamoRepository.getInstance();
         this.cargarPrestamos(EnumPrestamos.POR_COBRAR_HOY);
-        String macAddress = UtilsPreferences.loadMacPrinter();
-        if(macAddress == null || macAddress.isEmpty()){
-            Toast.makeText(this,"Impresora no configurada",Toast.LENGTH_SHORT).show();
-        }else{
-            //UtilsPrinter.imprimirRecibo(null,macAddress);
-        }
+    }
+
+    public String getURLForResource (int resourceId) {
+        return Uri.parse("android.resource://"+R.class.getPackage().getName()+"/" +resourceId).toString();
     }
 
     @Override

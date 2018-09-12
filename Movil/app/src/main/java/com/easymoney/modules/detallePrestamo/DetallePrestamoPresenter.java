@@ -426,7 +426,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                         if(macAddress == null || macAddress.isEmpty()){
                                             showMessage("No hay impresora configurada...");
                                         }else{
-                                            imprimio = UtilsPrinter.imprimirRecibo(modelImpresion,macAddress);
+                                            imprimio = UtilsPrinter.imprimirRecibo(modelImpresion,macAddress,consultaFragment.getContext());
                                         }
                                         if(!imprimio){
                                             showMessage("No se pudo establecer una conexión con la impresora, favor de verificar la conexión");
