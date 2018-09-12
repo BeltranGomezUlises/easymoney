@@ -90,69 +90,69 @@ public class UtilsPrinter {
 
                     String cpclData = "! 0 200 200 1533 1\r\n" +
                             //"PCX 95 53 !<EASY.PCX\r\n" +
-                            "T 5 1 4 1328 Por pagar: \r\n" +
+                            "T 5 1 4 1278 Por pagar: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 1 4 1328 $"+mia.getTotalParaSaldar()+"\r\n" +
+                            "T 5 1 4 1278 $"+mia.getTotalParaSaldar()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 1 6 1028 Totales\r\n" +
-                            "T 5 1 5 767 Distribucion de pago\r\n" +
-                            "T 5 1 7 668 Importe abono: \r\n" +
+                            "T 5 1 6 978 Totales\r\n" +
+                            "T 5 1 5 717 Distribucion de pago\r\n" +
+                            "T 5 1 7 618 Importe abono: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 1 7 668 $"+totalImporteAbono+"\r\n" +
+                            "T 5 1 7 618 $"+totalImporteAbono+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 1 6 607 Fecha abono: "+mia.getFechaHoraAbono()+"\r\n" +
-                            "T 5 0 6 564 Cobrador: "+mia.getCobrador()+"\r\n" +
+                            "T 5 1 6 557 Fecha abono: "+mia.getFechaHoraAbono()+"\r\n" +
+                            "T 5 0 6 514 Cobrador: "+mia.getCobrador()+"\r\n" +
                             "ML 32\r\n" +
-                            "T 5 0 8 470 Cliente: \r\n" +
+                            "T 5 0 8 420 Cliente: \r\n" +
                             ""+nombreRenglon1+"\r\n" +
                             ""+nombreRenglon2+"\r\n" +
                             "ENDML\r\n" +
-                            "T 5 0 4 371 Cantidad a pagar: \r\n" +
+                            "T 5 0 4 321 Cantidad a pagar: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 4 371 $"+mia.getTotalAPagar()+"\r\n" +
+                            "T 5 0 4 321 $"+mia.getTotalAPagar()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 4 324 Cantidad prestamo: \r\n" +
+                            "T 5 0 4 274 Cantidad prestamo: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 4 324 $"+mia.getCantidadPrestamo()+"\r\n" +
+                            "T 5 0 4 274 $"+mia.getCantidadPrestamo()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 2 280 Fecha limite: "+mia.getFechaLimite()+"\r\n" +
-                            "T 5 0 4 239 Fecha: "+mia.getFechaHoraPrestamo()+"\r\n" +
-                            "T 5 0 7 942 Multa post-plazo: \r\n" +
+                            "T 5 0 2 230 Fecha limite: "+mia.getFechaLimite()+"\r\n" +
+                            "T 5 0 4 189 Fecha: "+mia.getFechaHoraPrestamo()+"\r\n" +
+                            "T 5 0 7 892 Multa post-plazo: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 7 942 $"+mia.getMultaPosPlazo()+"\r\n" +
+                            "T 5 0 7 892 $"+mia.getMultaPosPlazo()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 8 911 Multa: \r\n" +
+                            "T 5 0 8 861 Multa: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 8 911 $"+mia.getMulta()+"\r\n" +
+                            "T 5 0 8 861 $"+mia.getMulta()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 3 1208 Total multado post-plazo: \r\n" +
+                            "T 5 0 3 1158 Total multado post-plazo: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 3 1208 $"+mia.getTotalMultadoPosPlazo()+"\r\n" +
+                            "T 5 0 3 1158 $"+mia.getTotalMultadoPosPlazo()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 6 1169 Total multado: \r\n" +
+                            "T 5 0 6 1119 Total multado: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 6 1169 $"+mia.getTotalMultado()+"\r\n" +
+                            "T 5 0 6 1119 $"+mia.getTotalMultado()+"\r\n" +
                             "LEFT\r\n" +
                             "ML 36\r\n" +
-                            "T 5 0 5 1412 Gracias por su interes en saldar\r\n" +
+                            "T 5 0 5 1362 Gracias por su interes en saldar\r\n" +
                             "su cuenta a tiempo en EasyMoney\r\n" +
                             "ENDML\r\n" +
-                            "T 5 0 7 1134 Porcentaje pagado: \r\n" +
+                            "T 5 0 7 1084 Porcentaje pagado: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 6 1134 "+mia.getPorcentajeAbonado()+"%\r\n" +
+                            "T 5 0 6 1084 "+mia.getPorcentajeAbonado()+"%\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 5 1097 Total abonado: \r\n" +
+                            "T 5 0 5 1047 Total abonado: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 5 1097 $"+mia.getTotalAbonado()+"\r\n" +
+                            "T 5 0 5 1047 $"+mia.getTotalAbonado()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 8 878 Abono: \r\n" +
+                            "T 5 0 8 828 Abono: \r\n" +
                             "RIGHT\r\n" +
-                            "T 5 0 8 878 $"+mia.getAbono()+"\r\n" +
+                            "T 5 0 8 828 $"+mia.getAbono()+"\r\n" +
                             "LEFT\r\n" +
-                            "T 5 0 3 199 Prestamo: "+mia.getPrestamoId()+"\r\n" +
-                            "T 4 0 3 1274 --------------------------\r\n" +
-                            "T 4 0 0 971 --------------------------\r\n" +
-                            "T 4 0 4 820 --------------------------\r\n"
+                            "T 5 0 3 149 Prestamo: "+mia.getPrestamoId()+"\r\n" +
+                            "T 4 0 3 1224 --------------------------\r\n" +
+                            "T 4 0 0 921 --------------------------\r\n" +
+                            "T 4 0 4 770 --------------------------\r\n"
                             + "PRINT\r\n";
 
                     Connection thePrinterConn = new BluetoothConnection(macAddress);
