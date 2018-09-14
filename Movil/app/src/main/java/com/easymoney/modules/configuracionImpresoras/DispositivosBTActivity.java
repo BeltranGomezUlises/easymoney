@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,8 +21,12 @@ import android.widget.TextView;
 
 import com.easymoney.R;
 import com.easymoney.utils.UtilsPreferences;
+import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.Set;
+
+import io.reactivex.Flowable;
+import retrofit2.Response;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
@@ -45,6 +50,7 @@ public class DispositivosBTActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dispositivos_bt);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         context = DispositivosBTActivity.this;
         listDevices = (ListView)findViewById(R.id.listBluetooth);
@@ -97,6 +103,9 @@ public class DispositivosBTActivity extends AppCompatActivity {
                 }
                 break;
             }
+            case android.R.id.home:
+                this.finish();
+                break;
         }
         return true;
     }
@@ -127,7 +136,10 @@ public class DispositivosBTActivity extends AppCompatActivity {
             item = (DevicesListAdapter.BluetoothItem) devicesAdapter.getItem(position);
             macAddress = item.macAddress;
             UtilsPreferences.saveMacPrinter(macAddress);
-            pairPrintDevice(context);
+            pairPrintDevice(context)
+                    .subscribeOn(SchedulerProvider.ioT())
+                    .observeOn(SchedulerProvider.uiT())
+                    .subscribe();
             finish();
         } catch (Exception e) {
             // TODO: handle exception
@@ -197,10 +209,11 @@ public class DispositivosBTActivity extends AppCompatActivity {
      * @param context contexto necesario.
      * @throws Exception
      */
-    private void pairPrintDevice(final Context context) throws Exception {
+    private Flowable<Response> pairPrintDevice(final Context context) throws Exception {
         BTPrinterDevice.getInstance().connectToClient(macAddress);
         Thread.sleep(1000);
         BTPrinterDevice.getInstance().disconnectFromClient();
+        return null;
     }
 
     public void showMessage(String message) {
