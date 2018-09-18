@@ -13,7 +13,7 @@ import java.util.Vector;
 
 public class DevicesListAdapter extends BaseAdapter {
 
-    private Vector<BluetoothItem> items = new Vector<BluetoothItem>();
+    private Vector<BluetoothItem> items = new Vector<>();
     private DataSetObserver dataObserver;
 
     public int getCount() {
@@ -37,13 +37,18 @@ public class DevicesListAdapter extends BaseAdapter {
             view = View.inflate(viewGroup.getContext(), R.layout.bt_device_list_item, null);
         }
         BluetoothItem item = items.get(index);
-        TextView nameText = (TextView)view.findViewById(R.id.bt_item_name);
-        TextView macText = (TextView)view.findViewById(R.id.bt_item_mac);
+        TextView nameText = view.findViewById(R.id.bt_item_name);
+        TextView macText = view.findViewById(R.id.bt_item_mac);
+
         nameText.setText(item.name);
         macText.setText(item.macAddress);
-        ImageView image = (ImageView)view.findViewById(R.id.bt_item_image);
-        if (item.visible) image.setImageResource(R.drawable.ic_bt_on);
-        else image.setImageResource(R.drawable.ic_bt_off);
+
+        ImageView image = view.findViewById(R.id.bt_item_image);
+        if (item.visible) {
+            image.setImageResource(R.drawable.ic_bt_on);
+        } else {
+            image.setImageResource(R.drawable.ic_bt_off);
+        }
         return view;
     }
 
@@ -86,23 +91,10 @@ public class DevicesListAdapter extends BaseAdapter {
         if (dataObserver != null) dataObserver.onChanged();
     }
 
-    public void removeItem(String macAddress) {
-        items.remove(macAddress);
-        if (dataObserver != null) dataObserver.onChanged();
-    }
-
-    public String getElementName(int index) {
-        return items.elementAt(index).name;
-    }
-
-    public String getElementMAC(int index) {
-        return items.elementAt(index).macAddress;
-    }
-
     public class BluetoothItem {
-        public String name;
-        public String macAddress;
-        public boolean visible;
+        private String name;
+        private String macAddress;
+        private boolean visible;
 
         public BluetoothItem(String name, String macAddress, boolean visible) {
             this.name = name;
@@ -119,6 +111,30 @@ public class DevicesListAdapter extends BaseAdapter {
         public boolean equals(Object other) {
             if (other == null) return false;
             return (other.toString().equals(toString()));
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getMacAddress() {
+            return macAddress;
+        }
+
+        public void setMacAddress(String macAddress) {
+            this.macAddress = macAddress;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+
+        public void setVisible(boolean visible) {
+            this.visible = visible;
         }
     }
 

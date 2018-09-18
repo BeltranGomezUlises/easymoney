@@ -37,6 +37,7 @@ import io.reactivex.functions.Consumer;
  */
 public class DetallePrestamoPresenter implements DetallePrestamoContract.Presenter {
 
+    private static final String MULTA_POST_PLAZO = "Multa post-plazo";
     private final PrestamoRepository repository = PrestamoRepository.getInstance();
     private FloatingActionButton fab;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -44,8 +45,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
     private AbonoFragment abonoFragment;
     private Prestamo prestamo;
     private ModelTotalAPagar modelTotalAPagar;
-
-    private static final String MULTA_POST_PLAZO = "Multa post-plazo";
 
     public DetallePrestamoPresenter(Prestamo prestamo) {
         this.prestamo = prestamo;
@@ -420,16 +419,21 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                         ModelImpresionAbono modelImpresion =
                                                 crearModelImpresionAbono(prestamo, modelDistribucionDeAbono);
 
-                                        //TODO: Aqui jorgais va a mandar imprimir el recibo
                                         String macAddress = UtilsPreferences.loadMacPrinter();
                                         boolean imprimio = true;
-                                        if(macAddress == null || macAddress.isEmpty()){
-                                            showMessage("No hay impresora configurada...");
-                                        }else{
-                                            imprimio = UtilsPrinter.imprimirRecibo(modelImpresion,macAddress,consultaFragment.getContext());
-                                        }
-                                        if(!imprimio){
-                                            showMessage("No se pudo establecer una conexión con la impresora, favor de verificar la conexión");
+                                        if (macAddress == null || macAddress.isEmpty()) {
+                                            showMessage("No hay impresora configurada");
+                                        } else {
+                                            UtilsPrinter.imprimirRecibo(
+                                                    modelImpresion,
+                                                    macAddress,
+                                                    consultaFragment.getContext(),
+                                                    new java.util.function.Consumer<Throwable>() {
+                                                        @Override
+                                                        public void accept(Throwable throwable) {
+                                                            showMessage("Error de conexión con la impresora");
+                                                        }
+                                                    });
                                         }
                                         break;
                                     case ERROR:
@@ -545,7 +549,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 .floatValue();
 
         int totalParaSaldar = p.getCantidadPagar() - totalAbonado;
-        if (totalParaSaldar < 0){
+        if (totalParaSaldar < 0) {
             totalParaSaldar = 0;
         }
         ModelImpresionAbono m = new ModelImpresionAbono(

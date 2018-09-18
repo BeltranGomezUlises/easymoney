@@ -19,7 +19,7 @@
             <item
                 android:id="@+id/configuracionImpresora"
                 android:icon="@drawable/ic_printer"
-                android:title="Configuració de impresora" />
+                android:title="Configuración de impresora" />
         </menu>
     </item>
 

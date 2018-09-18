@@ -15,11 +15,7 @@ import static com.easymoney.utils.services.UtilsWS.webServices;
 
 public class LoginRepository {
 
-    public Flowable<Response<Login.Response, String>> login(String user, String pass){
-        Login.Request request = new Login.Request();
-        request.setPass(pass);
-        request.setUser(user);
-
+    public Flowable<Response<Login.Response, String>> login(Login.Request request){
         return webServices().login(request);
     }
 

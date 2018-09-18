@@ -154,8 +154,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.configuracionImpresora:
                 intent = new Intent(MainActivity.this, DispositivosBTActivity.class);
                 startActivity(intent);
-            default:
-                break;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -203,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             List<Prestamo> prestamosBuscados = new ArrayList<>();
             for (Prestamo prestamo : this.prestamos) {
                 if (prestamo.getCliente().getNombre().toLowerCase().contains(nombreCliente.toLowerCase())
-                        || prestamo.getCliente().getApodo().contains(nombreCliente.toLowerCase())) {
+                        || prestamo.getCliente().getApodo().toLowerCase().contains(nombreCliente.toLowerCase())) {
                     prestamosBuscados.add(prestamo);
                 }
             }
