@@ -9,13 +9,12 @@ import android.support.annotation.RequiresApi;
 
 import com.easymoney.R;
 import com.easymoney.models.ModelImpresionAbono;
+import com.easymoney.utils.activities.Funcion;
 import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.graphics.ZebraImageFactory;
 import com.zebra.sdk.printer.PrinterLanguage;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
-
-import java.util.function.Consumer;
 
 public class UtilsPrinter {
 
@@ -58,9 +57,8 @@ public class UtilsPrinter {
             @NonNull final ModelImpresionAbono mia,
             final String macAddress,
             final Context context,
-            final Consumer<Throwable> onError) {
+            final Funcion<Throwable> onError) {
         new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             public void run() {
                 try {
                     // This example prints "This is a CPCL test." near the top of the label.

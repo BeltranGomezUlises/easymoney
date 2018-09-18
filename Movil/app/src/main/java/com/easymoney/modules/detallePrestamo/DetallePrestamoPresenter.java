@@ -15,6 +15,7 @@ import com.easymoney.models.ModelTotalAPagar;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
+import com.easymoney.utils.activities.Funcion;
 import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
@@ -420,7 +421,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                                 crearModelImpresionAbono(prestamo, modelDistribucionDeAbono);
 
                                         String macAddress = UtilsPreferences.loadMacPrinter();
-                                        boolean imprimio = true;
                                         if (macAddress == null || macAddress.isEmpty()) {
                                             showMessage("No hay impresora configurada");
                                         } else {
@@ -428,7 +428,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                                     modelImpresion,
                                                     macAddress,
                                                     consultaFragment.getContext(),
-                                                    new java.util.function.Consumer<Throwable>() {
+                                                    new Funcion<Throwable>() {
                                                         @Override
                                                         public void accept(Throwable throwable) {
                                                             showMessage("Error de conexión con la impresora");
