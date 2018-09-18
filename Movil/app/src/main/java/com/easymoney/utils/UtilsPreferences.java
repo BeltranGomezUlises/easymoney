@@ -5,11 +5,13 @@ import android.content.SharedPreferences;
 
 import com.easymoney.entities.Usuario;
 import com.easymoney.models.Config;
+import com.easymoney.models.services.Login;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -20,8 +22,11 @@ public class UtilsPreferences {
 
     private static final String TOKEN = "token";
     private static final String USUARIO = "usuario";
+    private static final String LOGIN = "login";
+    private static final String LOGIN_TIME = "loginTime";
     private static final String CONFIG = "config";
     private static final String COBRADO = "cobrado";
+    private static final String MACIMPRESORA = "macImpresora";
 
     private static Calendar cal;
 
@@ -67,6 +72,37 @@ public class UtilsPreferences {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(settings.getString(USUARIO, ""), Usuario.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void saveLogin(Login.Request request) {
+        SharedPreferences settings = mContext.getSharedPreferences(LOGIN, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            editor.putString(LOGIN, objectMapper.writeValueAsString(request));
+            editor.putLong(LOGIN_TIME, System.currentTimeMillis());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        editor.commit();
+    }
+
+    public static Login.Request loadLogin() {
+        SharedPreferences settings = mContext.getSharedPreferences(LOGIN, 0);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Login.Request req = objectMapper.readValue(settings.getString(LOGIN, ""), Login.Request.class);
+            long lastLoginTime = settings.getLong(LOGIN_TIME, 0);
+            long actualTime = System.currentTimeMillis();
+            if ((actualTime - lastLoginTime) > (1000 * 60 * 60)){ // si ya paso una hora, regresar null
+                return null;
+            }else{
+                return req;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,11 +169,46 @@ public class UtilsPreferences {
 
     /**
      * consulta los prestmos que fueron cobrados hoy, separados por comas
+     *
      * @return string con los ids de los prestmaos separados por comas ej: "1,65,35,15"
      */
-    public static String prestmosCobradosHoy(){
+    public static String prestmosCobradosHoy() {
         String key = COBRADO + "." + getCalendar().get(Calendar.DAY_OF_YEAR);
         SharedPreferences settings = mContext.getSharedPreferences(key, 0);
         return settings.getString(key, "");
+    }
+
+
+    /**
+     * Metodo para guardar en preferencias la mac address de la impresora seleccionada para poder
+     * imprimir los tickets.
+     *
+     * @param macAddress
+     */
+    public static void saveMacPrinter(String macAddress) {
+        SharedPreferences settings = mContext.getSharedPreferences(MACIMPRESORA, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        try {
+            editor.putString(MACIMPRESORA, macAddress);
+            editor.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo para consultar la mac address guardada anteriormente para la impresion del ticket.
+     *
+     * @return
+     */
+    public static String loadMacPrinter() {
+        SharedPreferences settings = mContext.getSharedPreferences(MACIMPRESORA, 0);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return settings.getString(MACIMPRESORA, "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

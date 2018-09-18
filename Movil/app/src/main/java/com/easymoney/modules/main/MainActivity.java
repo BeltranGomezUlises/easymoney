@@ -1,6 +1,7 @@
 package com.easymoney.modules.main;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +27,7 @@ import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
 import com.easymoney.models.services.Response;
 import com.easymoney.modules.cambiarContra.CambiarContraActivity;
+import com.easymoney.modules.configuracionImpresoras.DispositivosBTActivity;
 import com.easymoney.modules.detallePrestamo.DetallePrestamoActivity;
 import com.easymoney.modules.ingresosEgresos.IngresosEgresosActivity;
 import com.easymoney.modules.login.LoginActivity;
@@ -103,6 +105,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.cargarPrestamos(EnumPrestamos.POR_COBRAR_HOY);
     }
 
+    public String getURLForResource (int resourceId) {
+        return Uri.parse("android.resource://"+R.class.getPackage().getName()+"/" +resourceId).toString();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -145,8 +151,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent = new Intent(MainActivity.this, CambiarContraActivity.class);
                 startActivity(intent);
                 break;
-            default:
-                break;
+            case R.id.configuracionImpresora:
+                intent = new Intent(MainActivity.this, DispositivosBTActivity.class);
+                startActivity(intent);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -194,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             List<Prestamo> prestamosBuscados = new ArrayList<>();
             for (Prestamo prestamo : this.prestamos) {
                 if (prestamo.getCliente().getNombre().toLowerCase().contains(nombreCliente.toLowerCase())
-                        || prestamo.getCliente().getApodo().contains(nombreCliente.toLowerCase())) {
+                        || prestamo.getCliente().getApodo().toLowerCase().contains(nombreCliente.toLowerCase())) {
                     prestamosBuscados.add(prestamo);
                 }
             }

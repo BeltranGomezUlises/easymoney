@@ -4,6 +4,7 @@ import com.easymoney.data.repositories.LoginRepository;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsPreferences;
+import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,7 +29,12 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void attemptLogin(final String user, final String pass) {
         mCompositeDisposable.clear();
-        mCompositeDisposable.add(repository.login(user, pass)
+
+        final Login.Request request = new Login.Request();
+        request.setPass(pass);
+        request.setUser(user);
+
+        mCompositeDisposable.add(repository.login(request)
                 .observeOn(SchedulerProvider.getInstance().ui())
                 .subscribeOn(SchedulerProvider.getInstance().io())
                 .subscribe(new Consumer<Response<Login.Response, String>>() {
@@ -40,6 +46,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                                            UtilsPreferences.saveToken(t.getMeta().getMetaData().toString());
                                            UtilsPreferences.saveLogedUser(t.getData().getUsuario());
                                            UtilsPreferences.saveConfigs(t.getData().getConfig());
+                                           UtilsPreferences.saveLogin(request);
                                            fragment.showMain(t.getData().getUsuario().getId(), t.getData().getUsuario().getNombre(), t.getData().getUsuario().isTipo() ? "Administrador" : "Cobrador");
                                            break;
                                        case WARNING:
@@ -63,7 +70,10 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void subscribe() {
-
+        Login.Request request = UtilsPreferences.loadLogin();
+        if (request != null){
+            fragment.setPreloadedLogin(request);
+        }
     }
 
     @Override

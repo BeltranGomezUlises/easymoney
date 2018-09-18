@@ -94,7 +94,7 @@ public class CobroDialogFragment extends DialogFragment {
     private void abonar(final ModelTotalAPagar model) {
         final int abono = Integer.parseInt(txtAbonar.getText().toString());
         final String multaDes = txtDescripcion.getText().toString();
-        presenter.abonarAlPrestamo(abono, multaDes, model);
+        presenter.abonarAlPrestamo(abono,multaDes, model);
     }
 
     private boolean validateIns() {

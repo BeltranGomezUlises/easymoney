@@ -14,6 +14,15 @@
             android:title="Ingresos/Egresos" />
     </group>
 
+    <item android:title="Configuración">
+        <menu>
+            <item
+                android:id="@+id/configuracionImpresora"
+                android:icon="@drawable/ic_printer"
+                android:title="Configuración de impresora" />
+        </menu>
+    </item>
+
     <item android:title="Cuenta">
         <menu>
             <item
