@@ -17,7 +17,9 @@ import android.widget.TextView;
 
 import com.easymoney.R;
 import com.easymoney.entities.Cliente;
+import com.easymoney.entities.Prestamo;
 import com.easymoney.models.services.Status;
+import com.easymoney.modules.main.MainFiltroDialogFragment;
 
 import java.util.List;
 
@@ -27,10 +29,6 @@ public class RenovacionFragment extends Fragment implements RenovacionContract.F
 
     private ProgressDialog dialog;
     private RenovacionPresenter presenter;
-    SpinnerAdapter spaNombre;
-    SpinnerAdapter spaApodo;
-
-    List<Cliente> clientes;
 
     @Nullable
     @Override
@@ -90,8 +88,9 @@ public class RenovacionFragment extends Fragment implements RenovacionContract.F
     }
 
     @Override
-    public void showDialogRenovar() {
-
+    public void showDialogRenovar(Prestamo prestamo) {
+        RenovacionDialogFragment renovacionDialogFragment = new RenovacionDialogFragment(presenter, prestamo);
+        renovacionDialogFragment.show(getFragmentManager(), "Renovación");
     }
 
 }
