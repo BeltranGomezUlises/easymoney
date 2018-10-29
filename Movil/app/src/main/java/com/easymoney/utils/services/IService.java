@@ -2,12 +2,14 @@ package com.easymoney.utils.services;
 
 
 import com.easymoney.entities.Abono;
+import com.easymoney.entities.Cliente;
 import com.easymoney.entities.Movimiento;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.entities.Usuario;
 import com.easymoney.models.ModelAbonarPrestamo;
 import com.easymoney.models.ModelCambiarContra;
 import com.easymoney.models.ModelFiltroMovimiento;
+import com.easymoney.models.ModelFiltroPrestamos;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
@@ -30,7 +32,7 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-    String END_POINT = "http://74.208.178.83:8080/EasyMoney/api/";
+    String END_POINT = "http://192.168.1.69:8084/EasyMoney/api/";
 
     /**
      * Inicio de sesion
@@ -39,7 +41,7 @@ public interface IService {
      * @return usuario logeado
      */
     @POST("accesos/login")
-    Flowable<Response<Login.Response, String>> login(@Body final Login.Request request);
+    Flowable<Response<Login.Response, String>> login(@Body Login.Request request);
 
     /**
      * Obtiene los prestamos que le corresponden al cobrador y le faltan cobrar
@@ -49,7 +51,7 @@ public interface IService {
      * @return respuesta con la lista de prestamos
      */
     @GET("prestamos/prestamosPorCobrar/{cobradorId}")
-    Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(@Header("Authorization") final String token, @Path("cobradorId") final int cobradorId);
+    Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(@Header("Authorization") String token, @Path("cobradorId") int cobradorId);
 
     /**
      * Obtiene los prestamos que le corresponden al cobrador
@@ -59,7 +61,7 @@ public interface IService {
      * @return respuesta con la lista de prestamos
      */
     @GET("prestamos/prestamosDelCobrador/{cobradorId}")
-    Flowable<Response<List<Prestamo>, Object>> prestamosDelCobrador(@Header("Authorization") final String token, @Path("cobradorId") final int cobradorId);
+    Flowable<Response<List<Prestamo>, Object>> prestamosDelCobrador(@Header("Authorization") String token, @Path("cobradorId") int cobradorId);
 
     /**
      * Obtiene los totales generales del estado de un prestamo
@@ -69,7 +71,7 @@ public interface IService {
      * @return mmodelo de totales de un prestamo en espeficico
      */
     @GET("prestamos/totales/{prestamoId}")
-    Flowable<Response<ModelPrestamoTotales, Object>> totalesDelPrestamo(@Header("Authorization") final String token, @Path("prestamoId") final int prestamoId);
+    Flowable<Response<ModelPrestamoTotales, Object>> totalesDelPrestamo(@Header("Authorization") String token, @Path("prestamoId") int prestamoId);
 
     /**
      * Obtiene la lista de abonos de un prestamo en especifico
@@ -79,7 +81,7 @@ public interface IService {
      * @return lista de abonos del prestamo con el id en prestamoId
      */
     @GET("abonos/prestamo/{prestamoId}")
-    Flowable<Response<List<Abono>, Object>> abonosDelPrestamo(@Header("Authorization") final String token, @Path("prestamoId") final int prestamoId);
+    Flowable<Response<List<Abono>, Object>> abonosDelPrestamo(@Header("Authorization") String token, @Path("prestamoId") int prestamoId);
 
     /**
      * servicio para agregar un abono de ajuste a un prestamo donde las cantidades abonadas no tienen el valor correspondiente
@@ -89,7 +91,7 @@ public interface IService {
      * @return respuesta con el abono agregado
      */
     @POST("abonos/agregarAjuste")
-    Flowable<Response<Abono, Object>> agregarAbonoAjuste(@Header("Authorization") final String token, @Body final Abono abono);
+    Flowable<Response<Abono, Object>> agregarAbonoAjuste(@Header("Authorization") String token, @Body Abono abono);
 
     /**
      * Cambia la contraseña del usuario
@@ -99,7 +101,7 @@ public interface IService {
      * @return respuesta con el usuario actualizado
      */
     @POST("usuarios/cambiarContra")
-    Flowable<Response<Usuario, Object>> cambiarContra(@Header("Authorization") final String token, @Body final ModelCambiarContra cambiarContra);
+    Flowable<Response<Usuario, Object>> cambiarContra(@Header("Authorization") String token, @Body ModelCambiarContra cambiarContra);
 
     /**
      * Consulta todos los movimientos con un menu_ingresos_egresos proporcionado
@@ -109,7 +111,7 @@ public interface IService {
      * @return lista de movimientos
      */
     @POST("movimientos/filtro")
-    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") final String token, @Body final ModelFiltroMovimiento filtro);
+    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") String token, @Body ModelFiltroMovimiento filtro);
 
     /**
      * Da de alta un nuevo movimiento
@@ -119,7 +121,7 @@ public interface IService {
      * @return movimiento dado de alta, con el id generado
      */
     @POST("movimientos")
-    Flowable<Response<Movimiento, Object>> altaMovimientos(@Header("Authorization") final String token, @Body final Movimiento movimiento);
+    Flowable<Response<Movimiento, Object>> altaMovimientos(@Header("Authorization") String token, @Body Movimiento movimiento);
 
     /**
      * Genera el abono del prestamo y actualiza el estado del prestamo con la distribucion de su pago
@@ -129,5 +131,36 @@ public interface IService {
      * @return prestamo actualizado
      */
     @POST("cobros/generarAbono")
-    Flowable<Response<Prestamo, Object>> abonarPrestamo(@Header("Authorization") final String token, @Body final ModelAbonarPrestamo model);
+    Flowable<Response<Prestamo, Object>> abonarPrestamo(@Header("Authorization") String token, @Body ModelAbonarPrestamo model);
+
+
+    /**
+     * Carga los prestamos que cumplan con los citerios de filtrado
+     *
+     * @param token token de sesion
+     * @param model modelo contenedor de los datos para filtrar
+     * @return lista de prestamos
+     */
+    @POST("cargarPrestamos")
+    Flowable<Response<List<Prestamo>, Object>> buscarPrestamos(@Header("Authorization") String token, @Body ModelFiltroPrestamos model);
+
+
+    /**
+     * Busca todos los clientes del sistema
+     *
+     * @param token token de sesion
+     * @return lista de clientes
+     */
+    @GET("clientes")
+    Flowable<Response<List<Cliente>, Object>> clientes(@Header("Authorization") String token);
+
+    /**
+     * Busca todos los clientes del sistema
+     *
+     * @param token token de sesion
+     * @return lista de clientes
+     */
+    @GET("prestamos/{prestamoId}")
+    Flowable<Response<Prestamo, Object>> getPrestamo(@Header("Authorization") String token, @Path("prestamoId") int prestamoId);
+
 }

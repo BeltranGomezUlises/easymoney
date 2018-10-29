@@ -32,7 +32,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     private LoginPresenter presenter;
     private EditText mEmailView;
     private EditText mPasswordView;
-    ProgressDialog dialog;
+    private ProgressDialog dialog;
 
     @Nullable
     @Override

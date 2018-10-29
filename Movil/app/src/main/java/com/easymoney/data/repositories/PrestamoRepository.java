@@ -5,15 +5,19 @@ import com.easymoney.entities.Abono;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
 import com.easymoney.models.ModelAbonarPrestamo;
+import com.easymoney.models.ModelFiltroPrestamos;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsPreferences;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
+import static com.easymoney.utils.schedulers.SchedulerProvider.ioT;
+import static com.easymoney.utils.schedulers.SchedulerProvider.uiT;
 import static com.easymoney.utils.services.UtilsWS.webServices;
 
 /**
@@ -116,18 +120,6 @@ public class PrestamoRepository implements PrestamoDataSource {
     }
 
     /**
-     * agregar un abono de ajuste
-     *
-     * @param abono abono a agregar
-     * @return response con el abono agregado
-     */
-    public Flowable<Response<Abono, Object>> agregarAbonoAjuste(Abono abono) {
-        return webServices().agregarAbonoAjuste(UtilsPreferences.loadToken(), abono)
-                .observeOn(SchedulerProvider.uiT())
-                .subscribeOn(SchedulerProvider.ioT());
-    }
-
-    /**
      * Genera el abono al prestamo y actualiza el prestamo con la distribucion del pago
      *
      * @param modelAbonarPrestamo modelo contenedor de los valores necesarios asi como el prestamo con la dsitribucion de abonos a actualizar
@@ -135,7 +127,42 @@ public class PrestamoRepository implements PrestamoDataSource {
      */
     public Flowable<Response<Prestamo, Object>> abonarPrestamo(ModelAbonarPrestamo modelAbonarPrestamo) {
         return webServices().abonarPrestamo(UtilsPreferences.loadToken(), modelAbonarPrestamo)
-                .observeOn(SchedulerProvider.uiT())
-                .subscribeOn(SchedulerProvider.ioT());
+                .observeOn(uiT())
+                .subscribeOn(ioT());
+    }
+
+    /**
+     * Carga los prestamos correpondientes al filtro aplicado
+     *
+     * @param model   modelo contenedor de filtros
+     * @param onNext  on next consumer
+     * @param onError on error consumer
+     * @return disposable del recurso
+     */
+    public Disposable cargarPrestamos(ModelFiltroPrestamos model,
+                                      Consumer<Response<List<Prestamo>, Object>> onNext,
+                                      Consumer<Throwable> onError) {
+        return webServices().buscarPrestamos(UtilsPreferences.loadToken(), model)
+                .observeOn(uiT())
+                .subscribeOn(ioT())
+                .subscribe(onNext, onError);
+    }
+
+
+    /**
+     * Carga un prestamo por su id
+     *
+     * @param prestamoId identificador del prestamo
+     * @param onNext     consumer para continuar
+     * @param onError    consumer para error
+     * @return response con prestamo
+     */
+    public Disposable cargarPrestamo(int prestamoId,
+                                     Consumer<Response<Prestamo, Object>> onNext,
+                                     Consumer<Throwable> onError) {
+        return webServices().getPrestamo(UtilsPreferences.loadToken(), prestamoId)
+                .observeOn(uiT())
+                .subscribeOn(ioT())
+                .subscribe(onNext, onError);
     }
 }

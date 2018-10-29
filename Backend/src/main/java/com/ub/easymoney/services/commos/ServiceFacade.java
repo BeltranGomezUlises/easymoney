@@ -30,6 +30,8 @@ import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
 import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
 import static com.ub.easymoney.utils.UtilsService.setOkResponse;
+import static com.ub.easymoney.utils.UtilsService.setWarningResponse;
+import java.security.InvalidParameterException;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -123,7 +125,9 @@ public class ServiceFacade<T extends IEntity<K>, K> {
         } catch (TokenExpiradoException | TokenInvalidoException ex) {
             setInvalidTokenResponse(response);
         } catch (EntidadYaExistenteException e) {
-            UtilsService.setWarningResponse(response, e.getMessage(), "La entidad ya existe en el sistema");
+            setWarningResponse(response, e.getMessage(), "La entidad ya existe en el sistema");
+        } catch (InvalidParameterException e) {
+            setWarningResponse(response, e.getMessage(), "");
         } catch (Exception e) {
             setErrorResponse(response, e);
         }

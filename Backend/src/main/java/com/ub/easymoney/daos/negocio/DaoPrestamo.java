@@ -15,10 +15,10 @@ import com.ub.easymoney.managers.negocio.ManagerAbono;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsConfig;
 import com.ub.easymoney.utils.UtilsDB;
+import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.List;
 import org.jinq.jpa.JPAJinqStream;
-import static com.ub.easymoney.utils.UtilsValidations.isNotNullOrEmpty;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -36,13 +36,15 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
     }
 
     @Override
-    public void persist(Prestamo entity) throws Exception {
+    public void persist(Prestamo entity) throws InvalidParameterException, Exception {
         EntityManager em = this.getEMInstance();
-        ManagerAbono managerAbono = new ManagerAbono();
         Calendar cal = new GregorianCalendar();
-
+        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
+        if (capital.getCapital() < entity.getCantidad()) {
+            throw new InvalidParameterException("Capital insuficiente");
+        }
+        capital.setCapital(capital.getCapital() - entity.getCantidad());
         em.getTransaction().begin();
-
         em.persist(entity);
         em.flush(); //para obtener el id del prestamo
 
@@ -64,12 +66,9 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         entity.setCobroDiario(cantidadPagarPorAbono);
         entity.setAbonos(listaAbonos);
         em.merge(entity);
-        //generar la actualización del capital        
-        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
-        capital.setCapital(capital.getCapital() - entity.getCantidad());
-        em.merge(capital);
-
+        em.merge(capital); //generar la actualización del capital                
         em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -79,9 +78,8 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      * @return lista de prestamos filtrados
      */
     public List<Prestamo> findAll(final FiltroPrestamo filtro) {
-
-        String nombreCliente = filtro.getNombreCliente().toLowerCase();
-        String nombreCobrador = filtro.getNombreCobrador().toLowerCase();
+        Integer clienteId = filtro.getClienteId();
+        Integer cobradorId = filtro.getCobradorId();
 
         Date fechaPrestamoInicial = filtro.getFechaPrestamoInicial();
         Date fechaPrestamoFinal = filtro.getFechaPrestamoFinal();
@@ -90,12 +88,11 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         Date fechaLimiteFinal = filtro.getFechaLimiteFinal();
 
         JPAJinqStream<Prestamo> stream = this.stream();
-
-        if (isNotNullOrEmpty(nombreCliente)) {
-            stream = stream.where(t -> t.getCliente().getNombre().toLowerCase().contains(nombreCliente));
+        if (clienteId != null) {
+            stream = stream.where(t -> t.getCliente().getId().equals(clienteId));
         }
-        if (isNotNullOrEmpty(nombreCobrador)) {
-            stream = stream.where(t -> t.getCobrador().getNombre().toLowerCase().contains(nombreCobrador));
+        if (cobradorId != null) {
+            stream = stream.where(t -> t.getCobrador().getId().equals(cobradorId));
         }
         if (fechaPrestamoInicial != null) {
             stream = stream.where(t -> !t.getFecha().before(fechaPrestamoInicial));
@@ -124,7 +121,8 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
                 .where(t -> t.getCobrador().getId().equals(cobradorId))
                 //filtrar los que no este 100% abonados
                 .filter(t -> {
-                    float totalAbonado = t.getAbonos().stream().filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
+                    float totalAbonado = t.getAbonos().stream()
+                            .filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
                     float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
                     return porcentajeAbonado < 100;
                 }).collect(toList());
@@ -137,9 +135,13 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      * @return lista de prestamos asignados al cobrador
      */
     public List<Prestamo> prestamosDelCobrador(int cobradorId) {
-        return getEMInstance().createQuery("SELECT t FROM Prestamo t WHERE t.cobrador.id = :cobradorId", Prestamo.class)
+        EntityManager em = this.getEMInstance();
+        List<Prestamo> prestamosDelCobrador = em
+                .createQuery("SELECT t FROM Prestamo t WHERE t.cobrador.id = :cobradorId", Prestamo.class)
                 .setParameter("cobradorId", cobradorId)
                 .getResultList();
+        em.close();
+        return prestamosDelCobrador;
     }
 
     /**
@@ -150,9 +152,9 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      * @return cantidad a entregar de dinero fisico al cliente
      * @throws Exception
      */
-    public int renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo) throws Exception {
+    public int renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo) throws InvalidParameterException, Exception {
         EntityManager em = this.getEMInstance();
-        em.getTransaction().begin();
+        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
 
         //obtener lo que falta por abonar para dejar ese saldo 
         int cantidadPorSaldar = 0;
@@ -167,6 +169,10 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
             abono.setAbonado(true);
             abono.setCantidad(prestamoRenovar.getCobroDiario());
         }
+        if (!(capital.getCapital() >= nuevoPrestamo.getCantidad() - cantidadPorSaldar)) {
+            throw new InvalidParameterException("Capital insuficiente");
+        }
+        em.getTransaction().begin();
         em.merge(prestamoRenovar);
 
         Calendar cal = new GregorianCalendar();
@@ -193,11 +199,11 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         em.merge(nuevoPrestamo);
 
         //generar la actualización del capital        
-        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
         capital.setCapital(capital.getCapital() - (nuevoPrestamo.getCantidad() - cantidadPorSaldar));
         em.merge(capital);
 
         em.getTransaction().commit();
+        em.close();
         return (nuevoPrestamo.getCantidad() - cantidadPorSaldar);
     }
 }

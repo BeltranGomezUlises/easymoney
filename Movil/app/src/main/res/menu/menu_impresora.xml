@@ -8,7 +8,6 @@
         android:icon="@drawable/ic_recargar"
         android:title="Actualizar lista"
         android:orderInCategory="1"
-        app:actionViewClass="android.support.v7.widget.ProgressBar"
         app:showAsAction="withText|always"/>
 
 </menu>

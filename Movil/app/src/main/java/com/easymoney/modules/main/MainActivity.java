@@ -31,6 +31,7 @@ import com.easymoney.modules.configuracionImpresoras.DispositivosBTActivity;
 import com.easymoney.modules.detallePrestamo.DetallePrestamoActivity;
 import com.easymoney.modules.ingresosEgresos.IngresosEgresosActivity;
 import com.easymoney.modules.login.LoginActivity;
+import com.easymoney.modules.renovacion.RenovacionActivity;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.schedulers.SchedulerProvider;
@@ -137,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent;
         switch (id) {
             case R.id.cobros:
+                break;
+            case R.id.renovacion:
+                intent = new Intent(MainActivity.this, RenovacionActivity.class);
+                startActivity(intent);
                 break;
             case R.id.IE:
                 intent = new Intent(MainActivity.this, IngresosEgresosActivity.class);

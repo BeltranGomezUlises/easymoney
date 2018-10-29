@@ -10,6 +10,7 @@ import com.ub.easymoney.entities.negocio.Capital;
 import com.ub.easymoney.entities.negocio.Movimiento;
 import com.ub.easymoney.models.filtros.FiltroMovimientos;
 import com.ub.easymoney.utils.UtilsDB;
+import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
@@ -29,14 +30,18 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
     @Override
     public void persist(Movimiento entity) throws Exception {
         EntityManager em = this.getEMInstance();
-        em.getTransaction().begin();
-        
-        em.persist(entity);
-        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
-        capital.setCapital(capital.getCapital() + (int) entity.getCantidad());
-        em.merge(capital);
-                
+        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();        
+        if (entity.getCantidad() < 0) {
+            if (capital.getCapital() + entity.getCantidad() < 0) {
+                throw new InvalidParameterException("Capital insuficiente");
+            }
+        }                
+        capital.setCapital(capital.getCapital() + entity.getCantidad());        
+        em.getTransaction().begin();               
+        em.persist(entity);        
+        em.merge(capital);                
         em.getTransaction().commit();
+        em.close();
     }
 
     
@@ -59,10 +64,10 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
      */
     public List<Movimiento> movimientos(FiltroMovimientos filtro) {
         JPAJinqStream<Movimiento> stream = this.stream();
-        if (filtro.getNombre() != null) {
-            String nombre = filtro.getNombre().toLowerCase();
-            stream = stream.where(m -> m.getUsuarioCreador().getNombre().toLowerCase().contains(nombre));
-        }
+        Integer idCobrador = filtro.getCobradorId();        
+        if (idCobrador != null) {            
+            stream = stream.where(m -> m.getUsuarioCreador().getId().equals(idCobrador));
+        }        
         if (filtro.getTipoMovimiento() != null) {
             boolean tipoMovimiento = filtro.getTipoMovimiento();
             if (tipoMovimiento) {
@@ -70,14 +75,10 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
             } else {
                 stream = stream.where(m -> m.getCantidad() < 0);
             }
-        }
-        if (filtro.getCobradorId() != null) {
-            Integer idCobrador = filtro.getCobradorId();
-            stream = stream.where(m -> m.getUsuarioCreador().getId().equals(idCobrador));
-        }
+        }        
         if (filtro.getFechaFinal() != null) {
             Date fechaFinal = filtro.getFechaFinal();
-            stream = stream.where(m -> m.getFecha().before(fechaFinal));
+            stream = stream.where(m -> !m.getFecha().after(fechaFinal));
         }
         if (filtro.getFechaInicial() != null) {
             Date fechaInicial = filtro.getFechaInicial();
@@ -92,8 +93,8 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
      * @param fechaFinal fecha final del rango
      * @return lista de cantidades de movimientos dentro del rango
      */
-    public List<Double> cantidadesDesdeHasta(final Date fechaInicial, final Date fechaFinal) {
-        return this.getEMInstance().createQuery("SELECT t.cantidad FROM Movimiento t WHERE t.fecha >= :fechaInicial AND t.fecha < :fechaFinal", Double.class)
+    public List<Integer> cantidadesDesdeHasta(final Date fechaInicial, final Date fechaFinal) {
+        return this.getEMInstance().createQuery("SELECT t.cantidad FROM Movimiento t WHERE t.fecha >= :fechaInicial AND t.fecha < :fechaFinal", Integer.class)
                 .setParameter("fechaInicial", fechaInicial)
                 .setParameter("fechaFinal", fechaFinal)
                 .getResultList();

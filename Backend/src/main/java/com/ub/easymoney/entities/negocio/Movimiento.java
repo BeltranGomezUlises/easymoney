@@ -46,7 +46,7 @@ public class Movimiento implements Serializable, IEntity<Integer> {
     @Basic(optional = false)
     @NotNull
     @Column(name = "cantidad")
-    private double cantidad;
+    private int cantidad;
     @Basic(optional = false)
     @NotNull
     @Column(name = "fecha")
@@ -63,7 +63,7 @@ public class Movimiento implements Serializable, IEntity<Integer> {
         this.id = id;
     }
 
-    public Movimiento(Integer id, double cantidad, Date fecha) {
+    public Movimiento(Integer id, int cantidad, Date fecha) {
         this.id = id;
         this.cantidad = cantidad;
         this.fecha = fecha;
@@ -77,11 +77,11 @@ public class Movimiento implements Serializable, IEntity<Integer> {
         this.id = id;
     }
 
-    public double getCantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(double cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 

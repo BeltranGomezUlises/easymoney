@@ -4,6 +4,7 @@ import CobradorCard from './Componentes/CobradorCard.jsx';
 import CobradorForm from './Componentes/CobradorForm.jsx';
 import { Segment, Container, Divider, Form, Input, Card, Button, Image, Modal, Header, Dimmer, Loader} from 'semantic-ui-react';
 import * as utils from '../../utils.js';
+
 export default class Cobradores extends React.Component{
 
   constructor(props) {

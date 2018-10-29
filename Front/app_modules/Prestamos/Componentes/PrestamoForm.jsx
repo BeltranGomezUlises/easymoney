@@ -43,11 +43,10 @@ export default class PrestamoForm extends Component{
 
     handleSubmit(){
       const np = this.state.nuevoPrestamo;
-      console.log(np)
       if (np.cantidad == 0 || np.cliente.id == 0 || np.cobrador.id == 0) {
-        this.setState({warning:true});
+        this.setState({warning:'Verifique que tenga todos los datos llenos'});
       }else{
-        this.setState({loading:true, warning:false});
+        this.setState({loading:true, warning:null});
         fetch(localStorage.getItem('url') + 'prestamos',{
           method: 'POST',
           headers: {
@@ -60,7 +59,13 @@ export default class PrestamoForm extends Component{
         }).then((res)=> res.json())
         .then((response) =>{
           this.setState({loading:false});
-          this.props.close();
+          if(response.meta.status==='WARNING'){
+            this.setState({warning: response.meta.message});
+          }else{
+            utils.evalResponse(response, ()=>{
+                this.props.close();
+            }, response.meta.message);
+          }          
         })
       }
     }
@@ -120,23 +125,11 @@ export default class PrestamoForm extends Component{
         })
     }
 
-    renderButton(){
-      if (this.state.loading) {
-        return(
-          <Button color='green' loading>Agregar</Button>
-        );
-      }else{
-        return(
-          <Button color='green' type='submit'>Agregar</Button>
-        );
-      }
-    }
-
     renderWarning(){
       if (this.state.warning){
         return(
           <Segment color='yellow'>
-            <p>Verifique que tiene todos los campos llenos</p>
+            <p>{this.state.warning}</p>
           </Segment>
         );
       }
@@ -150,22 +143,16 @@ export default class PrestamoForm extends Component{
             <Form.Group widths='equal'>
               <Form.Field required>
                 <label>Cliente:</label>
-                <Dropdown
-                  search
-                  required
+                <Dropdown search required selection
                   options={this.state.optionsClientes}
-                  selection
                   placeholder='Cliente'
                   onChange={this.handleUpdateCliente}
                 />
               </Form.Field>
               <Form.Field required>
               <label>Usuario:</label>
-              <Dropdown
-                search
-                required
+              <Dropdown search required selection
                 options={this.state.optionsUsuarios}
-                selection
                 placeholder='Usuario'
                 onChange={this.handleUpdateUsuarios}
                 />
@@ -173,13 +160,12 @@ export default class PrestamoForm extends Component{
             </Form.Group>
             <Form.Field required>
               <label>Cantidad a prestar:</label>
-              <input type='number' min='0' step='1' max='99999'
-                required
+              <input type='number' min='0' step='1' max='99999' required
                 placeholder='Cantidad a prestar en el nuevo prestamo'
                 value={this.state.nuevoPrestamo.cantidad}
                 onInput={this.updateInputCantidad} />
             </Form.Field>
-            {this.renderButton()}
+            <Button color='green' loading={this.state.loading}>Agregar</Button>
           </Form>
         </div>
       );

@@ -10,8 +10,8 @@ import com.ub.easymoney.managers.admin.ManagerUsuario;
 import com.ub.easymoney.managers.negocio.ManagerCliente;
 import com.ub.easymoney.managers.negocio.ManagerPrestamo;
 import com.ub.easymoney.models.ModelCargarPrestamos;
-import com.ub.easymoney.models.ModeloPrestamoTotales;
-import com.ub.easymoney.models.ModeloPrestamoTotalesGenerales;
+import com.ub.easymoney.models.ModelPrestamoTotales;
+import com.ub.easymoney.models.ModelPrestamoTotalesGenerales;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
@@ -19,9 +19,8 @@ import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.services.commos.ServiceFacade;
 import com.ub.easymoney.utils.UtilsJWT;
 import com.ub.easymoney.utils.UtilsService;
-import static com.ub.easymoney.utils.UtilsService.setErrorResponse;
-import static com.ub.easymoney.utils.UtilsService.setInvalidTokenResponse;
-import static com.ub.easymoney.utils.UtilsService.setOkResponse;
+import static com.ub.easymoney.utils.UtilsService.*;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +44,9 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
 
     @GET
     @Path("/totales/{id}")
-    public Response<ModeloPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") final String token, @PathParam("id") final int id) {
-        Response<ModeloPrestamoTotales> r = new Response<>();
+    public Response<ModelPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") String token,
+            @PathParam("id") final int id) {
+        Response<ModelPrestamoTotales> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
             UtilsService.setOkResponse(r, managerPrestamo.totalesPrestamo(id), "totales del prestamo");
@@ -60,8 +60,8 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
 
     @GET
     @Path("/totalesGenerales")
-    public Response<ModeloPrestamoTotalesGenerales> totalesGenerales(@HeaderParam("Authorization") final String token) {
-        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();
+    public Response<ModelPrestamoTotalesGenerales> totalesGenerales(@HeaderParam("Authorization") String token) {
+        Response<ModelPrestamoTotalesGenerales> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
             managerPrestamo.setToken(token);
@@ -76,8 +76,9 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
 
     @POST
     @Path("/totalesGeneralesFiltro")
-    public Response<ModeloPrestamoTotalesGenerales> totalesGeneralesFiltro(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro) {
-        Response<ModeloPrestamoTotalesGenerales> r = new Response<>();
+    public Response<ModelPrestamoTotalesGenerales> totalesGeneralesFiltro(@HeaderParam("Authorization") String token,
+            FiltroPrestamo filtro) {
+        Response<ModelPrestamoTotalesGenerales> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
             managerPrestamo.setToken(token);
@@ -92,7 +93,8 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
 
     @POST
     @Path("/cargarPrestamos")
-    public Response<List<ModelCargarPrestamos>> listarFiltrados(@HeaderParam("Authorization") final String token, final FiltroPrestamo filtro) {
+    public Response<List<ModelCargarPrestamos>> listarFiltrados(@HeaderParam("Authorization") String token,
+            FiltroPrestamo filtro) {
         Response<List<ModelCargarPrestamos>> response = new Response();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -115,7 +117,8 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
      */
     @GET
     @Path("/prestamosPorCobrar/{cobradorId}")
-    public Response<List<Prestamo>> prestamosConCobroParaHoy(@HeaderParam("Authorization") final String token, @PathParam("cobradorId") final int cobradorId) {
+    public Response<List<Prestamo>> prestamosConCobroParaHoy(@HeaderParam("Authorization") String token,
+            @PathParam("cobradorId") int cobradorId) {
         Response<List<Prestamo>> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -138,7 +141,8 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
      */
     @GET
     @Path("/prestamosDelCobrador/{cobradorId}")
-    public Response<List<Prestamo>> prestamosCobrador(@HeaderParam("Authorization") final String token, @PathParam("cobradorId") final int cobradorId) {
+    public Response<List<Prestamo>> prestamosCobrador(@HeaderParam("Authorization") String token,
+            @PathParam("cobradorId") int cobradorId) {
         Response<List<Prestamo>> r = new Response<>();
         try {
             ManagerPrestamo managerPrestamo = new ManagerPrestamo();
@@ -211,7 +215,9 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
      */
     @GET
     @Path("/renovar/{prestamoId}/{cantidadNuevoPrestamo}")
-    public Response renovarPrestamo(@HeaderParam("Authorization") final String token, @PathParam("prestamoId") final int prestamoId, @PathParam("cantidadNuevoPrestamo") final int cantNuevoPrestamo) {
+    public Response renovarPrestamo(@HeaderParam("Authorization") String token,
+            @PathParam("prestamoId") int prestamoId,
+            @PathParam("cantidadNuevoPrestamo") int cantNuevoPrestamo) {
         Response res = new Response();
         try {
             UtilsJWT.validateSessionToken(token);
@@ -219,17 +225,19 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             int cantEntregar = managerPrestamo.renovarPrestamo(prestamoId, cantNuevoPrestamo);
             setOkResponse(res, cantEntregar, "prestamoRenovado");
         } catch (TokenExpiradoException | TokenInvalidoException e) {
-            UtilsService.setWarningResponse(res, e.getMessage(), "token inválido");
+            setWarningResponse(res, e.getMessage(), "token inválido");
+        } catch (InvalidParameterException e) {
+            setWarningResponse(res, e.getMessage(), null);
         } catch (Exception e) {
             setErrorResponse(res, e);
         }
 
         return res;
     }
-    
+
     @POST
     @Path("/cambiarCobrador")
-    public Response cambiarCobrador(@HeaderParam("Authorization") final String token, Map<String, Object> values){
+    public Response cambiarCobrador(@HeaderParam("Authorization") String token, Map<String, Object> values) {
         Response r = new Response();
         try {
             int prestamoId = (int) values.get("prestamoId");
@@ -238,7 +246,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             setOkResponse(r, "actualizado");
         } catch (Exception e) {
             setErrorResponse(r, e);
-        }        
+        }
         return r;
     }
 

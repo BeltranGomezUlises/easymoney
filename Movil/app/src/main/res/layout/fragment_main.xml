@@ -11,7 +11,7 @@
 
     <TextView
         android:padding="16dp"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:gravity="center"
         android:id="@+id/tvInfo"
         android:layout_width="match_parent"

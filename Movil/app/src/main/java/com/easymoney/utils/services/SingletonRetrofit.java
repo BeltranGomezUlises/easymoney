@@ -26,9 +26,9 @@ public class SingletonRetrofit {
                     .baseUrl(IService.END_POINT)
                     .client(
                             new OkHttpClient().newBuilder()
-                                    .connectTimeout(60, TimeUnit.SECONDS)
-                                    .writeTimeout(60, TimeUnit.SECONDS)
-                                    .readTimeout(60, TimeUnit.SECONDS)
+                                    .connectTimeout(15, TimeUnit.SECONDS)
+                                    .writeTimeout(15, TimeUnit.SECONDS)
+                                    .readTimeout(15, TimeUnit.SECONDS)
                                     .build()
                     )
                     .addConverterFactory(JacksonConverterFactory.create())

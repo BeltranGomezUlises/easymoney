@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Menu, Icon, Header, Table, Dimmer, Loader, Segment, Container, Modal, Button, Divider, Form, Input, Pagination} from 'semantic-ui-react'
 import MovimientoForm from './MovimientoForm.jsx'
 import * as utils from '../../../utils.js';
+import CmbCobrador from '../../cmbCatalog/CmbCobrador.jsx';
 
 export default class MovimientoList extends React.Component {
 
@@ -17,9 +18,13 @@ export default class MovimientoList extends React.Component {
       modalOpenWarning: false,
       buscando: false,
       filtro:{
-        nombreCobrador:'',
-        fechaFinal: '',
-        fechaInicial: ''
+        cobradorId: null,
+        fechaFinal: null,
+        fechaInicial: null
+      },
+      fechas:{
+        fechaFinal:'',
+        fechaInicial:''
       }
     }
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
@@ -43,9 +48,9 @@ export default class MovimientoList extends React.Component {
   }
 
   cargarMovimientos(){
-    let {filtro} = this.state;
-    let fechaInicial = filtro.fechaInicial !== '' ? utils.toUtcDate(filtro.fechaInicial) : '';
-    let fechaFinal = filtro.fechaFinal !== '' ? utils.toUtcDate(filtro.fechaFinal) + 86400000  : '';
+    let {filtro, fechas} = this.state;
+    filtro.fechaInicial = fechas.fechaInicial !== '' ? utils.toUtcDate(fechas.fechaInicial) : '';
+    filtro.fechaFinal = fechas.fechaFinal !== '' ? utils.toUtcDate(fechas.fechaFinal) : '';
       fetch(localStorage.getItem('url') + 'movimientos/filtro',{
         method: 'POST',
         headers: {
@@ -54,11 +59,7 @@ export default class MovimientoList extends React.Component {
           'Access-Control-Allow-Origin':'*',
           'Authorization': localStorage.getItem('tokenSesion')
         },
-        body: JSON.stringify({
-          nombre: filtro.nombreCobrador,
-          fechaInicial,
-          fechaFinal
-        })
+        body: JSON.stringify(filtro)
       }).then((res)=> res.json())
       .then((response) =>{
         utils.evalResponse(response, ()=>{
@@ -135,82 +136,53 @@ export default class MovimientoList extends React.Component {
     }
   }
 
-  renderButtonBuscar(){
-    if (this.state.buscando) {
-      return(
-        <Button primary loading>Buscar</Button>
-      );
-    }else{
-      return(
-        <Button primary type='submit' onClick={()=>{
-            this.setState({buscando:true})
-            this.cargarMovimientos();
-        }}>Buscar</Button>
-      );
-    }
-  }
-
   renderFiltros(){
     return(
-      <Form>
+      <Form onSubmit={()=>{
+        this.setState({buscando:true})
+        this.cargarMovimientos();
+      }}>
         <Form.Group>
-          <Form.Field
-             control={Input}
-             label='Nombre Cobrador:'
-             type='text'
-             placeholder='Nombre de cobrador'
-             value={this.state.filtro.nombreCobrador}
-             onChange={ (evt) => {
-               let {filtro} = this.state;
-               filtro.nombreCobrador = evt.target.value;
-               this.setState({filtro});
-             }}/>
+          <CmbCobrador onChange={(id)=> {
+            let {filtro} = this.state;
+            filtro.cobradorId = id;
+            this.setState(filtro);
+          }}/>
           <Form.Field>
-            <label>Movimientos despues de:</label>
+            <label>Movimientos desde:</label>
             <input
+              required
               type={'date'}
-              value={this.state.filtro.fechaInicial}
+              value={this.state.fechas.fechaInicial}
               onChange={(evt) => {
-                let {filtro} = this.state;
-                filtro.fechaInicial = evt.target.value;
-                this.setState({filtro});
+                let {fechas} = this.state;
+                fechas.fechaInicial = evt.target.value;
+                this.setState({fechas});
               }}/>
           </Form.Field>
           <Form.Field>
-            <label>Movimientos antes de:</label>
+            <label>Movimientos hasta:</label>
             <input
+              required
               type={'date'}
-              value={this.state.filtro.fechaFinal}
+              value={this.state.fechas.fechaFinal}
               onChange={(evt) => {
-                let {filtro} = this.state;
-                filtro.fechaFinal = evt.target.value;
-                this.setState({filtro});
+                let {fechas} = this.state;
+                fechas.fechaFinal = evt.target.value;
+                this.setState({fechas});
               }}/>
           </Form.Field>
        </Form.Group>
 
        <Form.Group>
         <Form.Field>
-          {this.renderButtonBuscar()}
+          <Button primary
+            loading={this.state.buscando}
+            type={this.state.buscando == false ? 'submit' : ''}>Buscar</Button>
         </Form.Field>
-
-        <Form.Field control={Button} secundary onClick={ () => {
-          let filtro = {
-            nombreCobrador:'',
-            fechaFinal:'',
-            fechaInicial: ''
-          }
-          this.setState({filtro});
-        }}>Limpiar filtros</Form.Field>
-
-        <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
-          onClose={this.handleCloseAgregar}
-          open={this.state.modalOpenAgregar}>
-          <Header content='Agregar Ingreso o Egreso' />
-          <Modal.Content>
-            <MovimientoForm handleClose={this.handleCloseAgregar}/>
-          </Modal.Content>
-        </Modal>
+        <Form.Field>
+          <Button color='green' type='button' onClick={this.handleOpenAgregar}>Agregar</Button>
+        </Form.Field>
         </Form.Group>
       </Form>
     );
@@ -223,9 +195,20 @@ export default class MovimientoList extends React.Component {
         <Divider horizontal>Filtros</Divider>
         {this.renderFiltros()}
       </Segment>
-        <Segment>
-          {this.renderMovimientos()}
-        </Segment>
+      <Segment>
+        {this.renderMovimientos()}
+      </Segment>
+
+      <Modal
+        onOpen={this.handleOpenAgregar}
+        onClose={this.handleCloseAgregar}
+        open={this.state.modalOpenAgregar}>
+        <Header content='Agregar Ingreso o Egreso' />
+        <Modal.Content>
+          <MovimientoForm handleClose={this.handleCloseAgregar}/>
+        </Modal.Content>
+      </Modal>
+
       </div>
     )
   }

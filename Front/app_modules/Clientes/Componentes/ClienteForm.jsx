@@ -7,17 +7,15 @@ export default class ClienteForm extends Component{
       super(props);
       let cliente = {};
       let text = '';
-      let checks = [true, true, true, true, true, true, true]; // dias de la semana que aplica multa empezando por lunes
+      // dias de la semana que aplica multa empezando por lunes
+      let checks = [true, true, true, true, true, true, true];
       if (props.cliente) {
         cliente = props.cliente;
         text = 'Actualizar';
-        let dias = cliente.diasSinMulta.split(",");
-        console.log(dias)
+        let dias = cliente.diasSinMulta.split(",");        
         dias.forEach(d => {
-          console.log('foreach', d);
           checks[d] = false;
         })
-        console.log(checks)
       }else{
         cliente = {
           nombre:'',
@@ -165,7 +163,6 @@ export default class ClienteForm extends Component{
             label='Lunes'
             checked={this.state.checks[1]}
             onChange={ (evt, data) => {
-              console.log(this.state.checks)
               this.updateDiasSinMulta(1);
             }}/>
             <label></label>

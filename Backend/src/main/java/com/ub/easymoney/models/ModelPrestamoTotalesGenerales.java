@@ -10,7 +10,7 @@ package com.ub.easymoney.models;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class ModeloPrestamoTotalesGenerales {
+public class ModelPrestamoTotalesGenerales {
 
     public int totalPrestado;
     public int totalAbonado;
@@ -19,10 +19,10 @@ public class ModeloPrestamoTotalesGenerales {
     public int capital;
     public float porcentajeCompletado;
 
-    public ModeloPrestamoTotalesGenerales() {
+    public ModelPrestamoTotalesGenerales() {
     }
 
-    public ModeloPrestamoTotalesGenerales(int totalPestado, int totalAbonado, int totalMultado, int totalRecuperado, int capital, float porcentajeCompletado) {
+    public ModelPrestamoTotalesGenerales(int totalPestado, int totalAbonado, int totalMultado, int totalRecuperado, int capital, float porcentajeCompletado) {
         this.totalPrestado = totalPestado;
         this.totalAbonado = totalAbonado;
         this.totalMultado = totalMultado;

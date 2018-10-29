@@ -12,6 +12,10 @@
             android:id="@+id/IE"
             android:icon="@drawable/ic_money_square"
             android:title="Ingresos/Egresos" />
+        <item
+            android:id="@+id/renovacion"
+            android:icon="@drawable/ic_time_lapse"
+            android:title="Renovar" />
     </group>
 
     <item android:title="Configuración">

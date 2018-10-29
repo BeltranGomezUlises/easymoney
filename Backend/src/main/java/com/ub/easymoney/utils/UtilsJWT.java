@@ -13,10 +13,6 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.impl.crypto.MacProvider;
-import java.security.Key;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  *
@@ -24,42 +20,15 @@ import java.util.GregorianCalendar;
  */
 public class UtilsJWT {
 
-    //llave de encriptacion generada por instancia desplegada
-    private static final Key KEY = MacProvider.generateKey();
-
     //llave de encriptacion por text
     private static final String STRING_KEY = "LLAVE ULTRA SECRETA";
 
     public static String generateSessionToken(String userId) throws JsonProcessingException {
-        JwtBuilder builder = Jwts.builder();
-        Calendar cal = new GregorianCalendar();        //calendario de tiempos                
+        JwtBuilder builder = Jwts.builder();        
         builder.setSubject(userId); //poner el sujeto en jwt
         return builder.signWith(SignatureAlgorithm.HS512, STRING_KEY).compact();
     }
-
-//    public static String generateValidateUserToken(ModelCodigoRecuperacionUsuario model) throws JsonProcessingException {
-//        JwtBuilder builder = Jwts.builder();
-//        Calendar cal = new GregorianCalendar();        //calendario de tiempos                
-//        cal.add(Calendar.SECOND, UtilsConfig.getSecondsRecoverJwtExp());
-//        builder.setExpiration(cal.getTime());
-//        builder.setSubject(UtilsJson.jsonSerialize(model));
-//
-//        return builder.signWith(SignatureAlgorithm.HS512, STRING_KEY).compact();
-//    }
-//    public static String generateTokenResetPassword(String token, String code) throws IOException, ParametroInvalidoException, TokenInvalidoException, TokenExpiradoException {
-//        JwtBuilder builder = Jwts.builder();
-//        Calendar cal = new GregorianCalendar();        //calendario de tiempos                
-//        cal.add(Calendar.SECOND, UtilsConfig.getSecondsRecoverJwtExp());
-//        builder.setExpiration(cal.getTime());
-//
-//        ModelCodigoRecuperacionUsuario codeUser = UtilsJson.jsonDeserialize(UtilsJWT.getBodyToken(token), ModelCodigoRecuperacionUsuario.class);
-//        if (!codeUser.getCode().equals(code)) {
-//            throw new ParametroInvalidoException("El código proporsionado no es válido");
-//        }
-//        builder.setSubject(codeUser.getIdUser());
-//
-//        return builder.signWith(SignatureAlgorithm.HS512, STRING_KEY).compact();
-//    }
+    
     public static String getBodyToken(String token) throws TokenInvalidoException, TokenExpiradoException {
         try {
             return Jwts.parser().setSigningKey(STRING_KEY).parseClaimsJws(token).getBody().getSubject();

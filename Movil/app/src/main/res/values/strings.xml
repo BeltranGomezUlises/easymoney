@@ -4,7 +4,7 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Nombre usuario</string>
     <string name="prompt_password">Contraseña</string>
-    <string name="action_sign_in">Iniciar sesion</string>
+    <string name="action_sign_in">Iniciar sesión</string>
     <string name="action_sign_in_short">Iniciar</string>
     <string name="error_invalid_email">Nombre de usuario inválido</string>
     <string name="error_invalid_password">Contraseña inválida</string>
@@ -23,9 +23,13 @@
     <string name="tvContraNuevaConfirmacion">Confirmar nueva contraseña</string>
     <string name="btnCambiarContra">Cambiar contraseña</string>
     <string name="title_activity_detalle_prestamo">DetallePrestamo</string>
-    <string name="section_format">Hello World from section: %1$d</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Renovacion -->
+    <string name="edtPrestamoId">Identificador de prestamo</string>
+    <string name="cmbNombreCliente">Nombre cliente</string>
+    <string name="cmdApodoCliente">Apodo cliente</string>
+
+
 
 </resources>

@@ -14,8 +14,8 @@ import java.util.Date;
  */
 public class FiltroPrestamo {
 
-    private String nombreCliente;
-    private String nombreCobrador;
+    private Integer clienteId;
+    private Integer cobradorId;
     private Date fechaPrestamoInicial;
     private Date fechaPrestamoFinal;
     private Date fechaLimiteInicial;
@@ -30,24 +30,24 @@ public class FiltroPrestamo {
         this.acreditados = acreditados;
     }
 
-    public String getNombreCliente() {
-        return nombreCliente;
-    }
-
-    public void setNombreCliente(String nombreCliente) {
-        this.nombreCliente = nombreCliente;
-    }
-
-    public String getNombreCobrador() {
-        return nombreCobrador;
-    }
-
-    public void setNombreCobrador(String nombreCobrador) {
-        this.nombreCobrador = nombreCobrador;
-    }
-
     public Date getFechaPrestamoInicial() {
         return fechaPrestamoInicial;
+    }
+
+    public Integer getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Integer clienteId) {
+        this.clienteId = clienteId;
+    }
+
+    public Integer getCobradorId() {
+        return cobradorId;
+    }
+
+    public void setCobradorId(Integer cobradorId) {
+        this.cobradorId = cobradorId;
     }
 
     public void setFechaPrestamoInicial(Date fechaPrestamoInicial) {

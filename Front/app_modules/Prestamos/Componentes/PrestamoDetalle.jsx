@@ -212,28 +212,23 @@ export default class PrestamoDetalle extends Component{
     }
 
     renderButton(){
-      if (this.state.loading) { //actualizando el prestamo
         return(
           <div>
-            <Button color='green' loading>
+            <Button
+              loading={this.state.loading}
+              color='green'
+              onClick={this.actualizarPrestamo}>
               Actualizar
             </Button>
-            <Button color='blue' disabled>
-              Renovar
-            </Button>
+            <ModalRenovar
+              prestamo={this.props.prestamo}
+              totales={this.state.totales}
+              update={this.props.update}/>
+            <ModalReasignar
+              prestamo={this.props.prestamo}
+              update={this.props.update}/>
           </div>
         );
-      }else{
-          return(
-            <div>
-              <Button color='green' onClick={this.actualizarPrestamo}>
-                Actualizar
-              </Button>
-              <ModalRenovar prestamo={this.props.prestamo} totales={this.state.totales} update={this.props.update}></ModalRenovar>
-              <ModalReasignar prestamo={this.props.prestamo} update={this.props.update}></ModalReasignar>
-            </div>
-          );
-      }
     }
 
     render(){
@@ -274,7 +269,6 @@ export default class PrestamoDetalle extends Component{
               {this.renderAbonos()}
             </Table.Body>
           </Table>
-
           <Table celled>
             <Table.Header>
               <Table.Row>

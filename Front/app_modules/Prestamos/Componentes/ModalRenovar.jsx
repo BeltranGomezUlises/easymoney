@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Modal, Form, Header, Table,  Icon, Segment, Dimmer, Loader} from 'semantic-ui-react';
+import {Button, Modal, Form, Header, Message,Table,  Icon, Segment, Dimmer, Loader} from 'semantic-ui-react';
 import * as utils from '../../../utils.js';
 
 export default class PrestamoDetalle extends Component{
@@ -11,11 +11,10 @@ export default class PrestamoDetalle extends Component{
       cantNuevoPrestamo : props.prestamo.cantidad,
       cantidadEntregar : 0,
       loading:false,
-      renovado:false
+      renovado:false,
+      message: ''
     }
 
-    this.onOpen = this.onOpen.bind(this);
-    this.onClose = this.onClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -33,66 +32,43 @@ export default class PrestamoDetalle extends Component{
       }
     }).then((res)=> res.json())
     .then((response) =>{
-      this.setState({
-        cantidadEntregar: response.data,
-        renovado:true,
-        loading:false
-      });
+      this.setState();
+      if (response.meta.status == 'WARNING') {
+        this.setState({
+          message: response.meta.message,
+          loading:false
+        });
+      }else{
+        this.setState({
+          cantidadEntregar: response.data,
+          message: '',
+          renovado:true,
+          loading:false
+        });
+        this.props.update();
+      }
     });
   }
 
-  onOpen(){
-    this.setState({open:true});
-  }
-
-  onClose(){
-    this.setState({open:false});
-  }
-
   renderCantidadEntregar(){
-    if (this.state.loading) {
-      return(
-        <Segment>
-          <Dimmer active>
-            <Loader size='mini'>Generando</Loader>
-          </Dimmer>
-          <div style={{'height':'50px'}}></div>
-        </Segment>
-      );
-    }else{
-      if (this.state.renovado) {
-        return(
-          <Segment>
-            <h2>Cantidad a entregar: ${this.state.cantidadEntregar}</h2>
-          </Segment>
-        );
-      }
-    }
-  }
-
-  renderButtonCerrar(){
     if (this.state.renovado) {
       return(
-         <Button primary content='Cerrar' onClick={()=>{
-          this.props.update();
-          this.onClose();
-         }} />
+        <Segment>
+          <h2>Cantidad a entregar: ${this.state.cantidadEntregar}</h2>
+        </Segment>
       );
     }
   }
 
   renderButton(){
     if (!this.state.renovado) {
-      if (this.state.loading) {
         return(
-           <Button primary content='Renovar' loading />
-        );
-      }else{
-        return(
-          <Button primary content='Renovar' type='submit' />
+           <Button primary content='Renovar'
+           type={this.state.loading ? 'button':'submit' }
+           loading={this.state.loading}
+           />
         );
       }
-    }
   }
 
   renderTotales(){
@@ -127,51 +103,61 @@ export default class PrestamoDetalle extends Component{
 
   }
 
+  renderMessage(){
+    if (this.state.message != '') {
+      return(
+        <Message warning>
+          <Message.Header>Atención!</Message.Header>
+          <p>{this.state.message}</p>
+        </Message>
+      );
+    }
+  }
+
   render(){
     return(
       <Modal
         trigger={<Button primary>Renovar</Button>}
-        onOpen={this.onOpen}
-        onClose={this.onClose}
+        onOpen={()=>{this.setState({open:true})}}
+        onClose={()=>{this.setState({open:false})}}
         open={this.state.open}>
         <Modal.Header>Resumen renovación</Modal.Header>
         <Modal.Content>
-        <Form onSubmit={this.handleSubmit}>
-        <Header as='h2'>          
-          <Header.Content>
-          {this.props.prestamo.id}
-          <Header.Subheader>id</Header.Subheader>
-          </Header.Content>
-        </Header>
-        <Table celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell textAlign='center'>Total Abonado</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Total Multado</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Total Recuperado</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Porcentaje Pagado</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Total a pagar</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Para saldar</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Entregar al renovar</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          {this.renderTotales()}
-        </Table>
-          <Form.Field>
-            <label>Cantidad a prestar:</label>
-            <input type='number' min='100' step='1' max='99999'
-              required
-              placeholder='Cantidad a prestar en el nuevo prestamo'
-              value={this.state.cantNuevoPrestamo}
-              onInput={(evt)=>{
-                this.setState({cantNuevoPrestamo: evt.target.value})
-              }} />
-          </Form.Field>
-          {this.renderCantidadEntregar()}
-          {this.renderButton()}
-        </Form>
-        <br></br>
-        {this.renderButtonCerrar()}
+          {this.renderMessage()}
+          <Form onSubmit={this.handleSubmit}>
+          <Header as='h2'>
+            <Header.Content>
+            {this.props.prestamo.id}
+            <Header.Subheader>Prestamo id</Header.Subheader>
+            </Header.Content>
+          </Header>
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell textAlign='center'>Total Abonado</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Total Multado</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Total Recuperado</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Porcentaje Pagado</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Total a pagar</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Para saldar</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Entregar al renovar</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            {this.renderTotales()}
+          </Table>
+            <Form.Field>
+              <label>Cantidad a prestar:</label>
+              <input type='number' min='100' step='1' max='99999' required
+                placeholder='Cantidad a prestar en el nuevo prestamo'
+                value={this.state.cantNuevoPrestamo}
+                onChange={(evt)=>{
+                  this.setState({cantNuevoPrestamo: evt.target.value})
+                }} />
+            </Form.Field>
+            {this.renderCantidadEntregar()}
+            {this.renderButton()}
+          </Form>
+          <br></br>
         </Modal.Content>
       </Modal>
     )

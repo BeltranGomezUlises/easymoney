@@ -10,7 +10,6 @@ export default class DetalleCobros extends Component{
         cobros : [],
         buscando: true
       }
-      console.log(props.cobrador)
     }
 
     componentDidMount(){
@@ -18,10 +17,10 @@ export default class DetalleCobros extends Component{
     }
 
     cargarDetalleCobros(){
-      var mesDiaAnio = new Date().toLocaleDateString().split('/');
-      var dia = new Date(mesDiaAnio[2], mesDiaAnio[0] - 1, mesDiaAnio[1]).toJSON().split('T')[0];
-      let fechaInicial = utils.toUtcDate(dia);
-      let fechaFinal = utils.toUtcDate(dia) + 86400000;
+      var date = new Date();
+      var actualDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());      
+      let fechaInicial = actualDate.getTime() + (actualDate.getTimezoneOffset() * 60000);
+      let fechaFinal = fechaInicial + 86400000;
       let cobradorId = this.props.cobrador.id;
       this.setState({buscando:true});
       fetch(localStorage.getItem('url') + 'cobros/cobrador',{

@@ -63,7 +63,8 @@ public class Movimientos extends ServiceFacade<Movimiento, Integer> {
      */
     @Path("/filtro")
     @POST
-    public Response<List<Movimiento>> movimientosFiltrados(@HeaderParam("Authorization") final String token, FiltroMovimientos filtro) {
+    public Response<List<Movimiento>> movimientosFiltrados(@HeaderParam("Authorization") String token, 
+            FiltroMovimientos filtro) {
         Response<List<Movimiento>> r = new Response();
         try {
             ManagerMovimiento managerMovimiento = new ManagerMovimiento();

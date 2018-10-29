@@ -21,11 +21,7 @@ public class FiltroMovimientos {
     /**
      * true si es de tipo ingreso, false si es de tipo egreso
      */
-    private Boolean tipoMovimiento;
-    /**
-     * nombre del cobrador que genero el movimiento
-     */
-    private String nombre;
+    private Boolean tipoMovimiento;   
     /**
      * fecha inicial del filtro de fechas
      */
@@ -49,15 +45,7 @@ public class FiltroMovimientos {
 
     public void setCobradorId(Integer cobradorId) {
         this.cobradorId = cobradorId;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    }  
 
     public Date getFechaInicial() {
         return fechaInicial;

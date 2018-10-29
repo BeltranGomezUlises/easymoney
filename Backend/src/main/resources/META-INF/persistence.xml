@@ -9,18 +9,18 @@
         <class>com.ub.easymoney.entities.admin.Config</class>
         <class>com.ub.easymoney.entities.negocio.Movimiento</class>
         <class>com.ub.easymoney.entities.negocio.EstadoCuenta</class>
-        <class>com.ub.easymoney.entities.negocio.Cobro</class>
+        <class>com.ub.easymoney.entities.negocio.Cobro</class   >
         <class>com.ub.easymoney.entities.negocio.Capital</class>
         <properties>
             <!-- jdbc -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.user" value="postgres"/>
                         
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
-            <property name="javax.persistence.jdbc.password" value=".toString(24);"/>    
-            
 <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
-            <property name="javax.persistence.jdbc.password" value="2424"/>-->
+            <property name="javax.persistence.jdbc.password" value=".toString(24);"/>    -->
+            
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
+            <property name="javax.persistence.jdbc.password" value="2424"/>
         </properties>
     </persistence-unit>
 </persistence>

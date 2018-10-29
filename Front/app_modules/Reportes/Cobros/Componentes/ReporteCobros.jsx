@@ -201,10 +201,7 @@ export default class ReporteCobros extends React.Component {
       );
     }else{
       return(
-        <Button primary type='submit' onClick={()=>{
-            this.setState({buscando:true})
-            this.cargarCobros()
-        }}>Buscar</Button>
+        <Button primary type='submit'>Buscar</Button>
       );
     }
   }
@@ -262,7 +259,10 @@ export default class ReporteCobros extends React.Component {
     return (
       <div>
         <Divider horizontal>Filtros</Divider>
-        <Form>
+        <Form onSubmit={()=>{
+          this.setState({buscando:true})
+          this.cargarCobros()
+        }}>
           <Form.Group inline>
            <label>Filtrar Por:</label>
            <Form.Field control={Radio} label='Cliente' value='1' checked={this.state.filtro.tipo === '1'} onChange={this.handleChangeRadio} />
@@ -277,6 +277,7 @@ export default class ReporteCobros extends React.Component {
             <Form.Field>
               <label>Cobros despues de:</label>
               <input
+                required
                 type={'date'}
                 value={this.state.filtro.fechaInicial}
                 onChange={(evt) => {
@@ -288,6 +289,7 @@ export default class ReporteCobros extends React.Component {
             <Form.Field>
               <label>Cobros antes de:</label>
               <input
+                required
                 type={'date'}
                 value={this.state.filtro.fechaFinal}
                 onChange={(evt) => {

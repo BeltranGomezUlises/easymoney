@@ -63,7 +63,7 @@ public class Reportes {
 
             //consultas
             mrc.setTotalRecuperado(daoCobro.totalCobradoDesdeHasta(fInicial, fFinal));
-            List<Double> cantidadesMovs = daoMov.cantidadesDesdeHasta(fInicial, fFinal);
+            List<Integer> cantidadesMovs = daoMov.cantidadesDesdeHasta(fInicial, fFinal);
 
             long totalIngreso = 0;
             long totalEgreso = 0;

@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader, Segment, Container, Modal, Button, Menu, Pagination, Grid} from 'semantic-ui-react'
+import { Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader,
+  Message, Segment, Container, Modal, Button, Menu, Pagination, Grid} from 'semantic-ui-react'
 import PrestamoForm from './PrestamoForm.jsx'
 import PrestamoDetalle from './PrestamoDetalle.jsx'
 import * as utils from '../../../utils.js';
+import CmbCliente from '../../cmbCatalog/CmbCliente.jsx';
+import CmbCobrador from '../../cmbCatalog/CmbCobrador.jsx';
 
 export default class PrestamoList extends React.Component {
 
@@ -16,15 +19,20 @@ export default class PrestamoList extends React.Component {
       totalesPrestamos:{},
       modalOpenAgregar:false,
       filtro:{
-        nombreCliente:'',
-        nombreCobrador:'',
+        clienteId: null,
+        cobradorId: null,
         fechaPrestamoFinal: '',
         fechaPrestamoInicial: '',
         fechaLimiteInicial: '',
         fechaLimiteFinal: '',
         acreditados: false
       },
-      buscando:false
+      fechas:{
+        fechaPrestamoInicial:'',
+        fechaPrestamoFinal:''
+      },
+      buscando:false,
+      message: ''
     }
 
     this.handleCloseAgregar = this.handleCloseAgregar.bind(this);
@@ -53,12 +61,31 @@ export default class PrestamoList extends React.Component {
   }
 
   cargarPrestamos(){
-    let {filtro} = this.state;
-    let fechaPrestamoInicial = filtro.fechaPrestamoInicial !== '' ? utils.toUtcDate(filtro.fechaPrestamoInicial) : '';
-    let fechaPrestamoFinal = filtro.fechaPrestamoFinal !== '' ? utils.toUtcDate(filtro.fechaPrestamoFinal) + 86400000  : '';
-    let fechaLimiteInicial = filtro.fechaLimiteInicial !== '' ? utils.toUtcDate(filtro.fechaLimiteInicial) : '';
-    let fechaLimiteFinal = filtro.fechaLimiteFinal !== '' ? utils.toUtcDate(filtro.fechaLimiteFinal) + 86400000 : '';
+    let {filtro, fechas} = this.state;
+    filtro.fechaPrestamoInicial = fechas.fechaPrestamoInicial !== '' ? utils.toUtcDate(fechas.fechaPrestamoInicial) : '';
+    filtro.fechaPrestamoFinal = fechas.fechaPrestamoFinal !== '' ? utils.toUtcDate(fechas.fechaPrestamoFinal) + 86400000  : '';
 
+    var filtrosValidos = false;
+    if (filtro.cobradorId != null) {
+      filtrosValidos = true;
+    }
+    if (filtro.clienteId != null) {
+      filtrosValidos = true;
+    }
+    if (filtro.fechaPrestamoInicial !== '' && filtro.fechaPrestamoFinal !== '') {
+      filtrosValidos = true;
+    }
+
+    if (filtrosValidos) {
+        this.filtrar(filtro);
+    }else{
+      this.setState({message: 'Debe de proporcionar filtros de búsqueda: cliente, cobrador ó rango de fechas'})
+    }
+
+  }
+
+  filtrar(filtro){
+    this.setState({buscando:true, message:''});
     fetch(localStorage.getItem('url') + 'prestamos/cargarPrestamos',{
       method: 'POST',
       headers: {
@@ -67,15 +94,7 @@ export default class PrestamoList extends React.Component {
         'Access-Control-Allow-Origin':'*',
         'Authorization': localStorage.getItem('tokenSesion')
       },
-      body:JSON.stringify({
-        nombreCliente: filtro.nombreCliente,
-        nombreCobrador : filtro.nombreCobrador,
-        fechaPrestamoInicial,
-        fechaPrestamoFinal,
-        fechaLimiteInicial,
-        fechaLimiteFinal,
-        acreditados: filtro.acreditados
-      })
+      body:JSON.stringify(filtro)
     }).then((res)=> res.json())
     .then((response) => {
         let totalPages = Math.ceil(response.data.length / 10);
@@ -85,6 +104,7 @@ export default class PrestamoList extends React.Component {
         this.setState({
           prestamos:prestamosOrdenados,
           buscando: false,
+          activePage:1,
           totalPages
         });
     })
@@ -97,15 +117,7 @@ export default class PrestamoList extends React.Component {
         'Access-Control-Allow-Origin':'*',
         'Authorization': localStorage.getItem('tokenSesion')
       },
-      body:JSON.stringify({
-        nombreCliente: filtro.nombreCliente,
-        nombreCobrador : filtro.nombreCobrador,
-        fechaPrestamoInicial,
-        fechaPrestamoFinal,
-        fechaLimiteInicial,
-        fechaLimiteFinal,
-        acreditados: filtro.acreditados
-      })
+      body:JSON.stringify(filtro)
     }).then((res)=> res.json())
     .then((response) =>{
       utils.evalResponse(response, () => {
@@ -309,83 +321,46 @@ export default class PrestamoList extends React.Component {
     return(
       <Form>
         <Form.Group>
-          <Form.Field
-             control={Input}
-             label='Nombre Cliente:'
-             type='text'
-             placeholder='Nombre de cliente'
-             value={this.state.filtro.nombreCliente}
-             onChange={ (evt) => {
-               let {filtro} = this.state;
-               filtro.nombreCliente = evt.target.value;
-               this.setState({filtro});
-             }}/>
-          <Form.Field
-             control={Input}
-             label='Nombre Cobrador:'
-             type='text'
-             placeholder='Nombre de cobrador'
-             value={this.state.filtro.nombreCobrador}
-             onChange={ (evt) => {
-               let {filtro} = this.state;
-               filtro.nombreCobrador = evt.target.value;
-               this.setState({filtro});
-             }}/>
-
+        <CmbCliente onChange={(id) => {
+          let {filtro} = this.state;
+          filtro.clienteId = id;
+          this.setState({filtro});
+        }}/>
+        <CmbCobrador onChange={(id) => {
+          let {filtro} = this.state;
+          filtro.cobradorId = id;
+          this.setState({filtro});
+        }}/>
           <Form.Field>
-            <label>Prestamos despues de:</label>
+            <label>Prestamos desde:</label>
             <input
               type={'date'}
-              value={this.state.filtro.fechaPrestamoInicial}
+              value={this.state.fechas.fechaPrestamoInicial}
               onChange={(evt) => {
-                let {filtro} = this.state;
-                filtro.fechaPrestamoInicial = evt.target.value;
-                this.setState({filtro});
+                let {fechas} = this.state;
+                fechas.fechaPrestamoInicial = evt.target.value;
+                this.setState({fechas});
               }}/>
           </Form.Field>
           <Form.Field>
-            <label>Prestamos antes de:</label>
+            <label>Prestamos hasta:</label>
             <input
               type={'date'}
-              value={this.state.filtro.fechaPrestamoFinal}
+              value={this.state.fechas.fechaPrestamoFinal}
               onChange={(evt) => {
-                let {filtro} = this.state;
-                filtro.fechaPrestamoFinal = evt.target.value;
-                this.setState({filtro});
+                let {fechas} = this.state;
+                fechas.fechaPrestamoFinal = evt.target.value;
+                this.setState({fechas});
               }}/>
           </Form.Field>
-
-          <Form.Field>
-            <label>Fecha limite pago despues de:</label>
-            <input
-              type={'date'}
-              value={this.state.filtro.fechaLimiteInicial}
-              onChange={(evt) => {
-                let {filtro} = this.state;
-                filtro.fechaLimiteInicial = evt.target.value;
-                this.setState({filtro});
-              }}/>
-          </Form.Field >
-          <Form.Field>
-            <label>Fecha limite pago antes de:</label>
-            <input
-              type={'date'}
-              value={this.state.filtro.fechaLimiteFinal}
-              onChange={(evt) => {
-                let {filtro} = this.state;
-                filtro.fechaLimiteFinal = evt.target.value;
-                this.setState({filtro});
-              }}/>
-          </Form.Field >
        </Form.Group>
 
         <Form.Field>
           <Checkbox
             label='Préstamos 100% abonados'
-            value={this.state.filtro.acreditados}
             onChange={ (evt, data) => {
               let {filtro} = this.state;
-              filtro.acreditados = data.checked;              
+              filtro.acreditados = data.checked;
               this.setState({filtro});
             }}
             checked={this.state.filtro.acreditados} />
@@ -395,18 +370,6 @@ export default class PrestamoList extends React.Component {
         <Form.Field>
           {this.renderButtonBuscar()}
         </Form.Field>
-
-        <Form.Field control={Button} onClick={ () => {
-          let filtro = {
-            nombreCliente:'',
-            nombreCobrador:'',
-            fechaPrestamoFinal:'',
-            fechaPrestamoInicial: '',
-            fechaLimiteInicial: '',
-            fechaLimiteFinal: ''
-          }
-          this.setState({filtro});
-        }}>Limpiar filtros</Form.Field>
 
         <Modal trigger={<Button color='green' onClick={this.handleOpenAgregar}>Agregar</Button>}
           onClose={this.handleCloseAgregar}
@@ -429,9 +392,19 @@ export default class PrestamoList extends React.Component {
     }else{
       return(
         <Button primary type='submit' onClick={()=>{
-            this.setState({buscando:true})
             this.cargarPrestamos()
         }}>Buscar</Button>
+      );
+    }
+  }
+
+  renderMessage(){
+    if (this.state.message != '') {
+      return(
+        <Message warning>
+          <Message.Header>Atención!</Message.Header>
+          <p>{this.state.message}</p>
+        </Message>
       );
     }
   }
@@ -441,6 +414,7 @@ export default class PrestamoList extends React.Component {
       <div>
         <Segment>
           <Divider horizontal>Filtros</Divider>
+          {this.renderMessage()}
           {this.renderFiltros()}
         </Segment>
         <Segment>

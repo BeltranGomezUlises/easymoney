@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Input, Button, Form, Checkbox } from 'semantic-ui-react';
+import { Input, Segment, Button, Form, Checkbox } from 'semantic-ui-react';
 import * as utils from '../../../utils.js';
 export default class MovimientoForm extends Component{
 
@@ -13,7 +13,8 @@ export default class MovimientoForm extends Component{
           fecha: new Date(),
           cantidad:0,
           descripcion: ''
-        }
+        },
+        fecha:''
       }
     }
     this.state.isLoading = false;
@@ -24,27 +25,12 @@ export default class MovimientoForm extends Component{
 
   handleSumbit(){
     this.setState({isLoading: true});
-    if (this.props.movimiento) { //actualizar si se creó con un movimiento
-      this.actualizarMovimiento();
-    }else{ //agregar
-      this.agregarMovimiento();
-    }
-  }
-
-  updateInputCantidad(evt){
-    const cantidad = (evt.target.validity.valid) ? evt.target.value : this.state.movimiento.cantidad;
-    let {movimiento} = this.state;
-    movimiento.cantidad = cantidad;
-    this.setState({movimiento})
-  }
-
-  agregarMovimiento(){
-    let {movimiento} = this.state;
+    let {movimiento, fecha} = this.state;
     if (!this.state.tipoMovimiento) {
       movimiento.cantidad *= -1;
     }
     movimiento.usuarioCreador = JSON.parse(localStorage.getItem('logedUser'));
-    movimiento.fecha = utils.toUtcDate(movimiento.fecha);
+    movimiento.fecha = utils.toUtcDate(fecha);
     fetch(localStorage.getItem('url') + 'movimientos',{
       method: 'POST',
       headers: {
@@ -56,11 +42,22 @@ export default class MovimientoForm extends Component{
       body:JSON.stringify(movimiento)
     }).then((res)=> res.json())
     .then((response) =>{
-      utils.evalResponse(response, () => {
-        this.setState({isLoading: false});
-        this.props.handleClose({hasChanches: true});
-      })
+      this.setState({isLoading: false});
+      if (response.meta.status == 'WARNING') {
+        this.setState({message: response.meta.message});
+      }else{
+        utils.evalResponse(response, () => {
+          this.props.handleClose({hasChanches: true});
+        })
+      }
     })
+  }
+
+  updateInputCantidad(evt){
+    const cantidad = (evt.target.validity.valid) ? evt.target.value : this.state.movimiento.cantidad;
+    let {movimiento} = this.state;
+    movimiento.cantidad = cantidad;
+    this.setState({movimiento})
   }
 
   renderButton(){
@@ -75,18 +72,28 @@ export default class MovimientoForm extends Component{
     }
   }
 
+  renderMessage(){
+    if (this.state.message != null & this.state.message != '') {
+      return (
+        <Segment color='yellow'>
+          <p>{this.state.message}</p>
+        </Segment>
+      )
+    }
+  }
+
   render(){
     return(
       <Form onSubmit={this.handleSumbit}>
+        {this.renderMessage()}
         <Form.Field>
           <label pointing='right'>Fecha:</label>
-          <input type='date' required onInput={(evt) =>{
-                const fecha = evt.target.value;
-                let {movimiento} = this.state;
-                movimiento.fecha = fecha;
-                this.setState({movimiento});
+          <input type='date' required onChange={(e) =>{
+                let {fecha} = this.state;
+                fecha = e.target.value;
+                this.setState({fecha});
             }}
-            value={this.state.movimiento.fecha}/>
+            value={this.state.fecha}/>
         </Form.Field>
         <Form.Field>
           <Checkbox label='Marcar como Ingreso' onChange={ (evt, data) => {
@@ -95,11 +102,13 @@ export default class MovimientoForm extends Component{
         </Form.Field>
         <Form.Field>
           <label>Cantidad:</label>
-          <input required type="text" pattern="[0-9]*" onInput={this.updateInputCantidad} value={this.state.movimiento.cantidad} />
+          <input required type="text" pattern="[0-9]*"
+          onChange={this.updateInputCantidad}
+          value={this.state.movimiento.cantidad} />
         </Form.Field>
         <Form.Field>
           <label pointing='right'>Descripción:</label>
-          <input type='text' required onInput={(evt)=>{
+          <input type='text' required onChange={(evt)=>{
               let {movimiento} = this.state;
               movimiento.descripcion = evt.target.value;
               this.setState({movimiento});
