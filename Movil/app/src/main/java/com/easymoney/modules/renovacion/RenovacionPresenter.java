@@ -65,9 +65,27 @@ public class RenovacionPresenter implements RenovacionContract.Presenter {
 
     @Override
     public void renovar(int prestamoId, int renovacion) {
+        fragment.showLoading(true);
+        mCompositeDisposable.add(
+                repository.renovar(prestamoId, renovacion, new Consumer<Response<Integer, Object>>() {
+                    @Override
+                    public void accept(Response<Integer, Object> res) {
+                        fragment.showLoading(false);
+                        switch (res.getMeta().getStatus()){
+                            case OK: fragment.showMessage("Entregar: $ " + res.getData(), Status.OK); break;
+                            case WARNING: fragment.showMessage(res.getMeta().getMessage(), Status.WARNING); break;
+                            case ERROR: fragment.showMessage("Error de progrmación" , Status.ERROR); break;
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) {
+                        fragment.showLoading(false);
+                        fragment.showMessage("Error de comunicación con el servidor", Status.ERROR);
+                    }
+                }));
 
     }
-
 
     public void totalesPrestamo(int prestamoId, Consumer<Response<ModelPrestamoTotales, Object>> onNext, Consumer<Throwable> onError) {
         mCompositeDisposable.add(
@@ -75,7 +93,7 @@ public class RenovacionPresenter implements RenovacionContract.Presenter {
                         .subscribe(onNext, onError));
     }
 
-    public void showError(String msg){
+    public void showError(String msg) {
         fragment.showMessage(msg, Status.ERROR);
     }
 

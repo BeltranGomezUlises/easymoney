@@ -32,7 +32,6 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-    String END_POINT = "http://192.168.10.113:8084/EasyMoney/api/";
 
     /**
      * Inicio de sesion
@@ -51,7 +50,9 @@ public interface IService {
      * @return respuesta con la lista de prestamos
      */
     @GET("prestamos/prestamosPorCobrar/{cobradorId}")
-    Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(@Header("Authorization") String token, @Path("cobradorId") int cobradorId);
+    Flowable<Response<List<Prestamo>, Object>> prestamosPorCobrar(
+            @Header("Authorization") String token,
+            @Path("cobradorId") int cobradorId);
 
     /**
      * Obtiene los prestamos que le corresponden al cobrador
@@ -61,7 +62,8 @@ public interface IService {
      * @return respuesta con la lista de prestamos
      */
     @GET("prestamos/prestamosDelCobrador/{cobradorId}")
-    Flowable<Response<List<Prestamo>, Object>> prestamosDelCobrador(@Header("Authorization") String token, @Path("cobradorId") int cobradorId);
+    Flowable<Response<List<Prestamo>, Object>> prestamosDelCobrador(
+            @Header("Authorization") String token, @Path("cobradorId") int cobradorId);
 
     /**
      * Obtiene los totales generales del estado de un prestamo
@@ -71,7 +73,8 @@ public interface IService {
      * @return mmodelo de totales de un prestamo en espeficico
      */
     @GET("prestamos/totales/{prestamoId}")
-    Flowable<Response<ModelPrestamoTotales, Object>> totalesDelPrestamo(@Header("Authorization") String token, @Path("prestamoId") int prestamoId);
+    Flowable<Response<ModelPrestamoTotales, Object>> totalesDelPrestamo(
+            @Header("Authorization") String token, @Path("prestamoId") int prestamoId);
 
     /**
      * Obtiene la lista de abonos de un prestamo en especifico
@@ -81,7 +84,8 @@ public interface IService {
      * @return lista de abonos del prestamo con el id en prestamoId
      */
     @GET("abonos/prestamo/{prestamoId}")
-    Flowable<Response<List<Abono>, Object>> abonosDelPrestamo(@Header("Authorization") String token, @Path("prestamoId") int prestamoId);
+    Flowable<Response<List<Abono>, Object>> abonosDelPrestamo(
+            @Header("Authorization") String token, @Path("prestamoId") int prestamoId);
 
     /**
      * servicio para agregar un abono de ajuste a un prestamo donde las cantidades abonadas no tienen el valor correspondiente
@@ -91,7 +95,8 @@ public interface IService {
      * @return respuesta con el abono agregado
      */
     @POST("abonos/agregarAjuste")
-    Flowable<Response<Abono, Object>> agregarAbonoAjuste(@Header("Authorization") String token, @Body Abono abono);
+    Flowable<Response<Abono, Object>> agregarAbonoAjuste(
+            @Header("Authorization") String token, @Body Abono abono);
 
     /**
      * Cambia la contraseña del usuario
@@ -101,7 +106,8 @@ public interface IService {
      * @return respuesta con el usuario actualizado
      */
     @POST("usuarios/cambiarContra")
-    Flowable<Response<Usuario, Object>> cambiarContra(@Header("Authorization") String token, @Body ModelCambiarContra cambiarContra);
+    Flowable<Response<Usuario, Object>> cambiarContra(
+            @Header("Authorization") String token, @Body ModelCambiarContra cambiarContra);
 
     /**
      * Consulta todos los movimientos con un menu_ingresos_egresos proporcionado
@@ -111,7 +117,8 @@ public interface IService {
      * @return lista de movimientos
      */
     @POST("movimientos/filtro")
-    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(@Header("Authorization") String token, @Body ModelFiltroMovimiento filtro);
+    Flowable<Response<List<Movimiento>, Object>> obtenerMovimientos(
+            @Header("Authorization") String token, @Body ModelFiltroMovimiento filtro);
 
     /**
      * Da de alta un nuevo movimiento
@@ -121,7 +128,8 @@ public interface IService {
      * @return movimiento dado de alta, con el id generado
      */
     @POST("movimientos")
-    Flowable<Response<Movimiento, Object>> altaMovimientos(@Header("Authorization") String token, @Body Movimiento movimiento);
+    Flowable<Response<Movimiento, Object>> altaMovimientos(@Header("Authorization") String token,
+                                                           @Body Movimiento movimiento);
 
     /**
      * Genera el abono del prestamo y actualiza el estado del prestamo con la distribucion de su pago
@@ -131,8 +139,8 @@ public interface IService {
      * @return prestamo actualizado
      */
     @POST("cobros/generarAbono")
-    Flowable<Response<Prestamo, Object>> abonarPrestamo(@Header("Authorization") String token, @Body ModelAbonarPrestamo model);
-
+    Flowable<Response<Prestamo, Object>> abonarPrestamo(@Header("Authorization") String token,
+                                                        @Body ModelAbonarPrestamo model);
 
     /**
      * Carga los prestamos que cumplan con los citerios de filtrado
@@ -142,17 +150,14 @@ public interface IService {
      * @return lista de prestamos
      */
     @POST("cargarPrestamos")
-    Flowable<Response<List<Prestamo>, Object>> buscarPrestamos(@Header("Authorization") String token, @Body ModelFiltroPrestamos model);
+    Flowable<Response<List<Prestamo>, Object>> buscarPrestamos(@Header("Authorization") String token,
+                                                               @Body ModelFiltroPrestamos model);
 
 
-    /**
-     * Busca todos los clientes del sistema
-     *
-     * @param token token de sesion
-     * @return lista de clientes
-     */
-    @GET("clientes")
-    Flowable<Response<List<Cliente>, Object>> clientes(@Header("Authorization") String token);
+    @GET("prestamos/renovar/{prestamoId}/{cantidadNuevoPrestamo}")
+    Flowable<Response<Integer, Object>> renovarPrestamo(@Header("Authorization") String token,
+                                                       @Path("prestamoId") int prestamoId,
+                                                       @Path("cantidadNuevoPrestamo") int cantidadNuevoPrestamo);
 
     /**
      * Busca todos los clientes del sistema
@@ -161,6 +166,7 @@ public interface IService {
      * @return lista de clientes
      */
     @GET("prestamos/{prestamoId}")
-    Flowable<Response<Prestamo, Object>> getPrestamo(@Header("Authorization") String token, @Path("prestamoId") int prestamoId);
+    Flowable<Response<Prestamo, Object>> getPrestamo(@Header("Authorization") String token,
+                                                     @Path("prestamoId") int prestamoId);
 
 }

@@ -79,10 +79,14 @@ public class RenovacionFragment extends Fragment implements RenovacionContract.F
                 Snackbar.make(this.getView(), message, LENGTH_LONG).show();
                 break;
             case WARNING:
-                Snackbar.make(this.getView(), message, LENGTH_LONG).setActionTextColor(Color.YELLOW).show();
+                Snackbar sbw = Snackbar.make(this.getView(), message, LENGTH_LONG);
+                sbw.getView().setBackgroundResource(R.color.warning);
+                sbw.show();
                 break;
             case ERROR:
-                Snackbar.make(this.getView(), message, LENGTH_LONG).setActionTextColor(Color.RED).show();
+                Snackbar sbe = Snackbar.make(this.getView(), message, LENGTH_LONG);
+                sbe.getView().setBackgroundColor(Color.RED);
+                sbe.show();
                 break;
         }
     }

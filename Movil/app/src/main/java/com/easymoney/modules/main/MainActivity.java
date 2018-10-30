@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //drawer layout
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -81,6 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         TextView txtNombreUsuario = navigationView.getHeaderView(0).findViewById(R.id.nombreUsuario);
         TextView txtTipoUsuario = navigationView.getHeaderView(0).findViewById(R.id.tipoUsuario);
+
+        //si no es administrador, remover del menu
+        if (!UtilsPreferences.loadLogedUser().isTipo()){
+            navigationView.getMenu().findItem(R.id.renovacion).setVisible(false);
+        }
 
         txtNombreUsuario.setText(getIntent().getStringExtra("userName"));
         txtTipoUsuario.setText(getIntent().getStringExtra("userType"));

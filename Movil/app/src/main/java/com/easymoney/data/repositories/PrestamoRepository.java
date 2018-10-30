@@ -165,4 +165,13 @@ public class PrestamoRepository implements PrestamoDataSource {
                 .subscribeOn(ioT())
                 .subscribe(onNext, onError);
     }
+
+    public Disposable renovar(int prestamoId, int cantidadNuevoPrestamo,
+                              Consumer<Response<Integer, Object>> onNext,
+                              Consumer<Throwable> onError) {
+        return webServices().renovarPrestamo(UtilsPreferences.loadToken(), prestamoId, cantidadNuevoPrestamo)
+                .observeOn(uiT())
+                .subscribeOn(ioT())
+                .subscribe(onNext, onError);
+    }
 }
