@@ -1,9 +1,7 @@
 package com.easymoney.modules.detallePrestamo;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,60 +17,30 @@ import com.easymoney.utils.UtilsDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
-
 /**
  * Created by ulises on 16/01/2018.
  */
-public class AbonoFragment extends Fragment implements DetallePrestamoContract.View {
+public class AbonoFragment extends Fragment {
 
-    private ListView listView;
     private AbonoAdapter abonoAdapter;
-    private DetallePrestamoPresenter presenter;
-    private ProgressDialog dialog;
 
     public static AbonoFragment getInstance(DetallePrestamoPresenter presenter) {
         AbonoFragment fragment = new AbonoFragment();
         presenter.setAbonoFragment(fragment);
-        fragment.setPresenter(presenter);
         return fragment;
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detalle_prestamo_abonos, container, false);
 
-        listView = rootView.findViewById(R.id.abonoList);
+        ListView listView = rootView.findViewById(R.id.abonoList);
         abonoAdapter = new AbonoAdapter(new ArrayList<Abono>());
         listView.setAdapter(abonoAdapter);
 
         return rootView;
     }
 
-    public DetallePrestamoPresenter getPresenter() {
-        return presenter;
-    }
-
-    @Override
-    public void setPresenter(DetallePrestamoContract.Presenter presenter) {
-        this.presenter = (DetallePrestamoPresenter) presenter;
-    }
-
-    @Override
-    public void showLoading(boolean active) {
-        if (active) {
-            dialog = ProgressDialog.show(getActivity(), "Cargando", "Por favor espere...", true);
-        } else {
-            if (dialog != null) {
-                dialog.cancel();
-            }
-        }
-    }
-
-    public void showMessage(String message) {
-        Snackbar.make(this.getView(), message, LENGTH_LONG).show();
-    }
 
     public void replaceData(List<Abono> abonos) {
         List<Abono> abonosFiltrado = new ArrayList<>();
@@ -90,11 +58,11 @@ public class AbonoFragment extends Fragment implements DetallePrestamoContract.V
         private TextView tvMulta;
         private TextView tvDescripcion;
 
-        public AbonoAdapter(List<Abono> abonos) {
+        AbonoAdapter(List<Abono> abonos) {
             this.abonos = abonos;
         }
 
-        protected void replaceData(List<Abono> abonos) {
+        void replaceData(List<Abono> abonos) {
             this.abonos = abonos;
             this.notifyDataSetChanged();
         }

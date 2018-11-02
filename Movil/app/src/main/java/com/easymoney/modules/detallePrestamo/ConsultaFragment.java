@@ -23,7 +23,7 @@ import static android.support.design.widget.Snackbar.LENGTH_LONG;
 /**
  * Created by ulises on 15/01/2018.
  */
-public class ConsultaFragment extends Fragment implements DetallePrestamoContract.View {
+public class ConsultaFragment extends Fragment {
 
     private DetallePrestamoPresenter presenter;
     private TextView tvNombreCliente;
@@ -46,11 +46,20 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
 
     }
 
-    public static ConsultaFragment getInstance(DetallePrestamoPresenter prestamoPresenter) {
+    public static ConsultaFragment getInstance(DetallePrestamoPresenter presenter) {
         ConsultaFragment instance = new ConsultaFragment();
-        prestamoPresenter.setConsultaFragment(instance);
-        instance.setPresenter(prestamoPresenter);
+        presenter.setConsultaFragment(instance);
+        instance.setPresenter(presenter);
         return instance;
+    }
+
+
+    public DetallePrestamoPresenter getPresenter() {
+        return presenter;
+    }
+
+    public void setPresenter(DetallePrestamoPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @Nullable
@@ -75,26 +84,6 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         this.presenter.subscribe();
 
         return rootView;
-    }
-
-    @Override
-    public void showLoading(boolean active) {
-        if (active){
-            dialog = ProgressDialog.show(getActivity(), "Cargando","Por favor espere...", true);
-        }else{
-            if (dialog != null){
-                dialog.cancel();
-            }
-        }
-    }
-
-    public void showMessage(String message) {
-        Snackbar.make(this.getView(), message, LENGTH_LONG).show();
-    }
-
-    @Override
-    public void setPresenter(DetallePrestamoContract.Presenter presenter) {
-        this.presenter = (DetallePrestamoPresenter) presenter;
     }
 
     public void llenarDatosGenerales(Prestamo prestamo) {

@@ -1,7 +1,8 @@
 package com.easymoney.modules.login;
 
+import com.easymoney.models.services.Login;
+import com.easymoney.utils.baseClases.BaseFragment;
 import com.easymoney.utils.baseClases.BasePresenter;
-import com.easymoney.utils.baseClases.BaseView;
 
 /**
  * Created by ulises on 30/12/17.
@@ -9,17 +10,13 @@ import com.easymoney.utils.baseClases.BaseView;
 
 public interface LoginContract {
 
-    interface View extends BaseView<Presenter> {
-
-        void showLoading(boolean active);
-
-        void showMain(int userId, String userName, String userType);
+    abstract class Fragment extends BaseFragment<Presenter> {
+        abstract void showMain(int userId, String userName, String userType);
+        abstract void setPreloadedLogin(Login.Request request);
     }
 
-    interface Presenter extends BasePresenter<View> {
-
-        void attemptLogin(String user, String pass);
-
+    abstract class Presenter extends BasePresenter<Fragment> {
+        abstract void attemptLogin(String user, String pass);
     }
 
 }

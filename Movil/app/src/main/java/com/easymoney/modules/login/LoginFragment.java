@@ -1,12 +1,9 @@
 package com.easymoney.modules.login;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -21,18 +18,14 @@ import com.easymoney.R;
 import com.easymoney.models.services.Login;
 import com.easymoney.modules.main.MainActivity;
 
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
-
 /**
  * Created by ulises on 30/12/17.
  */
 
-public class LoginFragment extends Fragment implements LoginContract.View {
+public class LoginFragment extends LoginContract.Fragment {
 
-    private LoginPresenter presenter;
     private EditText mEmailView;
     private EditText mPasswordView;
-    private ProgressDialog dialog;
 
     @Nullable
     @Override
@@ -60,19 +53,8 @@ public class LoginFragment extends Fragment implements LoginContract.View {
                 attemptLogin();
             }
         });
-        this.presenter.subscribe();
+        this.getPresenter().subscribe();
         return root;
-    }
-
-    @Override
-    public void showLoading(boolean active) {
-        if (active){
-            dialog = ProgressDialog.show(getActivity(), "Cargando","Por favor espere...", true);
-        }else{
-            if (dialog != null){
-                dialog.cancel();
-            }
-        }
     }
 
     @Override
@@ -85,12 +67,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
         this.getActivity().finishAffinity();
     }
 
-    @Override
-    public void setPresenter(LoginContract.Presenter presenter) {
-        this.presenter = (LoginPresenter) presenter;
-    }
-
-    private void attemptLogin(){
+    private void attemptLogin() {
         mEmailView.setError(null);
         mPasswordView.setError(null);
         // Store values at the time of the login attempt.
@@ -117,21 +94,17 @@ public class LoginFragment extends Fragment implements LoginContract.View {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            showLoading(true);
-            presenter.attemptLogin(email, password);
+            getPresenter().attemptLogin(email, password);
         }
-    }
-
-    public void showMessage(String mesage) {
-        Snackbar.make(getView(), mesage, LENGTH_LONG).show();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        presenter.unsubscribe();
+        getPresenter().unsubscribe();
     }
 
+    @Override
     public void setPreloadedLogin(Login.Request request) {
         mEmailView.setText(request.getUser());
         mPasswordView.setText(request.getPass());

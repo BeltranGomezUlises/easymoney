@@ -33,29 +33,34 @@ import java.util.List;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
+import static com.easymoney.models.services.Errors.ERROR_COMUNICACION;
+
 /**
  * Created by ulises on 15/01/2018.
  */
-public class DetallePrestamoPresenter implements DetallePrestamoContract.Presenter {
+public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter {
 
     private static final String MULTA_POST_PLAZO = "Multa post-plazo";
     private final PrestamoRepository repository = PrestamoRepository.getInstance();
+
     private FloatingActionButton fab;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     private ConsultaFragment consultaFragment;
     private AbonoFragment abonoFragment;
+
     private Prestamo prestamo;
     private ModelTotalAPagar modelTotalAPagar;
 
-    public DetallePrestamoPresenter(Prestamo prestamo) {
+    DetallePrestamoPresenter(Prestamo prestamo) {
         this.prestamo = prestamo;
     }
 
-    public ModelTotalAPagar getModelTotalAPagar() {
+    ModelTotalAPagar getModelTotalAPagar() {
         return modelTotalAPagar;
     }
 
-    public void setModelTotalAPagar(ModelTotalAPagar modelTotalAPagar) {
+    private void setModelTotalAPagar(ModelTotalAPagar modelTotalAPagar) {
         this.modelTotalAPagar = modelTotalAPagar;
     }
 
@@ -66,26 +71,20 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 .subscribeOn(SchedulerProvider.ioT())
                 .subscribe(new Consumer<Response<ModelPrestamoTotales, Object>>() {
                     @Override
-                    public void accept(Response<ModelPrestamoTotales, Object> r) throws Exception {
-                        consultaFragment.showLoading(false);
-                        switch (r.getMeta().getStatus()) {
-                            case OK:
+                    public void accept(final Response<ModelPrestamoTotales, Object> r) throws Exception {
+                        getFragment().stopShowLoading();
+                        evalResponse(r, new Runnable() {
+                            @Override
+                            public void run() {
                                 consultaFragment.setTotales(r.getData());
-                                break;
-                            case WARNING:
-                                showMessage(r.getMeta().getMessage());
-                                break;
-                            case ERROR:
-                                showMessage("Existió un error de programación");
-                                break;
-                        }
+                            }
+                        });
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        showLoading(false);
-                        showMessage("Existió un error de comunicación");
-                        throwable.printStackTrace();
+                        getFragment().stopShowLoading();
+                        getFragment().showERROR(ERROR_COMUNICACION);
                     }
                 }));
     }
@@ -98,40 +97,21 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                         .subscribeOn(SchedulerProvider.ioT())
                         .subscribe(new Consumer<Response<List<Abono>, Object>>() {
                             @Override
-                            public void accept(Response<List<Abono>, Object> r) throws Exception {
-                                switch (r.getMeta().getStatus()) {
-                                    case OK:
+                            public void accept(final Response<List<Abono>, Object> r) throws Exception {
+                                evalResponse(r, new Runnable() {
+                                    @Override
+                                    public void run() {
                                         proccessAbonos(r.getData());
-                                        break;
-                                    case WARNING:
-                                        showMessage(r.getMeta().getMessage());
-                                        break;
-                                    case ERROR:
-                                        showMessage("Existió un error de programación");
-                                        break;
-                                    default:
-                                }
+                                    }
+                                });
                             }
                         }, new Consumer<Throwable>() {
                             @Override
                             public void accept(Throwable throwable) throws Exception {
-                                showMessage("Existió un error de comunicación");
-                                showLoading(false);
-                                throwable.printStackTrace();
+                                getFragment().showERROR(ERROR_COMUNICACION);
                             }
                         })
         );
-    }
-
-    @Override
-    public void showLoading(boolean active) {
-        this.abonoFragment.showLoading(active);
-        this.consultaFragment.showLoading(active);
-    }
-
-    public final void showMessage(final String message) {
-        this.consultaFragment.showMessage(message);
-        this.abonoFragment.showMessage(message);
     }
 
     @Override
@@ -154,15 +134,11 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         this.fab = fab;
     }
 
-    @Override
-    public void setView(DetallePrestamoContract.View view) {
-    }
-
     public ConsultaFragment getConsultaFragment() {
         return consultaFragment;
     }
 
-    public void setConsultaFragment(ConsultaFragment consultaFragment) {
+    void setConsultaFragment(ConsultaFragment consultaFragment) {
         this.consultaFragment = consultaFragment;
     }
 
@@ -170,7 +146,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         return abonoFragment;
     }
 
-    public void setAbonoFragment(AbonoFragment abonoFragment) {
+    void setAbonoFragment(AbonoFragment abonoFragment) {
         this.abonoFragment = abonoFragment;
     }
 
@@ -182,7 +158,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         this.prestamo = prestamo;
     }
 
-    public void llenarDatosGenerales() {
+    private void llenarDatosGenerales() {
         this.consultaFragment.llenarDatosGenerales(prestamo);
     }
 
@@ -191,7 +167,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      *
      * @return modelo con abono a pagar, multa a pagar y la multa del mes en modelo
      */
-    public ModelTotalAPagar calcularTotalesPagar() {
+    ModelTotalAPagar calcularTotalesPagar() {
         int abonoAPagar = 0;
         int multaAPagar = 0;
         int multaAPagarMes = 0;
@@ -203,9 +179,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
 
         List<Abono> abonos = new ArrayList<>();
-        for (Abono a : prestamo.getAbonos()) {
-            abonos.add(a);
-        }
+        abonos.addAll(prestamo.getAbonos());
         Collections.sort(abonos, new Comparator<Abono>() {
             @Override
             public int compare(Abono a1, Abono a2) {
@@ -265,7 +239,9 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
      *
      * @param abono cantidad de dinero a abonar por el cliente, intresado en el dialog
      */
-    public void abonarAlPrestamo(int abono, String multaDes, final ModelTotalAPagar model) {
+    void abonarAlPrestamo(int abono, String multaDes, final ModelTotalAPagar model) {
+        getFragment().showLoading();
+
         final int abonoTotal = abono;
         Calendar cal = new GregorianCalendar();
         cal.setTime(new Date());
@@ -274,9 +250,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
         //distribuir pago con prioridad en multa y abonos anteriores e ir cubriendo la cantidad del abono
 
         List<Abono> abonos = new ArrayList<>();
-        for (Abono a : prestamo.getAbonos()) {
-            abonos.add(a);
-        }
+        abonos.addAll(prestamo.getAbonos());
         Collections.sort(abonos, new Comparator<Abono>() {
             @Override
             public int compare(Abono a1, Abono a2) {
@@ -396,8 +370,6 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                 = new ModelDistribucionDeAbono(totalDeAbono, totalDeMulta, totalDeMultaMes);
 
         prestamo.setAbonos(abonos);
-        this.showLoading(true);
-
         final ModelAbonarPrestamo modelAbonarPrestamo = new ModelAbonarPrestamo(
                 abonoTotal,
                 prestamo.getCliente().getId(),
@@ -411,8 +383,10 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                         .subscribe(new Consumer<Response<Prestamo, Object>>() {
                             @Override
                             public void accept(Response<Prestamo, Object> r) throws Exception {
-                                switch (r.getMeta().getStatus()) {
-                                    case OK:
+                                getFragment().stopShowLoading();
+                                evalResponse(r, new Runnable() {
+                                    @Override
+                                    public void run() {
                                         proccessAbonos(prestamo.getAbonos());
                                         cargarTotalesPrestamo();
                                         UtilsPreferences.setPrestamoCobradoHoy(modelAbonarPrestamo.getPrestamo().getId());
@@ -422,7 +396,7 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
                                         String macAddress = UtilsPreferences.loadMacPrinter();
                                         if (macAddress == null || macAddress.isEmpty()) {
-                                            showMessage("No hay impresora configurada");
+                                            getFragment().showWARNING("No hay impresora configurada");
                                         } else {
                                             UtilsPrinter.imprimirRecibo(
                                                     modelImpresion,
@@ -431,23 +405,18 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
                                                     new Funcion<Throwable>() {
                                                         @Override
                                                         public void accept(Throwable throwable) {
-                                                            showMessage("Error de conexión con la impresora");
+                                                            getFragment().showERROR("Error de comunicación con impresora");
                                                         }
                                                     });
                                         }
-                                        break;
-                                    case ERROR:
-                                        showMessage("Existió un error de programación del lado del servidor");
-                                        break;
-                                }
-                                showLoading(false);
+                                    }
+                                });
                             }
                         }, new Consumer<Throwable>() {
                             @Override
                             public void accept(Throwable throwable) throws Exception {
-                                showLoading(false);
-                                showMessage("Existió un error de comunicación");
-                                throwable.printStackTrace();
+                                getFragment().stopShowLoading();
+                                getFragment().showERROR(ERROR_COMUNICACION);
                             }
                         }));
     }

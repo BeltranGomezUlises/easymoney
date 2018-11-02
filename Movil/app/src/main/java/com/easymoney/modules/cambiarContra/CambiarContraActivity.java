@@ -24,7 +24,7 @@ public class CambiarContraActivity extends AppCompatActivity {
         }
 
         UsuarioRepository usuarioRepository = new UsuarioRepository();
-        CambiarContraPresenter cambiarContraPresenter = new CambiarContraPresenter(cambiarContraFragment, usuarioRepository);
+        new CambiarContraPresenter(cambiarContraFragment, usuarioRepository);
     }
 
 

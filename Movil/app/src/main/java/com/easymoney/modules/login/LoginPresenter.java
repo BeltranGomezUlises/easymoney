@@ -1,29 +1,29 @@
 package com.easymoney.modules.login;
 
 import com.easymoney.data.repositories.LoginRepository;
+import com.easymoney.entities.Usuario;
+import com.easymoney.models.Config;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsPreferences;
-import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
+import static com.easymoney.models.services.Errors.ERROR_COMUNICACION;
+
 /**
  * Created by ulises on 30/12/17.
  */
-public class LoginPresenter implements LoginContract.Presenter {
+public class LoginPresenter extends LoginContract.Presenter {
 
-    private LoginFragment fragment;
     private LoginRepository repository;
-    private CompositeDisposable mCompositeDisposable;
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
-    public LoginPresenter(LoginFragment fragment, LoginRepository repository) {
-        this.fragment = fragment;
+    LoginPresenter(LoginContract.Fragment fragment, LoginRepository repository) {
+        this.setFragment(fragment);
         this.repository = repository;
         fragment.setPresenter(this);
-        mCompositeDisposable = new CompositeDisposable();
     }
 
     @Override
@@ -34,34 +34,37 @@ public class LoginPresenter implements LoginContract.Presenter {
         request.setPass(pass);
         request.setUser(user);
 
+        getFragment().showLoading();
         mCompositeDisposable.add(repository.login(request)
-                .observeOn(SchedulerProvider.getInstance().ui())
-                .subscribeOn(SchedulerProvider.getInstance().io())
                 .subscribe(new Consumer<Response<Login.Response, String>>() {
                                @Override
-                               public void accept(Response<Login.Response, String> t) throws Exception {
-                                   fragment.showLoading(false);
-                                   switch (t.getMeta().getStatus()) {
-                                       case OK:
-                                           UtilsPreferences.saveToken(t.getMeta().getMetaData().toString());
-                                           UtilsPreferences.saveLogedUser(t.getData().getUsuario());
-                                           UtilsPreferences.saveConfigs(t.getData().getConfig());
+                               public void accept(final Response<Login.Response, String> t) {
+                                   getFragment().stopShowLoading();
+                                   evalResponse(t, new Runnable() {
+                                       @Override
+                                       public void run() {
+                                           String token = t.getMeta().getMetaData().toString();
+                                           Usuario usuario = t.getData().getUsuario();
+                                           Config config = t.getData().getConfig();
+                                           String tipoUsuario = usuario.isTipo() ? "Administrador" : "Cobrador";
+
+                                           UtilsPreferences.saveToken(token);
+                                           UtilsPreferences.saveLogedUser(usuario);
+                                           UtilsPreferences.saveConfigs(config);
                                            UtilsPreferences.saveLogin(request);
-                                           fragment.showMain(t.getData().getUsuario().getId(), t.getData().getUsuario().getNombre(), t.getData().getUsuario().isTipo() ? "Administrador" : "Cobrador");
-                                           break;
-                                       case WARNING:
-                                           fragment.showMessage(t.getMeta().getMessage());
-                                           break;
-                                       case ERROR:
-                                       default:
-                                   }
+                                           getFragment().showMain(usuario.getId(),
+                                                   usuario.getNombre(),
+                                                   tipoUsuario);
+                                       }
+                                   });
+
                                }
                            }, new Consumer<Throwable>() {
                                @Override
                                public void accept(Throwable err) throws Exception {
-                                   fragment.showLoading(false);
-                                   fragment.showMessage("Existió un error de comunicación");
-                                   err.printStackTrace();
+                                   getFragment().stopShowLoading();
+                                   getFragment().showERROR(ERROR_COMUNICACION);
+
                                }
                            }
                 )
@@ -71,8 +74,8 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void subscribe() {
         Login.Request request = UtilsPreferences.loadLogin();
-        if (request != null){
-            fragment.setPreloadedLogin(request);
+        if (request != null) {
+            getFragment().setPreloadedLogin(request);
         }
     }
 
@@ -81,9 +84,5 @@ public class LoginPresenter implements LoginContract.Presenter {
         mCompositeDisposable.clear();
     }
 
-    @Override
-    public void setView(LoginContract.View view) {
-        this.fragment = (LoginFragment) view;
-    }
 
 }

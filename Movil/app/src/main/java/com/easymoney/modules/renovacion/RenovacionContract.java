@@ -2,8 +2,6 @@ package com.easymoney.modules.renovacion;
 
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.services.Status;
-import com.easymoney.utils.baseClases.BasePresenter;
-import com.easymoney.utils.baseClases.BaseView;
 
 public interface RenovacionContract {
 
