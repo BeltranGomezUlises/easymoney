@@ -14,6 +14,9 @@ import android.view.View;
 import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
 
+import java.util.Date;
+import java.util.TimeZone;
+
 public class DetallePrestamoActivity extends AppCompatActivity {
 
     DetallePrestamoPresenter presenter;
@@ -38,6 +41,10 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detalle_prestamo);
         //asegurar primero el presentador para poder enlazar los fragmentos
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
+
+        int offsetMillis = TimeZone.getDefault().getOffset(prestamo.getFechaLimite().getTime());
+        prestamo.setFechaLimite( new Date(prestamo.getFechaLimite().getTime() - offsetMillis));
+
         presenter = new DetallePrestamoPresenter(prestamo);
 
         Toolbar toolbar = findViewById(R.id.toolbar);

@@ -130,118 +130,44 @@ export default class PrestamoList extends React.Component {
     const limiteSuperior = this.state.activePage * 10;
     let prestamos = this.state.prestamos.slice(limiteSuperior - 10, limiteSuperior);
     return prestamos.map((prestamo) =>{
-      if (prestamo.estado ==='ACREDITADO') {
-        return(
-          <Table.Row key={prestamo.id} positive>
-            <Modal trigger={
-                <Table.Cell style={{cursor: 'pointer'}}>
-                  <Header textAlign='center'>
-                    {prestamo.id}
-                  </Header>
-                </Table.Cell>
-              }>
-              <Modal.Header>Detalle Prestamo</Modal.Header>
-              <Modal.Content>
-                <PrestamoDetalle prestamo={prestamo} update={this.cargarPrestamos}>
-                </PrestamoDetalle>
-              </Modal.Content>
-            </Modal>
-            <Table.Cell>
-              {prestamo.cliente}
-            </Table.Cell>
-            <Table.Cell>
-              {prestamo.cobrador}
-            </Table.Cell>
-            <Table.Cell textAlign='right'>
-              ${prestamo.cantidad}
-            </Table.Cell>
-            <Table.Cell textAlign='right'>
-                ${prestamo.cantidadAPagar}
-            </Table.Cell>
-            <Table.Cell>
-                {new Date(prestamo.fecha).toLocaleString()}
-            </Table.Cell>
-            <Table.Cell>
-                {new Date(prestamo.fechaLimite).toLocaleDateString()}
-            </Table.Cell>
-          </Table.Row>
-        )
-      }else {
-        if (prestamo.estado === 'VENCIDO') {
-          return(
-            <Table.Row key={prestamo.id} negative>
-              <Modal trigger={
-                  <Table.Cell style={{cursor: 'pointer'}}>
-                    <Header textAlign='center'>
-                      {prestamo.id}
-                    </Header>
-                  </Table.Cell>
-                }>
-                <Modal.Header>Detalle Prestamo</Modal.Header>
-                <Modal.Content>
-                  <PrestamoDetalle prestamo={prestamo} update={this.cargarPrestamos}>
-                  </PrestamoDetalle>
-                </Modal.Content>
-              </Modal>
-              <Table.Cell>
-                {prestamo.cliente}
+      return(
+        <Table.Row key={prestamo.id}
+          positive={prestamo.estado ==='ACREDITADO'}
+          negative={prestamo.estado === 'VENCIDO'}
+          >
+          <Modal trigger={
+              <Table.Cell style={{cursor: 'pointer'}}>
+                <Header textAlign='center'>
+                  {prestamo.id}
+                </Header>
               </Table.Cell>
-              <Table.Cell>
-                {prestamo.cobrador}
-              </Table.Cell>
-              <Table.Cell textAlign='right'>
-                ${prestamo.cantidad}
-              </Table.Cell>
-              <Table.Cell textAlign='right'>
-                  ${prestamo.cantidadAPagar}
-              </Table.Cell>
-              <Table.Cell>
-                  {new Date(prestamo.fecha).toLocaleString()}
-              </Table.Cell>
-              <Table.Cell>
-                  {new Date(prestamo.fechaLimite).toLocaleDateString()}
-              </Table.Cell>
-            </Table.Row>
-          )
-        }else{
-          return(
-            <Table.Row key={prestamo.id}>
-              <Modal trigger={
-                  <Table.Cell style={{cursor: 'pointer'}}>
-                    <Header textAlign='center'>
-                      {prestamo.id}
-                    </Header>
-                  </Table.Cell>
-                }>
-                <Modal.Header>Detalle Prestamo</Modal.Header>
-                <Modal.Content>
-                  <PrestamoDetalle prestamo={prestamo} update={this.cargarPrestamos}>
-                  </PrestamoDetalle>
-                </Modal.Content>
-              </Modal>
-              <Table.Cell>
-                {prestamo.cliente}
-              </Table.Cell>
-              <Table.Cell>
-                {prestamo.cobrador}
-              </Table.Cell>
-              <Table.Cell textAlign='right'>
-                ${prestamo.cantidad}
-              </Table.Cell>
-              <Table.Cell textAlign='right'>
-                  ${prestamo.cantidadAPagar}
-              </Table.Cell>
-              <Table.Cell>
-                  {new Date(prestamo.fecha).toLocaleString()}
-              </Table.Cell>
-              <Table.Cell>
-                  {new Date(prestamo.fechaLimite).toLocaleDateString()}
-              </Table.Cell>
-            </Table.Row>
-          )
-        }
-      }
-
+            }>
+            <Modal.Header>Detalle Prestamo</Modal.Header>
+            <Modal.Content>
+              <PrestamoDetalle prestamo={prestamo} update={this.cargarPrestamos}>
+              </PrestamoDetalle>
+            </Modal.Content>
+          </Modal>
+          <Table.Cell>
+            {prestamo.cliente}
+          </Table.Cell>
+          <Table.Cell>
+            {prestamo.cobrador}
+          </Table.Cell>
+          <Table.Cell textAlign='right'>
+            ${prestamo.cantidad}
+          </Table.Cell>
+          <Table.Cell textAlign='right'>
+              ${prestamo.cantidadAPagar}
+          </Table.Cell>
+          <Table.Cell>
+              {new Date(prestamo.fecha).toLocaleString()}
+          </Table.Cell>
+          <Table.Cell>
+            {new Date(prestamo.fechaLimite + (new Date().getTimezoneOffset() * 60000)).toLocaleDateString()}              
+          </Table.Cell>
+        </Table.Row>
+      )
     })
   }
 

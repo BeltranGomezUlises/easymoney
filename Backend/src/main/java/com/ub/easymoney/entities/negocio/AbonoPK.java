@@ -28,7 +28,7 @@ public class AbonoPK implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date fecha;
 
     public AbonoPK() {

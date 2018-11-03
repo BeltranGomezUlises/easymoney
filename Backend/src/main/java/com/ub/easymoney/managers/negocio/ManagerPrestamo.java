@@ -48,17 +48,15 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      */
     @Override
     public Prestamo persist(Prestamo entity) throws Exception {
-        int cantImpuesto = entity.getCantidad();
-        cantImpuesto *= ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f);
+        int cantImpuesto =  (int) (entity.getCantidad() * ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f));
 
         entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
         entity.setFecha(new Date());
-
-        GregorianCalendar cal = new GregorianCalendar();
-        Date d = cal.getTime(); //guardamos la fecha actual
-
-        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo());
+        
+        GregorianCalendar cal = new GregorianCalendar();        
+        cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo()); //apartir del dia siguiente        
         entity.setFechaLimite(cal.getTime());
+        
         this.dao.persist(entity);
 
         return entity;//To change body of generated methods, choose Tools | Templates.

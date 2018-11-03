@@ -100,7 +100,9 @@ export default class PrestamoDetalle extends Component{
         return this.state.abonos.map((abono)=>{
           return(
             <Table.Row key={abono.abonoPK.fecha}>
-              <Table.Cell>{new Date(abono.abonoPK.fecha).toLocaleDateString()}</Table.Cell>
+              <Table.Cell>
+                {new Date(abono.abonoPK.fecha + (new Date().getTimezoneOffset() * 60000)).toLocaleDateString()}
+              </Table.Cell>
               <Table.Cell textAlign='center'>
                 <Form size='small'>
                   <Form.Field>
@@ -251,8 +253,10 @@ export default class PrestamoDetalle extends Component{
               <Table.Cell>{prestamo.cobrador.nombre}</Table.Cell>
               <Table.Cell textAlign='right'>${prestamo.cantidad}</Table.Cell>
               <Table.Cell textAlign='right'>${prestamo.cantidadPagar}</Table.Cell>
-              <Table.Cell>{new Date(prestamo.fecha).toLocaleString()}</Table.Cell>
-              <Table.Cell>{new Date(prestamo.fechaLimite).toLocaleDateString()}</Table.Cell>
+              <Table.Cell>{new Date(prestamo.fecha).toLocaleString()}</Table.Cell>              
+              <Table.Cell>
+                {new Date(prestamo.fechaLimite + (new Date().getTimezoneOffset() * 60000)).toLocaleDateString()}
+              </Table.Cell>
             </Table.Body>
           </Table>
           <Table celled compact='very'>

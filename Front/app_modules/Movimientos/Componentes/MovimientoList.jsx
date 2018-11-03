@@ -90,7 +90,7 @@ export default class MovimientoList extends React.Component {
             </Header>
           </Table.Cell>
           <Table.Cell>
-            {new Date(ie.fecha).toLocaleDateString()}
+            {new Date(ie.fecha + (new Date().getTimezoneOffset() * 60000)).toLocaleDateString()}            
           </Table.Cell>
           <Table.Cell>
             {ie.usuarioCreador.nombre}

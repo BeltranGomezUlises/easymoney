@@ -50,7 +50,7 @@ public class Movimiento implements Serializable, IEntity<Integer> {
     @Basic(optional = false)
     @NotNull
     @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date fecha;
     @Size(max = 2147483647)
     @Column(name = "descripcion")

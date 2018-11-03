@@ -104,11 +104,9 @@ public class Reportes {
             List<Cliente> clientes = daoCliente.findAll();
             List<ModelClienteLiquidado> clientesLiquidados = new ArrayList<>();
 
-            ModelClienteLiquidado mcl;
-            boolean clienteLiquidado;
-            Date fechaUltimoAbono = null;
             for (Cliente cliente : clientes) {
-                clienteLiquidado = true;
+                Date fechaUltimoAbono = null;
+                boolean clienteLiquidado = true;
                 if (cliente.getPrestamoList().isEmpty()) {
                     clienteLiquidado = false;
                 }
@@ -136,7 +134,7 @@ public class Reportes {
                     }
                 }
                 if (clienteLiquidado) {
-                    mcl = new ModelClienteLiquidado(cliente.getId(), cliente.getNombre(), cliente.getApodo(), cliente.getTelefono(), fechaUltimoAbono);
+                    ModelClienteLiquidado mcl = new ModelClienteLiquidado(cliente.getId(), cliente.getNombre(), cliente.getApodo(), cliente.getTelefono(), fechaUltimoAbono);
                     clientesLiquidados.add(mcl);
                 }
                 fechaUltimoAbono = null;

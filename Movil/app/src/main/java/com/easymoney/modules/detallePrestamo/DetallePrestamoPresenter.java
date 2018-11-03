@@ -198,14 +198,11 @@ public class DetallePrestamoPresenter implements DetallePrestamoContract.Present
 
         Calendar cal = new GregorianCalendar();
         Date fechaActual = new Date();
-        cal.setTime(fechaActual);
         int diaActual = cal.get((Calendar.DAY_OF_YEAR));
         int multaDiaria = UtilsPreferences.loadConfig().getCantidadMultaDiaria();
 
         List<Abono> abonos = new ArrayList<>();
-        for (Abono a : prestamo.getAbonos()) {
-            abonos.add(a);
-        }
+        abonos.addAll(prestamo.getAbonos());
         Collections.sort(abonos, new Comparator<Abono>() {
             @Override
             public int compare(Abono a1, Abono a2) {

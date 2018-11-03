@@ -11,7 +11,6 @@ import com.ub.easymoney.entities.negocio.Capital;
 import com.ub.easymoney.entities.negocio.Multa;
 import com.ub.easymoney.entities.negocio.MultaPK;
 import com.ub.easymoney.entities.negocio.Prestamo;
-import com.ub.easymoney.managers.negocio.ManagerAbono;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsConfig;
 import com.ub.easymoney.utils.UtilsDB;
