@@ -73,11 +73,6 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        presenter.unsubscribe();
-        super.onBackPressed();
-    }
 
     private void lanzarModalCobro() {
         CobroDialogFragment newFragment = new CobroDialogFragment(presenter);
@@ -112,4 +107,10 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.unsubscribe();
+    }
 }

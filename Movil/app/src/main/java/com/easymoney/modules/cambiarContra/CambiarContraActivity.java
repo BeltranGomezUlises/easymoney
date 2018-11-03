@@ -10,6 +10,8 @@ import com.easymoney.utils.activities.ActivityUtils;
 
 public class CambiarContraActivity extends AppCompatActivity {
 
+    CambiarContraPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +26,7 @@ public class CambiarContraActivity extends AppCompatActivity {
         }
 
         UsuarioRepository usuarioRepository = new UsuarioRepository();
-        new CambiarContraPresenter(cambiarContraFragment, usuarioRepository);
+        presenter= new CambiarContraPresenter(cambiarContraFragment, usuarioRepository);
     }
 
 
@@ -36,5 +38,11 @@ public class CambiarContraActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.unsubscribe();
     }
 }

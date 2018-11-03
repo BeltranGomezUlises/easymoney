@@ -71,4 +71,10 @@ public class IngresosEgresosActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_ingresos_egresos, menu);
         return true;
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.unsubscribe();
+    }
 }

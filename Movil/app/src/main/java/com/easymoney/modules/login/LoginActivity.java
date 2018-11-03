@@ -13,6 +13,8 @@ import com.easymoney.utils.UtilsPreferences;
  */
 public class LoginActivity extends AppCompatActivity {
 
+    LoginPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +30,14 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         LoginRepository loginRepository = new LoginRepository();
-        new LoginPresenter(loginFragment, loginRepository);
+        presenter = new LoginPresenter(loginFragment, loginRepository);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.unsubscribe();
+
+    }
 }
 
