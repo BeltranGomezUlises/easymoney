@@ -3,6 +3,7 @@ package com.easymoney.data.repositories;
 import com.easymoney.entities.Usuario;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
+import com.easymoney.utils.schedulers.SchedulerProvider;
 import com.easymoney.utils.services.UtilsWS;
 
 import io.reactivex.Flowable;
@@ -16,7 +17,8 @@ import static com.easymoney.utils.services.UtilsWS.webServices;
 public class LoginRepository {
 
     public Flowable<Response<Login.Response, String>> login(Login.Request request){
-        return webServices().login(request);
+        return webServices().login(request).observeOn(SchedulerProvider.getInstance().ui())
+                .subscribeOn(SchedulerProvider.getInstance().io());
     }
 
 }

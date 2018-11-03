@@ -33,7 +33,7 @@ public class BTPrinterDevice {
         return instance;
     }
 
-    public synchronized boolean connectToClient(String macAddress) throws IOException {
+    synchronized boolean connectToClient(String macAddress) throws IOException {
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(macAddress);
         bluetoothAdapter.cancelDiscovery();
         if (!connected) {
@@ -75,7 +75,7 @@ public class BTPrinterDevice {
         return connected;
     }
 
-    public synchronized boolean disconnectFromClient() {
+    synchronized boolean disconnectFromClient() {
         if (connected) {
             connected = false;
             try {

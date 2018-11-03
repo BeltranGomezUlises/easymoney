@@ -1,29 +1,29 @@
 package com.easymoney.modules.detallePrestamo;
 
+import com.easymoney.entities.Abono;
+import com.easymoney.entities.Prestamo;
+import com.easymoney.models.ModelPrestamoTotales;
+import com.easymoney.utils.baseClases.BaseFragment;
 import com.easymoney.utils.baseClases.BasePresenter;
-import com.easymoney.utils.baseClases.BaseView;
+
+import java.util.List;
 
 /**
  * Created by ulises on 15/01/2018.
  */
 public interface DetallePrestamoContract {
 
-    interface View extends BaseView<Presenter> {
-
-        void showLoading(boolean active);
-
-        void showMessage(String message);
-
+    abstract class Fragment extends BaseFragment<Presenter> {
+        abstract void setTotales(ModelPrestamoTotales totales);
+        abstract void llenarDatosGenerales(Prestamo prestamo);
+        abstract void replaceData(List<Abono> abonos);
     }
 
-    interface Presenter extends BasePresenter<View> {
+    abstract class Presenter extends BasePresenter<Fragment> {
 
-        void cargarTotalesPrestamo();
+        abstract void cargarTotalesPrestamo();
 
-        void cargarAbonosPrestamo();
-
-        void showLoading(boolean active);
-
+        abstract void cargarAbonosPrestamo();
 
     }
 

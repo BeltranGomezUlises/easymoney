@@ -22,12 +22,8 @@ import com.easymoney.models.ModelTotalAPagar;
 @SuppressLint("ValidFragment")
 public class CobroDialogFragment extends DialogFragment {
 
-    DetallePrestamoPresenter presenter;
-    private TextView tvAbono;
-    private TextView tvMulta;
-    private TextView tvMultaMes;
+    private DetallePrestamoPresenter presenter;
     private EditText txtAbonar;
-
     private EditText txtDescripcion;
 
     @SuppressLint("ValidFragment")
@@ -44,9 +40,9 @@ public class CobroDialogFragment extends DialogFragment {
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         View rootView = inflater.inflate(R.layout.dialog_cobro, null);
-        tvAbono = rootView.findViewById(R.id.tvAbono);
-        tvMulta = rootView.findViewById(R.id.tvMulta);
-        tvMultaMes = rootView.findViewById(R.id.tvMultaMes);
+        TextView tvAbono = rootView.findViewById(R.id.tvAbono);
+        TextView tvMulta = rootView.findViewById(R.id.tvMulta);
+        TextView tvMultaMes = rootView.findViewById(R.id.tvMultaMes);
         txtAbonar = rootView.findViewById(R.id.txtAbonar);
         txtDescripcion = rootView.findViewById(R.id.txtDes);
 

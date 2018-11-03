@@ -1,13 +1,7 @@
 package com.easymoney.modules.detallePrestamo;
 
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +11,13 @@ import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.utils.UtilsDate;
-
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
+import com.easymoney.utils.baseClases.BaseFragment;
 
 /**
  * Created by ulises on 15/01/2018.
  */
-public class ConsultaFragment extends Fragment implements DetallePrestamoContract.View {
+public class ConsultaFragment extends BaseFragment {
 
-    private DetallePrestamoPresenter presenter;
     private TextView tvNombreCliente;
     private TextView tvApodoCliente;
     private TextView tvNumPrestamo;
@@ -39,19 +31,6 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
     private TextView tvTotalMultado;
     private TextView tvTotalPorcentaje;
     private TextView tvTotalPorPagar;
-    private ProgressDialog dialog;
-
-    @SuppressLint("ValidFragment")
-    private ConsultaFragment() {
-
-    }
-
-    public static ConsultaFragment getInstance(DetallePrestamoPresenter prestamoPresenter) {
-        ConsultaFragment instance = new ConsultaFragment();
-        prestamoPresenter.setConsultaFragment(instance);
-        instance.setPresenter(prestamoPresenter);
-        return instance;
-    }
 
     @Nullable
     @Override
@@ -72,29 +51,9 @@ public class ConsultaFragment extends Fragment implements DetallePrestamoContrac
         tvNumPrestamo = rootView.findViewById(R.id.tvNumPrestamo);
         tvAbonoDiario = rootView.findViewById(R.id.tvAbonoDiario);
 
-        this.presenter.subscribe();
+        getPresenter().subscribe();
 
         return rootView;
-    }
-
-    @Override
-    public void showLoading(boolean active) {
-        if (active){
-            dialog = ProgressDialog.show(getActivity(), "Cargando","Por favor espere...", true);
-        }else{
-            if (dialog != null){
-                dialog.cancel();
-            }
-        }
-    }
-
-    public void showMessage(String message) {
-        Snackbar.make(this.getView(), message, LENGTH_LONG).show();
-    }
-
-    @Override
-    public void setPresenter(DetallePrestamoContract.Presenter presenter) {
-        this.presenter = (DetallePrestamoPresenter) presenter;
     }
 
     public void llenarDatosGenerales(Prestamo prestamo) {

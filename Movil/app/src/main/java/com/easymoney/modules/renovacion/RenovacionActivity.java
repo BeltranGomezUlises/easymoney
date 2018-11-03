@@ -17,14 +17,17 @@ public class RenovacionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_renovacion);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        RenovacionFragment renovacionFragment = (RenovacionFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-        if (renovacionFragment == null) {
-            renovacionFragment = new RenovacionFragment();
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), renovacionFragment, R.id.contentFrame);
+
+        RenovacionFragment fragment = (RenovacionFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+        if (fragment == null) {
+            fragment = new RenovacionFragment();
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment, R.id.contentFrame);
         }
 
         PrestamoRepository prestamoRepository = PrestamoRepository.getInstance();
-        presenter = new RenovacionPresenter(prestamoRepository, renovacionFragment);
+        presenter = new RenovacionPresenter(prestamoRepository);
+        ActivityUtils.contract(fragment, presenter);
+
     }
 
     @Override

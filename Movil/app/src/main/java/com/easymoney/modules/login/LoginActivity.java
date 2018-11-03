@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         LoginRepository loginRepository = new LoginRepository();
-        LoginPresenter loginPresenter = new LoginPresenter(loginFragment, loginRepository);
+        new LoginPresenter(loginFragment, loginRepository);
     }
 
 }

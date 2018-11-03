@@ -23,14 +23,15 @@ public class IngresosEgresosActivity extends AppCompatActivity {
         setTitle("Ingresos y Egresos");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        MovimientoRepository movimientoRepository = new MovimientoRepository();
-        presenter = new IngresosEgresosPresenter(movimientoRepository);
-        IngresosEgresosFragment ingresosEgresosFragment = (IngresosEgresosFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
-        if (ingresosEgresosFragment == null) {
-            ingresosEgresosFragment = IngresosEgresosFragment.getInstance(presenter);
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), ingresosEgresosFragment, R.id.contentFrame);
+        IngresosEgresosFragment fragment = (IngresosEgresosFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+        if (fragment == null) {
+            fragment = new IngresosEgresosFragment();
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), fragment, R.id.contentFrame);
         }
-        presenter.setView(ingresosEgresosFragment);
+
+        MovimientoRepository repository = new MovimientoRepository();
+        presenter = new IngresosEgresosPresenter(repository);
+        ActivityUtils.contract(fragment, presenter);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

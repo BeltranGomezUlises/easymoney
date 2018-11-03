@@ -4,24 +4,23 @@ import com.easymoney.data.repositories.UsuarioRepository;
 import com.easymoney.entities.Usuario;
 import com.easymoney.models.ModelCambiarContra;
 import com.easymoney.models.services.Response;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
+
+import static com.easymoney.models.services.Errors.ERROR_COMUNICACION;
 
 /**
  * Created by ulises on 15/01/2018.
  */
 
-public class CambiarContraPresenter implements CambiarContraContract.Presenter {
+public class CambiarContraPresenter extends CambiarContraContract.Presenter {
 
-    private CambiarContraFragment fragment;
     private UsuarioRepository usuarioRepository;
-
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public CambiarContraPresenter(CambiarContraFragment fragment, UsuarioRepository usuarioRepository) {
-        this.fragment = fragment;
+    CambiarContraPresenter(CambiarContraFragment fragment, UsuarioRepository usuarioRepository) {
+        this.setFragment(fragment);
         fragment.setPresenter(this);
         this.usuarioRepository = usuarioRepository;
     }
@@ -29,29 +28,24 @@ public class CambiarContraPresenter implements CambiarContraContract.Presenter {
     @Override
     public void cambiarContra(ModelCambiarContra modelCambiarContra) {
         compositeDisposable.clear();
-        compositeDisposable.add(this.usuarioRepository.cambiarContraseña(modelCambiarContra)
-                .observeOn(SchedulerProvider.uiT())
-                .subscribeOn(SchedulerProvider.ioT())
-                .subscribe(new Consumer<Response<Usuario, Object>>() {
+        getFragment().showLoading();
+        compositeDisposable.add(
+                this.usuarioRepository.cambiarContraseña(modelCambiarContra, new Consumer<Response<Usuario, Object>>() {
                     @Override
-                    public void accept(Response<Usuario, Object> r) throws Exception {
-                        fragment.showLoading(false);
-                        switch (r.getMeta().getStatus()) {
-                            case OK:
-                                fragment.showMessage("Contraseña actualizada");
-                                break;
-                            case WARNING:
-                                fragment.showMessage(r.getMeta().getMessage());
-                                break;
-                            case ERROR:
-                                fragment.showMessage("Existió un error de programación");
-                                break;
-                        }
+                    public void accept(Response<Usuario, Object> r) {
+                        getFragment().stopShowLoading();
+                        evalResponse(r, new Runnable() {
+                            @Override
+                            public void run() {
+                                getFragment().showOK("Contraseña actualizada");
+                            }
+                        });
                     }
                 }, new Consumer<Throwable>() {
                     @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        fragment.showMessage("Existió un error de programación");
+                    public void accept(Throwable throwable) {
+                        getFragment().stopShowLoading();
+                        getFragment().showERROR(ERROR_COMUNICACION);
                     }
                 })
         );
@@ -67,8 +61,4 @@ public class CambiarContraPresenter implements CambiarContraContract.Presenter {
 
     }
 
-    @Override
-    public void setView(CambiarContraContract.View view) {
-        this.fragment = (CambiarContraFragment) view;
-    }
 }
