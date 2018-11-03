@@ -20,15 +20,14 @@ import com.easymoney.entities.Cliente;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.services.Status;
 import com.easymoney.modules.main.MainFiltroDialogFragment;
+import com.easymoney.utils.baseClases.BaseFragment;
 
 import java.util.List;
 
 import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
-public class RenovacionFragment extends Fragment implements RenovacionContract.Fragment {
+public class RenovacionFragment extends RenovacionContract.Fragment{
 
-    private ProgressDialog dialog;
-    private RenovacionPresenter presenter;
 
     @Nullable
     @Override
@@ -45,55 +44,19 @@ public class RenovacionFragment extends Fragment implements RenovacionContract.F
                         return true;
                     }
                     int prestamoId = Integer.parseInt(text);
-                    presenter.buscarPrestamoId(prestamoId);
+                    getPresenter().buscarPrestamoId(prestamoId);
                     return true;
                 }
                 return false;
             }
         });
 
-        this.presenter.subscribe();
+        getPresenter().subscribe();
         return root;
     }
 
-    @Override
-    public void setPresenter(RenovacionContract.Presenter presenter) {
-        this.presenter = (RenovacionPresenter) presenter;
-    }
-
-    @Override
-    public void showLoading(boolean value) {
-        if (value) {
-            dialog = ProgressDialog.show(getActivity(), "Cargando", "Por favor espere...", true);
-        } else {
-            if (dialog != null) {
-                dialog.cancel();
-            }
-        }
-    }
-
-    @Override
-    public void showMessage(String message, Status status) {
-        switch (status) {
-            case OK:
-                Snackbar.make(this.getView(), message, LENGTH_LONG).show();
-                break;
-            case WARNING:
-                Snackbar sbw = Snackbar.make(this.getView(), message, LENGTH_LONG);
-                sbw.getView().setBackgroundResource(R.color.warning);
-                sbw.show();
-                break;
-            case ERROR:
-                Snackbar sbe = Snackbar.make(this.getView(), message, LENGTH_LONG);
-                sbe.getView().setBackgroundColor(Color.RED);
-                sbe.show();
-                break;
-        }
-    }
-
-    @Override
     public void showDialogRenovar(Prestamo prestamo) {
-        RenovacionDialogFragment renovacionDialogFragment = new RenovacionDialogFragment(presenter, prestamo);
+        RenovacionDialogFragment renovacionDialogFragment = new RenovacionDialogFragment(getPresenter(), prestamo);
         renovacionDialogFragment.show(getFragmentManager(), "Renovación");
     }
 

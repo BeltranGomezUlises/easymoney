@@ -17,7 +17,6 @@ import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.activities.Funcion;
 import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -46,9 +45,6 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
     private FloatingActionButton fab;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private ConsultaFragment consultaFragment;
-    private AbonoFragment abonoFragment;
-
     private Prestamo prestamo;
     private ModelTotalAPagar modelTotalAPagar;
 
@@ -66,36 +62,34 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
 
     @Override
     public void cargarTotalesPrestamo() {
-        compositeDisposable.add(repository.totalesPrestamo(prestamo.getId())
-                .observeOn(SchedulerProvider.uiT())
-                .subscribeOn(SchedulerProvider.ioT())
-                .subscribe(new Consumer<Response<ModelPrestamoTotales, Object>>() {
-                    @Override
-                    public void accept(final Response<ModelPrestamoTotales, Object> r) throws Exception {
-                        getFragment().stopShowLoading();
-                        evalResponse(r, new Runnable() {
+        compositeDisposable.add(
+                repository.totalesPrestamo(prestamo.getId(),
+                        new Consumer<Response<ModelPrestamoTotales, Object>>() {
                             @Override
-                            public void run() {
-                                consultaFragment.setTotales(r.getData());
+                            public void accept(final Response<ModelPrestamoTotales, Object> r) throws Exception {
+                                getFragment().stopShowLoading();
+                                evalResponse(r, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getFragment().setTotales(r.getData());
+                                    }
+                                });
                             }
-                        });
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        getFragment().stopShowLoading();
-                        getFragment().showERROR(ERROR_COMUNICACION);
-                    }
-                }));
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                getFragment().stopShowLoading();
+                                getFragment().showERROR(ERROR_COMUNICACION);
+                            }
+                        })
+        );
     }
 
     @Override
     public void cargarAbonosPrestamo() {
         compositeDisposable.add(
-                repository.abonosPrestamo(prestamo.getId())
-                        .observeOn(SchedulerProvider.uiT())
-                        .subscribeOn(SchedulerProvider.ioT())
-                        .subscribe(new Consumer<Response<List<Abono>, Object>>() {
+                repository.abonosPrestamo(prestamo.getId(),
+                        new Consumer<Response<List<Abono>, Object>>() {
                             @Override
                             public void accept(final Response<List<Abono>, Object> r) throws Exception {
                                 evalResponse(r, new Runnable() {
@@ -134,22 +128,6 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
         this.fab = fab;
     }
 
-    public ConsultaFragment getConsultaFragment() {
-        return consultaFragment;
-    }
-
-    void setConsultaFragment(ConsultaFragment consultaFragment) {
-        this.consultaFragment = consultaFragment;
-    }
-
-    public AbonoFragment getAbonoFragment() {
-        return abonoFragment;
-    }
-
-    void setAbonoFragment(AbonoFragment abonoFragment) {
-        this.abonoFragment = abonoFragment;
-    }
-
     public Prestamo getPrestamo() {
         return prestamo;
     }
@@ -159,7 +137,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
     }
 
     private void llenarDatosGenerales() {
-        this.consultaFragment.llenarDatosGenerales(prestamo);
+        getFragment().llenarDatosGenerales(prestamo);
     }
 
     /**
@@ -377,12 +355,9 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                 prestamo);
 
         compositeDisposable.add(
-                repository.abonarPrestamo(modelAbonarPrestamo)
-                        .subscribeOn(SchedulerProvider.ioT())
-                        .observeOn(SchedulerProvider.uiT())
-                        .subscribe(new Consumer<Response<Prestamo, Object>>() {
+                repository.abonarPrestamo(modelAbonarPrestamo, new Consumer<Response<Prestamo, Object>>() {
                             @Override
-                            public void accept(Response<Prestamo, Object> r) throws Exception {
+                            public void accept(Response<Prestamo, Object> r) {
                                 getFragment().stopShowLoading();
                                 evalResponse(r, new Runnable() {
                                     @Override
@@ -401,7 +376,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                                             UtilsPrinter.imprimirRecibo(
                                                     modelImpresion,
                                                     macAddress,
-                                                    consultaFragment.getContext(),
+                                                    getFragment().getContext(),
                                                     new Funcion<Throwable>() {
                                                         @Override
                                                         public void accept(Throwable throwable) {
@@ -414,11 +389,12 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                             }
                         }, new Consumer<Throwable>() {
                             @Override
-                            public void accept(Throwable throwable) throws Exception {
+                            public void accept(Throwable throwable) {
                                 getFragment().stopShowLoading();
                                 getFragment().showERROR(ERROR_COMUNICACION);
                             }
-                        }));
+                        }
+                ));
     }
 
     /**
@@ -429,7 +405,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
     private void proccessAbonos(final List<Abono> abonos) {
         prestamo.setAbonos(abonos);
         this.calcularTotalesPagar();
-        abonoFragment.replaceData(abonos);
+        getFragment().replaceData(abonos);
 
         int sumaAbonos = 0;
         for (Abono abono : abonos) {
@@ -437,8 +413,6 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                 sumaAbonos += abono.getCantidad();
             }
         }
-        //ModelTotalAPagar modelTotalAPagar = this.getModelTotalAPagar();
-        //if (sumaAbonos < prestamo.getCantidadPagar() && modelTotalAPagar.getTotalPagar() > 0) {
         if (sumaAbonos < prestamo.getCantidadPagar()) {
             this.fab.setVisibility(View.VISIBLE);
         } else {
@@ -521,7 +495,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
         if (totalParaSaldar < 0) {
             totalParaSaldar = 0;
         }
-        ModelImpresionAbono m = new ModelImpresionAbono(
+        return new ModelImpresionAbono(
                 p.getId(),
                 p.getCobrador().getNombre(),
                 p.getCliente().getNombre(),
@@ -539,7 +513,6 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                 totalParaSaldar,
                 porcentajeFormateado
         );
-        return m;
     }
 
 }

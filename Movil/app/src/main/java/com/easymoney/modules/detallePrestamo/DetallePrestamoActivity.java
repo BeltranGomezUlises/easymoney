@@ -16,7 +16,10 @@ import com.easymoney.entities.Prestamo;
 
 public class DetallePrestamoActivity extends AppCompatActivity {
 
-    DetallePrestamoPresenter presenter;
+    private DetallePrestamoPresenter presenter;
+    private AbonoFragment abonoFragment;
+    private ConsultaFragment consultaFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,13 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         //asegurar primero el presentador para poder enlazar los fragmentos
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
         presenter = new DetallePrestamoPresenter(prestamo);
+
+        abonoFragment = new AbonoFragment();
+        consultaFragment = new ConsultaFragment();
+
+        FragmentController fragmentController = new FragmentController(abonoFragment, consultaFragment);
+        presenter.setFragment(fragmentController);
+        fragmentController.setPresenter(presenter);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,9 +91,9 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return ConsultaFragment.getInstance(presenter);
+                    return consultaFragment;
                 case 1:
-                    return AbonoFragment.getInstance(presenter);
+                    return abonoFragment;
                 default:
                     return null;
             }

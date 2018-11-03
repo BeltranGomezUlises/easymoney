@@ -38,11 +38,7 @@ public class DispositivosBTActivity extends AppCompatActivity {
     private static final int BLUETOOTH_ENABLED = 1;
     private DevicesListAdapter devicesAdapter;
     private BluetoothAdapter bluetoothAdapter;
-    private ListView listDevices;
-    private TextView emptySector;
     private ProgressBar progressBar;
-    private DevicesListAdapter.BluetoothItem item;
-    private BluetoothDevice device;
     private String macAddress;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -56,7 +52,7 @@ public class DispositivosBTActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 showMessage("Búsqueda finalizada");
             } else {
-                device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 devicesAdapter.addItem(device.getName(), device.getAddress(), true);
             }
         }
@@ -71,8 +67,8 @@ public class DispositivosBTActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.indeterminateBar);
 
-        listDevices = findViewById(R.id.listBluetooth);
-        emptySector = findViewById(R.id.emptyList);
+        ListView listDevices = findViewById(R.id.listBluetooth);
+        TextView emptySector = findViewById(R.id.emptyList);
 
         listDevices.setEmptyView(emptySector);
         devicesAdapter = new DevicesListAdapter();
@@ -121,7 +117,7 @@ public class DispositivosBTActivity extends AppCompatActivity {
      * @param position posición de la lista del dispositivo seleccionado.
      */
     protected void onListViewClick(int position) {
-        item = (DevicesListAdapter.BluetoothItem) devicesAdapter.getItem(position);
+        DevicesListAdapter.BluetoothItem item = (DevicesListAdapter.BluetoothItem) devicesAdapter.getItem(position);
         macAddress = item.getMacAddress();
         UtilsPreferences.saveMacPrinter(macAddress);
         new Thread(new Runnable() {
@@ -132,9 +128,7 @@ public class DispositivosBTActivity extends AppCompatActivity {
                     btPrinterDevice.connectToClient(macAddress);
                     Thread.sleep(150);
                     btPrinterDevice.disconnectFromClient();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
                 finish();

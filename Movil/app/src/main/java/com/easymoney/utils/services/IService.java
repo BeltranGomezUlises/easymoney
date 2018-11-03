@@ -89,17 +89,6 @@ public interface IService {
             @Header("Authorization") String token, @Path("prestamoId") int prestamoId);
 
     /**
-     * servicio para agregar un abono de ajuste a un prestamo donde las cantidades abonadas no tienen el valor correspondiente
-     *
-     * @param token token de sesion
-     * @param abono abono a agregar, con su respectiva multa y comentario
-     * @return respuesta con el abono agregado
-     */
-    @POST("abonos/agregarAjuste")
-    Flowable<Response<Abono, Object>> agregarAbonoAjuste(
-            @Header("Authorization") String token, @Body Abono abono);
-
-    /**
      * Cambia la contraseña del usuario
      *
      * @param token         token de sesion

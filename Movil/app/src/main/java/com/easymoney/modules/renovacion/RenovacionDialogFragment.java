@@ -26,7 +26,7 @@ import io.reactivex.functions.Consumer;
 @SuppressLint("ValidFragment")
 public class RenovacionDialogFragment extends android.support.v4.app.DialogFragment {
 
-    private RenovacionPresenter presenter;
+    private RenovacionContract.Presenter presenter;
     private ModelPrestamoTotales modelTotales;
     private Prestamo prestamo;
 
@@ -51,7 +51,7 @@ public class RenovacionDialogFragment extends android.support.v4.app.DialogFragm
     private LinearLayout layoutLoading;
     private LinearLayout layoutRenovacion;
 
-    public RenovacionDialogFragment(RenovacionPresenter presenter, Prestamo prestamo) {
+    public RenovacionDialogFragment(RenovacionContract.Presenter presenter, Prestamo prestamo) {
         this.presenter = presenter;
         this.prestamo = prestamo;
     }

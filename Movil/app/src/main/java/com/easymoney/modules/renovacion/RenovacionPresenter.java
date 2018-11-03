@@ -7,22 +7,20 @@ import com.easymoney.models.services.Response;
 import com.easymoney.models.services.Status;
 
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 import static com.easymoney.utils.schedulers.SchedulerProvider.ioT;
 import static com.easymoney.utils.schedulers.SchedulerProvider.uiT;
 
 
-public class RenovacionPresenter implements RenovacionContract.Presenter {
+public class RenovacionPresenter extends RenovacionContract.Presenter {
 
     private PrestamoRepository repository;
-    private RenovacionFragment fragment;
     private CompositeDisposable mCompositeDisposable;
 
-    RenovacionPresenter(PrestamoRepository repository, RenovacionFragment fragment) {
+    RenovacionPresenter(PrestamoRepository repository) {
         this.repository = repository;
-        this.fragment = fragment;
-        fragment.setPresenter(this);
         mCompositeDisposable = new CompositeDisposable();
     }
 
@@ -36,65 +34,61 @@ public class RenovacionPresenter implements RenovacionContract.Presenter {
     }
 
     @Override
-    public void setView(RenovacionContract.Fragment view) {
-        this.fragment = (RenovacionFragment) view;
-    }
-
-    @Override
     public void buscarPrestamoId(int prestamoId) {
-        fragment.showLoading(true);
+        getFragment().showLoading();
         mCompositeDisposable.add(
                 repository.cargarPrestamo(prestamoId, new Consumer<Response<Prestamo, Object>>() {
                     @Override
                     public void accept(Response<Prestamo, Object> res) {
-                        fragment.showLoading(false);
+                       getFragment().stopShowLoading();
                         if (res.getData() == null) {
-                            fragment.showMessage("Prestamo no encontrado", Status.WARNING);
+                            getFragment().showWARNING("Prestamo no encontrado");
                         } else {
-                            fragment.showDialogRenovar(res.getData());
+                            getFragment().showDialogRenovar(res.getData());
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        fragment.showLoading(false);
-                        fragment.showMessage("Error de comunicación con el servidor", Status.ERROR);
+                        getFragment().stopShowLoading();
+                        getFragment().showERROR("Error de comunicación con el servidor");
                     }
                 }));
     }
 
     @Override
     public void renovar(int prestamoId, int renovacion) {
-        fragment.showLoading(true);
+        getFragment().showLoading();
         mCompositeDisposable.add(
                 repository.renovar(prestamoId, renovacion, new Consumer<Response<Integer, Object>>() {
                     @Override
-                    public void accept(Response<Integer, Object> res) {
-                        fragment.showLoading(false);
-                        switch (res.getMeta().getStatus()){
-                            case OK: fragment.showMessage("Entregar: $ " + res.getData(), Status.OK); break;
-                            case WARNING: fragment.showMessage(res.getMeta().getMessage(), Status.WARNING); break;
-                            case ERROR: fragment.showMessage("Error de progrmación" , Status.ERROR); break;
-                        }
+                    public void accept(final Response<Integer, Object> res) {
+                        getFragment().stopShowLoading();
+                        evalResponse(res, new Runnable() {
+                            @Override
+                            public void run() {
+                                getFragment().showMessage("Entregar: $ " + res.getData());
+                            }
+                        });
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) {
-                        fragment.showLoading(false);
-                        fragment.showMessage("Error de comunicación con el servidor", Status.ERROR);
+                        getFragment().stopShowLoading();
+                        getFragment().showERROR("Error de comunicación con el servidor");
                     }
                 }));
 
     }
 
-    public void totalesPrestamo(int prestamoId, Consumer<Response<ModelPrestamoTotales, Object>> onNext, Consumer<Throwable> onError) {
-        mCompositeDisposable.add(
-                repository.totalesPrestamo(prestamoId).subscribeOn(ioT()).observeOn(uiT())
-                        .subscribe(onNext, onError));
+    public Disposable totalesPrestamo(int prestamoId, Consumer<Response<ModelPrestamoTotales, Object>> onNext, Consumer<Throwable> onError) {
+        Disposable dis = repository.totalesPrestamo(prestamoId, onNext, onError);
+        mCompositeDisposable.add(dis);
+        return dis;
     }
 
-    public void showError(String msg) {
-        fragment.showMessage(msg, Status.ERROR);
+    @Override
+    void showError(String msg) {
+        getFragment().showERROR(msg);
     }
-
 }

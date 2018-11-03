@@ -1,10 +1,7 @@
 package com.easymoney.modules.cambiarContra;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -13,16 +10,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.easymoney.R;
-import com.easymoney.entities.Usuario;
 import com.easymoney.models.ModelCambiarContra;
 import com.easymoney.utils.UtilsPreferences;
-import com.easymoney.utils.baseClases.BaseFragment;
-
-import static android.support.design.widget.Snackbar.LENGTH_LONG;
 
 /**
  * Created by ulises on 15/01/2018.
@@ -58,7 +50,13 @@ public class CambiarContraFragment extends CambiarContraContract.Fragment {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                cambiarContra();
+                preventDoubleClick(new Runnable() {
+                    @Override
+                    public void run() {
+                        cambiarContra();
+                    }
+                });
+
             }
         });
 
@@ -77,24 +75,24 @@ public class CambiarContraFragment extends CambiarContraContract.Fragment {
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(contraActual)){
+        if (TextUtils.isEmpty(contraActual)) {
             tvContraAcutal.setError("Campo requerido");
             focusView = tvContraAcutal;
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(contraNueva)){
+        if (TextUtils.isEmpty(contraNueva)) {
             tvContraNueva.setError("Campo requerido");
             focusView = tvContraNueva;
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(contraNuevaConfirmacion)){
+        if (TextUtils.isEmpty(contraNuevaConfirmacion)) {
             tvContraNuevaConfirmacion.setError("Campo requerido");
             focusView = tvContraNuevaConfirmacion;
             cancel = true;
         }
-        if (!contraNueva.equals(contraNuevaConfirmacion)){
+        if (!contraNueva.equals(contraNuevaConfirmacion)) {
             tvContraNuevaConfirmacion.setError("Contraseña no coincide");
             focusView = tvContraNuevaConfirmacion;
             cancel = true;

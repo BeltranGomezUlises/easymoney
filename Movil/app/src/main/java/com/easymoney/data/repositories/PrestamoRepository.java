@@ -101,12 +101,21 @@ public class PrestamoRepository implements PrestamoDataSource {
      * @param prestamoId identificador del prestamo
      * @return Response con el modelo de totales de un prestamo
      */
-    public Flowable<Response<ModelPrestamoTotales, Object>> totalesPrestamo(int prestamoId) {
-        return webServices().totalesDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
+    public Disposable totalesPrestamo(int prestamoId,
+                                      Consumer<Response<ModelPrestamoTotales, Object>> onNext,
+                                      Consumer<Throwable> onError) {
+        return webServices().totalesDelPrestamo(UtilsPreferences.loadToken(), prestamoId)
+                .subscribeOn(ioT())
+                .observeOn(uiT())
+                .subscribe(onNext, onError);
     }
 
-    public Flowable<Response<List<Abono>, Object>> abonosPrestamo(int prestamoId) {
-        return webServices().abonosDelPrestamo(UtilsPreferences.loadToken(), prestamoId);
+    public Disposable abonosPrestamo(int prestamoId, Consumer<Response<List<Abono>,
+            Object>> onNext, Consumer<Throwable> onError) {
+        return webServices().abonosDelPrestamo(UtilsPreferences.loadToken(), prestamoId)
+                .subscribeOn(ioT())
+                .observeOn(uiT())
+                .subscribe(onNext, onError);
     }
 
     /**
@@ -125,10 +134,13 @@ public class PrestamoRepository implements PrestamoDataSource {
      * @param modelAbonarPrestamo modelo contenedor de los valores necesarios asi como el prestamo con la dsitribucion de abonos a actualizar
      * @return prestamo actualizado
      */
-    public Flowable<Response<Prestamo, Object>> abonarPrestamo(ModelAbonarPrestamo modelAbonarPrestamo) {
+    public Disposable abonarPrestamo(ModelAbonarPrestamo modelAbonarPrestamo,
+                                     Consumer<Response<Prestamo, Object>> onNext,
+                                     Consumer<Throwable> onError) {
         return webServices().abonarPrestamo(UtilsPreferences.loadToken(), modelAbonarPrestamo)
                 .observeOn(uiT())
-                .subscribeOn(ioT());
+                .subscribeOn(ioT())
+                .subscribe(onNext, onError);
     }
 
     /**
@@ -169,7 +181,8 @@ public class PrestamoRepository implements PrestamoDataSource {
     public Disposable renovar(int prestamoId, int cantidadNuevoPrestamo,
                               Consumer<Response<Integer, Object>> onNext,
                               Consumer<Throwable> onError) {
-        return webServices().renovarPrestamo(UtilsPreferences.loadToken(), prestamoId, cantidadNuevoPrestamo)
+        return webServices().renovarPrestamo(UtilsPreferences.loadToken(),
+                prestamoId, cantidadNuevoPrestamo)
                 .observeOn(uiT())
                 .subscribeOn(ioT())
                 .subscribe(onNext, onError);

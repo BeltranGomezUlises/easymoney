@@ -36,7 +36,7 @@ public class IngresosEgresosPresenter extends IngresosEgresosContract.Presenter 
                 repository.altaMovimiento(movimiento)
                         .subscribe(new Consumer<Response<Movimiento, Object>>() {
                             @Override
-                            public void accept(Response<Movimiento, Object> r) throws Exception {
+                            public void accept(Response<Movimiento, Object> r) {
                                 getFragment().stopShowLoading();
                                 agregarMovimientoLista(r.getData());
                             }
@@ -55,8 +55,6 @@ public class IngresosEgresosPresenter extends IngresosEgresosContract.Presenter 
         getFragment().showLoading();
         compositeDisposable.add(
                 repository.findAll(tipoMovimiento, enumRangoFecha)
-                        .subscribeOn(SchedulerProvider.ioT())
-                        .observeOn(SchedulerProvider.uiT())
                         .subscribe(new Consumer<Response<List<Movimiento>, Object>>() {
                                        @Override
                                        public void accept(final Response<List<Movimiento>, Object> r) throws Exception {

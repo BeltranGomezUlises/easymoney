@@ -2,7 +2,6 @@ package com.easymoney.modules.detallePrestamo;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 import com.easymoney.R;
 import com.easymoney.entities.Abono;
 import com.easymoney.utils.UtilsDate;
+import com.easymoney.utils.baseClases.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +20,9 @@ import java.util.List;
 /**
  * Created by ulises on 16/01/2018.
  */
-public class AbonoFragment extends Fragment {
+public class AbonoFragment extends BaseFragment {
 
     private AbonoAdapter abonoAdapter;
-
-    public static AbonoFragment getInstance(DetallePrestamoPresenter presenter) {
-        AbonoFragment fragment = new AbonoFragment();
-        presenter.setAbonoFragment(fragment);
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
