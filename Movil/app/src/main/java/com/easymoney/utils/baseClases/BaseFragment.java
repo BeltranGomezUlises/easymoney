@@ -26,6 +26,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
      */
     public void showMessage(String message) {
         Snackbar.make(this.getView(), message, Snackbar.LENGTH_LONG).show();
+        hideKeyBoard();
     }
 
 
@@ -36,8 +37,9 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
      */
     public void showOK(String message) {
         Snackbar sb = Snackbar.make(this.getView(), message, Snackbar.LENGTH_LONG);
-        sb.getView().setBackgroundColor(Color.GREEN);
+        sb.getView().setBackgroundResource(R.color.positive);
         sb.show();
+        hideKeyBoard();
     }
 
     /**
@@ -49,6 +51,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
         Snackbar sb = Snackbar.make(this.getView(), message, Snackbar.LENGTH_LONG);
         sb.getView().setBackgroundResource(R.color.warning);
         sb.show();
+        hideKeyBoard();
     }
 
     /**
@@ -58,8 +61,9 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
      */
     public void showERROR(String message) {
         Snackbar sb = Snackbar.make(this.getView(), message, Snackbar.LENGTH_LONG);
-        sb.getView().setBackgroundColor(Color.RED);
+        sb.getView().setBackgroundResource(R.color.error);
         sb.show();
+        hideKeyBoard();
     }
 
     /**

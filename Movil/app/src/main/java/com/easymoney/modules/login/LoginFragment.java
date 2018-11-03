@@ -50,7 +50,12 @@ public class LoginFragment extends LoginContract.Fragment {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                preventDoubleClick(new Runnable() {
+                    @Override
+                    public void run() {
+                        attemptLogin();
+                    }
+                });
             }
         });
         this.getPresenter().subscribe();

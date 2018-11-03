@@ -100,7 +100,10 @@ public class CambiarContraFragment extends CambiarContraContract.Fragment {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            getPresenter().cambiarContra(new ModelCambiarContra(UtilsPreferences.loadLogedUser().getId(), contraActual, contraNueva));
+            getPresenter().cambiarContra(new ModelCambiarContra(
+                    UtilsPreferences.loadLogedUser().getId(),
+                    contraActual,
+                    contraNueva));
         }
 
     }
