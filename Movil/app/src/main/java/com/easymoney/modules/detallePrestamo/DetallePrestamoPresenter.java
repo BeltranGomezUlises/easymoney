@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -95,7 +96,11 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                                 evalResponse(r, new Runnable() {
                                     @Override
                                     public void run() {
-                                        proccessAbonos(r.getData());
+                                        List<Abono> abonosDelPrestamo = r.getData();
+                                        for (Abono abono : abonosDelPrestamo) {
+                                            abono.getAbonoPK().setFecha(UtilsDate.dateWithOffSet(abono.getAbonoPK().getFecha()));
+                                        }
+                                        proccessAbonos(abonosDelPrestamo);
                                     }
                                 });
                             }

@@ -6,6 +6,7 @@ import com.easymoney.entities.Movimiento;
 import com.easymoney.models.EnumRangoFecha;
 import com.easymoney.models.EnumTipoMovimiento;
 import com.easymoney.models.services.Response;
+import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.List;
@@ -62,7 +63,11 @@ public class IngresosEgresosPresenter extends IngresosEgresosContract.Presenter 
                                            evalResponse(r, new Runnable() {
                                                @Override
                                                public void run() {
-                                                   getFragment().replaceMovimientoList(r.getData());
+                                                   List<Movimiento> movimientos = r.getData();
+                                                   for (Movimiento movimiento : movimientos) {
+                                                       movimiento.setFecha(UtilsDate.dateWithOffSet(movimiento.getFecha()));
+                                                   }
+                                                   getFragment().replaceMovimientoList(movimientos);
                                                }
                                            });
                                        }

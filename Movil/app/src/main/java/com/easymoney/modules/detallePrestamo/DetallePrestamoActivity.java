@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
+import com.easymoney.utils.UtilsDate;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -30,9 +31,7 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detalle_prestamo);
         //asegurar primero el presentador para poder enlazar los fragmentos
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
-
-        int offsetMillis = TimeZone.getDefault().getOffset(prestamo.getFechaLimite().getTime());
-        prestamo.setFechaLimite( new Date(prestamo.getFechaLimite().getTime() - offsetMillis));
+        prestamo.setFechaLimite(UtilsDate.dateWithOffSet(prestamo.getFechaLimite()));
 
         presenter = new DetallePrestamoPresenter(prestamo);
 
