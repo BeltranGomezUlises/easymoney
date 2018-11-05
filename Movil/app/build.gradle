@@ -76,4 +76,8 @@ dependencies {
 
     //ZEBRA SDK
     implementation files('libs/ZSDK_ANDROID_API.jar')
+    //BIXOLON JARs
+    implementation files('libs/jpos118-controls.jar')
+    implementation files('libs/bixolon_printer_v130.jar')
+    implementation files('libs/xerces.jar')
 }

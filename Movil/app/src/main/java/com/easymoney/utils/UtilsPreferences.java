@@ -27,6 +27,7 @@ public class UtilsPreferences {
     private static final String CONFIG = "config";
     private static final String COBRADO = "cobrado";
     private static final String MACIMPRESORA = "macImpresora";
+    private static final String MODELOIMPRESORA = "modeloImpresora";
 
     private static Calendar cal;
 
@@ -206,6 +207,36 @@ public class UtilsPreferences {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return settings.getString(MACIMPRESORA, "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Metodo para guardar el modelo de la impresora seleccionada
+     * @param modeloImpresora
+     */
+    public static void savePrinterModel(String modeloImpresora) {
+        SharedPreferences settings = mContext.getSharedPreferences(MODELOIMPRESORA, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        try {
+            editor.putString(MODELOIMPRESORA, modeloImpresora);
+            editor.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo para obtener el modelo de la impresora guardada.
+     * @return
+     */
+    public static String loadPrinterModel() {
+        SharedPreferences settings = mContext.getSharedPreferences(MODELOIMPRESORA, 0);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return settings.getString(MODELOIMPRESORA, "");
         } catch (Exception e) {
             e.printStackTrace();
         }
