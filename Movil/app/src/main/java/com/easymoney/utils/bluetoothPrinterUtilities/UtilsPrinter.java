@@ -3,10 +3,12 @@ package com.easymoney.utils.bluetoothPrinterUtilities;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 
 import com.easymoney.R;
 import com.easymoney.models.ModelImpresionAbono;
-import com.easymoney.utils.UtilsDate;
+import com.easymoney.modules.configuracionImpresoras.Bixolon.PrinterControl.BixolonPrinter;
 import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.activities.Funcion;
 import com.zebra.sdk.comm.BluetoothConnection;
@@ -16,6 +18,8 @@ import com.zebra.sdk.printer.PrinterLanguage;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
 
 public class UtilsPrinter {
+
+    static BixolonPrinter bxlPrinter = null;
 
     /**
      * Mandar a imprimir a impresora ESC/POS por bluetooth configurada con formato siguiente:
@@ -52,18 +56,84 @@ public class UtilsPrinter {
      *
      * @param mia modelo con los atributos a imprimir en el recibo
      */
-    public static void imprimirRecibo(final ModelImpresionAbono mia, final String macAddress,
-                                      final Context context, final Funcion<Throwable> onError) {
+    public static void imprimirRecibo(
+            @NonNull final ModelImpresionAbono mia,
+            final String macAddress,
+            final Context context,
+            final Funcion<Throwable> onError) {
+        String modeloImpresora = UtilsPreferences.loadPrinterModel();
+        if(modeloImpresora != null){
+            switch (modeloImpresora){
+                case "Bixolon R200III" :
+                    bxlPrinter = new BixolonPrinter(context);
+                    //TODO: utilizar enumerables para los modelos.
+                    bxlPrinter.printerOpen(0,"SPP-R200III",macAddress,true);
+                    imprimirBixolon(context,macAddress);
+                    break;
+                case "Zebra 220":
+                    imprimirZebra(mia,macAddress,context);
+                    break;
+            }
+        }
+
+    }
+
+    private static void imprimirBixolon(Context context,String macAddress){
+        try {
+            int width = bxlPrinter.getPrinterMaxWidth();
+            String imageUri = Environment.getExternalStorageDirectory() + "/" + "easy.jpg";
+            bxlPrinter.printImage(imageUri,width,2,50);
+            bxlPrinter.printText("\n",0,0,1);
+            bxlPrinter.printText("\n",0,0,1);
+            bxlPrinter.printText("Prestamo: 12453\n",0,0,1);
+            bxlPrinter.printText("Fecha: 20/noviembre/2018\n",0,0,1);
+            bxlPrinter.printText("Fecha limite: 20/noviembre/2018\n",0,0,1);
+            bxlPrinter.printText("Cantidad prestamo: $5000\n",0,0,1);
+            bxlPrinter.printText("Cantidad a pagar: $5000\n",0,0,1);
+            bxlPrinter.printText("\n",0,0,1);
+            bxlPrinter.printText("Cliente:\n",0,0,1);
+            bxlPrinter.printText("Jorge Fernando Barraza Zambada (Desarrollador):\n",0,0,1);
+            bxlPrinter.printText("Cobrador: Admin\n",0,0,1);
+            bxlPrinter.printText("\n",0,0,1);
+            bxlPrinter.printText("Fecha Abono: 20/noviembre/2018\n",0,8,1);
+            bxlPrinter.printText("Importe abono: $3000\n",0,8,1);
+            bxlPrinter.printText("\n",0,0,1);
+            bxlPrinter.printText("Distribuacion pago\n",0,8,1);
+            bxlPrinter.printText("--------------------------------\n",0,8,1);
+            bxlPrinter.printText("Abono:                     $500\n",0,1,1);
+            bxlPrinter.printText("Multa:                     $500\n",0,1,1);
+            bxlPrinter.printText("Multa post-plazo:          $500\n",0,1,1);
+            bxlPrinter.printText("--------------------------------\n",0,8,1);
+            bxlPrinter.printText("Totales\n",0,8,1);
+            bxlPrinter.printText("Total abonado:             $500\n",0,1,1);
+            bxlPrinter.printText("Porcentaje pagado:         %500\n",0,1,1);
+            bxlPrinter.printText("Total multado:             $500\n",0,1,1);
+            bxlPrinter.printText("Total multado post-plazo   $500\n",0,1,1);
+            bxlPrinter.printText("--------------------------------\n",0,8,1);
+            bxlPrinter.printText("Por pagar:                 $500\n",0,8,1);
+            bxlPrinter.printText("\n",0,0,1);
+            bxlPrinter.printText("Gracias por su interes en saldar su cuenta a tiempo en EasyMoney\n",0,0,1);
+            bxlPrinter.printText("\n",0,0,1);
+            bxlPrinter.printText("\n",0,0,1);
+
+            Thread.sleep(3000);
+            bxlPrinter.printerClose();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo para imprimir el ticket en formato CPCL
+     * @param mia objecto con los datos del recibo
+     * @param macAddress direccion MAC de la impresora
+     * @param context context a utilizar.
+     */
+    private static void imprimirZebra(final ModelImpresionAbono mia, final String macAddress, final Context context){
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    // This example prints "This is a CPCL test." near the top of the label.
-                    /*String cpclData = "! 0 200 200 50 1\r\n"
-                            + "TEXT 4 0 30 40 This is a CPCL test.\r\n"
-                            + "FORM\r\n"
-                            + "PRINT\r\n";*/
-
-                    int longitudNombre = mia.getCliente().length();
+                    int tamañoNombre = mia.getCliente().length();
                     String nombreRenglon1 = "";
                     String nombreRenglon2 = "";
                     if (longitudNombre > 30) {
@@ -165,7 +235,7 @@ public class UtilsPrinter {
                     BTPrinterDevice.getInstance().disconnectFromClient();*/
 
                 } catch (Exception e) {
-                    onError.accept(e);
+                    //onError.accept(e);
                 }
             }
         }).start();
