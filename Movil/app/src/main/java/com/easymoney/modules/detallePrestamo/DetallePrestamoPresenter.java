@@ -50,7 +50,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
     private ModelTotalAPagar modelTotalAPagar;
 
     DetallePrestamoPresenter(Prestamo prestamo) {
-        this.prestamo = prestamo;
+         this.prestamo = prestamo;
     }
 
     ModelTotalAPagar getModelTotalAPagar() {
@@ -377,9 +377,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                                         if (macAddress == null || macAddress.isEmpty()) {
                                             getFragment().showWARNING("No hay impresora configurada");
                                         } else {
-                                            UtilsPrinter.imprimirRecibo(
-                                                    modelImpresion,
-                                                    macAddress,
+                                            UtilsPrinter.imprimirRecibo(modelImpresion, macAddress,
                                                     getFragment().getContext(),
                                                     new Funcion<Throwable>() {
                                                         @Override

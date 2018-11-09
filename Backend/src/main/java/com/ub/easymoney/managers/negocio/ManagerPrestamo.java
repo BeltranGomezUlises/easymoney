@@ -19,6 +19,7 @@ import com.ub.easymoney.models.ModelPrestamoTotales;
 import com.ub.easymoney.models.ModelPrestamoTotalesGenerales;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsConfig;
+import com.ub.easymoney.utils.UtilsDate;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,12 +50,13 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     @Override
     public Prestamo persist(Prestamo entity) throws Exception {
         int cantImpuesto =  (int) (entity.getCantidad() * ((float) UtilsConfig.getPorcentajeComisionPrestamo() / 100f));
-
-        entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
+        entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);        
         entity.setFecha(new Date());
         
         GregorianCalendar cal = new GregorianCalendar();        
         cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo()); //apartir del dia siguiente        
+        
+        UtilsDate.setTimeToCero(cal);        
         entity.setFechaLimite(cal.getTime());
         
         this.dao.persist(entity);

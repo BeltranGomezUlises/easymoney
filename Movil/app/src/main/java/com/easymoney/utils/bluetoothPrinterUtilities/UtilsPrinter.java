@@ -3,12 +3,11 @@ package com.easymoney.utils.bluetoothPrinterUtilities;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 
 import com.easymoney.R;
 import com.easymoney.models.ModelImpresionAbono;
+import com.easymoney.utils.UtilsDate;
+import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.activities.Funcion;
 import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
@@ -53,11 +52,8 @@ public class UtilsPrinter {
      *
      * @param mia modelo con los atributos a imprimir en el recibo
      */
-    public static void imprimirRecibo(
-            @NonNull final ModelImpresionAbono mia,
-            final String macAddress,
-            final Context context,
-            final Funcion<Throwable> onError) {
+    public static void imprimirRecibo(final ModelImpresionAbono mia, final String macAddress,
+                                      final Context context, final Funcion<Throwable> onError) {
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -67,14 +63,14 @@ public class UtilsPrinter {
                             + "FORM\r\n"
                             + "PRINT\r\n";*/
 
-                    int tamañoNombre = mia.getCliente().length();
+                    int longitudNombre = mia.getCliente().length();
                     String nombreRenglon1 = "";
                     String nombreRenglon2 = "";
-                    if (tamañoNombre > 30) {
+                    if (longitudNombre > 30) {
                         nombreRenglon1 = mia.getCliente().substring(0, 30);
-                        nombreRenglon2 = mia.getCliente().substring(30, tamañoNombre);
+                        nombreRenglon2 = mia.getCliente().substring(30, longitudNombre);
                     } else {
-                        nombreRenglon1 = mia.getCliente().substring(0, tamañoNombre);
+                        nombreRenglon1 = mia.getCliente();
                     }
                     int totalImporteAbono = mia.getAbono() + mia.getMulta() + mia.getMultaPosPlazo();
 
@@ -151,12 +147,12 @@ public class UtilsPrinter {
 //                    int y = 53;
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inScaled = false;
-                    Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.easy, options);
+                    Bitmap bm = BitmapFactory.decodeResource(UtilsPreferences.getContext().getResources(), R.drawable.easy, options);
                     com.zebra.sdk.printer.ZebraPrinter printer = ZebraPrinterFactory.getInstance(PrinterLanguage.CPCL, thePrinterConn);
                     thePrinterConn.write("! U1 setvar \"device.languages\" \"zpl\"\r\n! U1 JOURNAL\r\n! U1 SETFF 20 2\r\n".getBytes());
                     printer.printImage(ZebraImageFactory.getImage(bm), 0, 0, bm.getWidth(), bm.getHeight(), false);
                     thePrinterConn.write(cpclData.getBytes());
-                    Thread.sleep(500);
+                    Thread.sleep(5000);
                     thePrinterConn.close();
 
                     //CONEXION POR CLASES GENERICAS

@@ -43,6 +43,10 @@ public class UtilsPreferences {
         mContext = context;
     }
 
+    public static Context getContext(){
+        return mContext;
+    }
+
     public static void saveToken(final String token) {
         SharedPreferences settings = mContext.getSharedPreferences(TOKEN, 0);
         SharedPreferences.Editor editor = settings.edit();
