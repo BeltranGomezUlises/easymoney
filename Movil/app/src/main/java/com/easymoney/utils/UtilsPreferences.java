@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -40,12 +39,12 @@ public class UtilsPreferences {
         return cal;
     }
 
-    public static void setContext(final Context context) {
-        mContext = context;
+    public static Context getContext() {
+        return mContext;
     }
 
-    public static Context getContext(){
-        return mContext;
+    public static void setContext(final Context context) {
+        mContext = context;
     }
 
     public static void saveToken(final String token) {
@@ -103,9 +102,9 @@ public class UtilsPreferences {
             Login.Request req = objectMapper.readValue(settings.getString(LOGIN, ""), Login.Request.class);
             long lastLoginTime = settings.getLong(LOGIN_TIME, 0);
             long actualTime = System.currentTimeMillis();
-            if ((actualTime - lastLoginTime) > (1000 * 60 * 60)){ // si ya paso una hora, regresar null
+            if ((actualTime - lastLoginTime) > (1000 * 60 * 60)) { // si ya paso una hora, regresar null
                 return null;
-            }else{
+            } else {
                 return req;
             }
         } catch (IOException e) {
@@ -219,6 +218,7 @@ public class UtilsPreferences {
 
     /**
      * Metodo para guardar el modelo de la impresora seleccionada
+     *
      * @param modeloImpresora
      */
     public static void savePrinterModel(String modeloImpresora) {
@@ -234,16 +234,17 @@ public class UtilsPreferences {
 
     /**
      * Metodo para obtener el modelo de la impresora guardada.
-     * @return
+     *
+     * @return cadena con el nombre del modelo
      */
     public static String loadPrinterModel() {
         SharedPreferences settings = mContext.getSharedPreferences(MODELOIMPRESORA, 0);
-        ObjectMapper objectMapper = new ObjectMapper();
+        String modelo = "";
         try {
-            return settings.getString(MODELOIMPRESORA, "");
+            modelo = settings.getString(MODELOIMPRESORA, "");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return modelo;
     }
 }
