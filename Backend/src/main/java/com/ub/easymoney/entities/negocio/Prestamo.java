@@ -57,7 +57,7 @@ public class Prestamo implements Serializable, IEntity<Integer> {
     @Basic(optional = false)
     @NotNull
     @Column(name = "fecha_limite")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaLimite;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "prestamo1", fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

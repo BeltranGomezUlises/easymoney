@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.easymoney.entities.Abono;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
+import com.easymoney.models.ModelTotalAPagar;
 
 import java.util.List;
 
@@ -35,8 +36,15 @@ public class FragmentController extends DetallePrestamoContract.Fragment {
         abonoFragment.replaceData(abonos);
     }
 
+    @Override
+    void setTotalParaSaldar(ModelTotalAPagar modelTotalAPagar) {
+        consultaFragment.setTotalParaSaldar(modelTotalAPagar);
+    }
 
-
+    @Override
+    void setBtnVisible(int visible) {
+        consultaFragment.setBtnVisible(visible);
+    }
 
     @Override
     public void showMessage(String message) {

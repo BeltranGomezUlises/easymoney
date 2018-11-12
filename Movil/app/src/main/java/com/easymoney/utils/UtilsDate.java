@@ -142,14 +142,4 @@ public class UtilsDate {
         return TimeUnit.DAYS.convert(diffMillis, TimeUnit.MILLISECONDS);
     }
 
-    /**
-     * Adds the offset time to date without time part
-     *
-     * @param d date to add offset time
-     * @return new Date object with offset time added
-     */
-    public static Date dateWithOffSet(Date d) {
-        int offsetMillis = TimeZone.getDefault().getOffset(d.getTime());
-        return new Date(d.getTime() - offsetMillis);
-    }
 }

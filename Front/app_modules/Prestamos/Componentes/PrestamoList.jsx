@@ -164,7 +164,7 @@ export default class PrestamoList extends React.Component {
               {new Date(prestamo.fecha).toLocaleString()}
           </Table.Cell>
           <Table.Cell>
-            {new Date(prestamo.fechaLimite + (new Date().getTimezoneOffset() * 60000)).toLocaleDateString()}              
+            {new Date(prestamo.fechaLimite).toLocaleDateString()}              
           </Table.Cell>
         </Table.Row>
       )

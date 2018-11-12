@@ -5,11 +5,13 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
+import com.easymoney.models.ModelTotalAPagar;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.baseClases.BaseFragment;
 
@@ -31,6 +33,8 @@ public class ConsultaFragment extends BaseFragment {
     private TextView tvTotalMultado;
     private TextView tvTotalPorcentaje;
     private TextView tvTotalPorPagar;
+    private TextView tvTotalParaSaldar;
+    private Button btnAbonar;
 
     @Nullable
     @Override
@@ -50,6 +54,20 @@ public class ConsultaFragment extends BaseFragment {
         tvTotalPorPagar = rootView.findViewById(R.id.tvTotalporPagar);
         tvNumPrestamo = rootView.findViewById(R.id.tvNumPrestamo);
         tvAbonoDiario = rootView.findViewById(R.id.tvAbonoDiario);
+        tvTotalParaSaldar = rootView.findViewById(R.id.tvTotalParaSaldar);
+        btnAbonar = rootView.findViewById(R.id.btnAbonar);
+
+        btnAbonar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                preventDoubleClick(new Runnable() {
+                    @Override
+                    public void run() {
+                        lanzarModalCobro();
+                    }
+                });
+            }
+        });
 
         getPresenter().subscribe();
 
@@ -73,5 +91,18 @@ public class ConsultaFragment extends BaseFragment {
         tvTotalRecuperado.setText("$" + data.getTotalRecuperado());
         tvTotalPorcentaje.setText(data.getPorcentajePagado() + "%");
         tvTotalPorPagar.setText("$" + data.getPorPagar());
+    }
+
+    public void setTotalParaSaldar(ModelTotalAPagar modelTotalAPagar) {
+        tvTotalParaSaldar.setText(String.valueOf(modelTotalAPagar.getTotalPagar()));
+    }
+
+    private void lanzarModalCobro() {
+        CobroDialogFragment newFragment = new CobroDialogFragment((DetallePrestamoContract.Presenter) getPresenter());
+        newFragment.show(getActivity().getFragmentManager(), "cobro");
+    }
+
+    public void setBtnVisible(int visible) {
+        btnAbonar.setVisibility(visible);
     }
 }

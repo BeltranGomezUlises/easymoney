@@ -56,7 +56,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         GregorianCalendar cal = new GregorianCalendar();        
         cal.add(Calendar.DAY_OF_YEAR, UtilsConfig.getDiasPlazoPrestamo()); //apartir del dia siguiente        
         
-        UtilsDate.setTimeToCero(cal);        
+        //UtilsDate.setTimeToCero(cal);        
         entity.setFechaLimite(cal.getTime());
         
         this.dao.persist(entity);

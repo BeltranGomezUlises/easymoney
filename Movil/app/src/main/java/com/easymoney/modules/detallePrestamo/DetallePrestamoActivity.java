@@ -31,7 +31,6 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detalle_prestamo);
         //asegurar primero el presentador para poder enlazar los fragmentos
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
-        prestamo.setFechaLimite(UtilsDate.dateWithOffSet(prestamo.getFechaLimite()));
 
         presenter = new DetallePrestamoPresenter(prestamo);
 
@@ -49,16 +48,6 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         ViewPager mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DetallePrestamoActivity.this.lanzarModalCobro();
-            }
-        });
-        fab.setVisibility(View.GONE);
-        presenter.setFab(fab);
     }
 
     @Override
@@ -73,10 +62,6 @@ public class DetallePrestamoActivity extends AppCompatActivity {
     }
 
 
-    private void lanzarModalCobro() {
-        CobroDialogFragment newFragment = new CobroDialogFragment(presenter);
-        newFragment.show(getFragmentManager(), "cobro");
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

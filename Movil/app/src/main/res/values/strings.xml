@@ -5,6 +5,7 @@
     <string name="prompt_email">Nombre usuario</string>
     <string name="prompt_password">Contraseña</string>
     <string name="action_sign_in">Iniciar sesión</string>
+    <string name="action_abonar">Abonar</string>
     <string name="action_sign_in_short">Iniciar</string>
     <string name="error_invalid_email">Nombre de usuario inválido</string>
     <string name="error_invalid_password">Contraseña inválida</string>

@@ -101,7 +101,7 @@ export default class PrestamoDetalle extends Component{
           return(
             <Table.Row key={abono.abonoPK.fecha}>
               <Table.Cell>
-                {new Date(abono.abonoPK.fecha + (new Date().getTimezoneOffset() * 60000)).toLocaleDateString()}
+                {new Date(abono.abonoPK.fecha).toLocaleDateString()}
               </Table.Cell>
               <Table.Cell textAlign='center'>
                 <Form size='small'>
@@ -255,7 +255,7 @@ export default class PrestamoDetalle extends Component{
               <Table.Cell textAlign='right'>${prestamo.cantidadPagar}</Table.Cell>
               <Table.Cell>{new Date(prestamo.fecha).toLocaleString()}</Table.Cell>              
               <Table.Cell>
-                {new Date(prestamo.fechaLimite + (new Date().getTimezoneOffset() * 60000)).toLocaleDateString()}
+                {new Date(prestamo.fechaLimite).toLocaleDateString()}
               </Table.Cell>
             </Table.Body>
           </Table>
