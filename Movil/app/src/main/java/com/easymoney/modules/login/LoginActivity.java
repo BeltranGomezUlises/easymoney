@@ -97,8 +97,6 @@ public class LoginActivity extends AppCompatActivity {
             }else{
                 UtilsPrinter.imprimirRecibo(
                         null,
-                        macAddress,
-                        LoginActivity.this,
                         new Funcion<Throwable>() {
                             @Override
                             public void accept(Throwable throwable) {

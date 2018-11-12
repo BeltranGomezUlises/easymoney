@@ -64,9 +64,6 @@ public class IngresosEgresosPresenter extends IngresosEgresosContract.Presenter 
                                                @Override
                                                public void run() {
                                                    List<Movimiento> movimientos = r.getData();
-                                                   for (Movimiento movimiento : movimientos) {
-                                                       movimiento.setFecha(UtilsDate.dateWithOffSet(movimiento.getFecha()));
-                                                   }
                                                    getFragment().replaceMovimientoList(movimientos);
                                                }
                                            });

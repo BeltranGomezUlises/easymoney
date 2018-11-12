@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.easymoney.R;
+import com.easymoney.models.ModelTotalAPagar;
 
 
 public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
@@ -28,7 +29,6 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
         Snackbar.make(this.getView(), message, Snackbar.LENGTH_LONG).show();
         hideKeyBoard();
     }
-
 
     /**
      * Displays a snack bar with the specified message color green

@@ -48,16 +48,15 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         em.persist(entity);
         em.flush(); //para obtener el id del prestamo
 
-        List<Abono> listaAbonos = new ArrayList<>();
-        Abono abono;
+        List<Abono> listaAbonos = new ArrayList<>();        
 
         cal.setTime(entity.getFecha());
-        UtilsDate.setTimeToCero(cal);
+        //UtilsDate.setTimeToCero(cal);
         cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
         final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
         final int cantidadPagarPorAbono = entity.getCantidadPagar() / diasPlazo;
         for (int i = 0; i < diasPlazo; i++) {
-            abono = new Abono(entity.getId(), cal.getTime());
+            Abono abono = new Abono(entity.getId(), cal.getTime());
             abono.setCantidad(cantidadPagarPorAbono);
             abono.setAbonado(false);
             abono.setMulta(new Multa(new MultaPK(entity.getId(), cal.getTime()), 0, ""));

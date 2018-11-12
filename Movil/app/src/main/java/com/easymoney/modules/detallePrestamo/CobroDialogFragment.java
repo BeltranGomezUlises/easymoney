@@ -22,12 +22,12 @@ import com.easymoney.models.ModelTotalAPagar;
 @SuppressLint("ValidFragment")
 public class CobroDialogFragment extends DialogFragment {
 
-    private DetallePrestamoPresenter presenter;
+    private DetallePrestamoContract.Presenter presenter;
     private EditText txtAbonar;
     private EditText txtDescripcion;
 
     @SuppressLint("ValidFragment")
-    public CobroDialogFragment(DetallePrestamoPresenter presenter) {
+    public CobroDialogFragment(DetallePrestamoContract.Presenter presenter) {
         this.presenter = presenter;
     }
 
@@ -74,8 +74,9 @@ public class CobroDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(View view) {
                         if (validateIns()) {
-                            abonar(model);
-                            dialog.dismiss();
+                            if (abonar(model)){
+                                dialog.dismiss();
+                            }
                         }
                     }
 
@@ -87,10 +88,16 @@ public class CobroDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void abonar(final ModelTotalAPagar model) {
+    private boolean abonar(final ModelTotalAPagar model) {
         final int abono = Integer.parseInt(txtAbonar.getText().toString());
+        if (abono <= 0){
+            txtAbonar.setError("Abono debe ser mayor a 0");
+            txtAbonar.requestFocus();
+            return false;
+        }
         final String multaDes = txtDescripcion.getText().toString();
-        presenter.abonarAlPrestamo(abono,multaDes, model);
+        presenter.abonarAlPrestamo(abono, multaDes, model);
+        return true;
     }
 
     private boolean validateIns() {

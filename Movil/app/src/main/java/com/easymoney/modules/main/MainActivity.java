@@ -45,7 +45,6 @@ import io.reactivex.functions.Consumer;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView tvInfo;
-    private ListView listaPrestamos;
     private PrestamoAdapter adapterPrestamo;
     private PrestamoRepository prestamoRepository;
     private List<Prestamo> prestamos;
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView txtTipoUsuario = navigationView.getHeaderView(0).findViewById(R.id.tipoUsuario);
 
         //si no es administrador, remover del menu
-        if (!UtilsPreferences.loadLogedUser().isTipo()){
+        if (!UtilsPreferences.loadLogedUser().isTipo()) {
             navigationView.getMenu().findItem(R.id.renovacion).setVisible(false);
         }
 
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvInfo.setText("Cargando prestamos...");
 
         //crear la lista de prestamos
-        listaPrestamos = findViewById(R.id.prestamoList);
+        ListView listaPrestamos = findViewById(R.id.prestamoList);
         adapterPrestamo = new PrestamoAdapter(new ArrayList<Prestamo>());
         listaPrestamos.setAdapter(adapterPrestamo);
         listaPrestamos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -112,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.cargarPrestamos(EnumPrestamos.POR_COBRAR_HOY);
     }
 
-    public String getURLForResource (int resourceId) {
-        return Uri.parse("android.resource://"+R.class.getPackage().getName()+"/" +resourceId).toString();
+    public String getURLForResource(int resourceId) {
+        return Uri.parse("android.resource://" + R.class.getPackage().getName() + "/" + resourceId).toString();
     }
 
     @Override
@@ -135,6 +134,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.compositeDisposable.clear();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
