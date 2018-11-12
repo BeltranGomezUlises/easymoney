@@ -2,6 +2,7 @@ package com.easymoney.modules.configuracionImpresoras;
 
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -61,7 +62,12 @@ public class DispositivosBTActivity extends AppCompatActivity {
                 showMessage("Búsqueda finalizada");
             } else {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                devicesAdapter.addItem(device.getName(), device.getAddress(), true);
+                device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                int tipoDevice = device.getBluetoothClass().getDeviceClass(); //1664
+                int tipoDeviceMajor = device.getBluetoothClass().getMajorDeviceClass();//1536
+                if(tipoDevice == 1664 && tipoDeviceMajor == BluetoothClass.Device.Major.IMAGING){
+                    devicesAdapter.addItem(device.getName(), device.getAddress(), true);
+                }
             }
         }
     };
