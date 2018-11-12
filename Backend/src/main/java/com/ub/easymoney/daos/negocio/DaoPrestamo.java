@@ -14,6 +14,7 @@ import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsConfig;
 import com.ub.easymoney.utils.UtilsDB;
+import com.ub.easymoney.utils.UtilsDate;
 import java.security.InvalidParameterException;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         Abono abono;
 
         cal.setTime(entity.getFecha());
+        UtilsDate.setTimeToCero(cal);
         cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
         final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
         final int cantidadPagarPorAbono = entity.getCantidadPagar() / diasPlazo;

@@ -2,7 +2,6 @@ package com.easymoney.modules.configuracionImpresoras.Bixolon.PrinterControl;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.app.Fragment;
 
 import com.bxl.config.editor.BXLConfigLoader;
 
@@ -158,7 +157,6 @@ public class BixolonPrinter implements ErrorListener, OutputCompleteListener, St
                 } catch (JposException e1) {
                     e1.printStackTrace();
                 }
-
                 return false;
             }
         } else {
@@ -179,6 +177,20 @@ public class BixolonPrinter implements ErrorListener, OutputCompleteListener, St
         }
 
         return true;
+    }
+
+    public boolean printerIsReady(){
+        try {
+            return posPrinter.getClaimed() && posPrinter.getDeviceEnabled();
+        } catch (JposException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void reanimate(String logicalName, boolean asyncMode){
+        this.printerClose();
+        this.printerOpen(mPortType, logicalName, mAddress, asyncMode);
     }
 
     private boolean setTargetDevice(int portType, String logicalName, int deviceCategory, String address) {

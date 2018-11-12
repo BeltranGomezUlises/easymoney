@@ -28,7 +28,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -373,21 +372,13 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                                         ModelImpresionAbono modelImpresion =
                                                 crearModelImpresionAbono(prestamo, modelDistribucionDeAbono);
 
-                                        String macAddress = UtilsPreferences.loadMacPrinter();
-                                        if (macAddress == null || macAddress.isEmpty()) {
-                                            getFragment().showWARNING("No hay impresora configurada");
-                                        } else {
-                                            UtilsPrinter.imprimirRecibo(
-                                                    modelImpresion,
-                                                    macAddress,
-                                                    UtilsPreferences.getContext(),
-                                                    new Funcion<Throwable>() {
-                                                        @Override
-                                                        public void accept(Throwable throwable) {
-                                                            getFragment().showERROR("Error de comunicación con impresora");
-                                                        }
-                                                    });
-                                        }
+                                        UtilsPrinter.imprimirRecibo(modelImpresion,
+                                                new Funcion<Throwable>() {
+                                                    @Override
+                                                    public void accept(Throwable throwable) {
+                                                        getFragment().showERROR(throwable.getMessage());
+                                                    }
+                                                });
                                     }
                                 });
                             }

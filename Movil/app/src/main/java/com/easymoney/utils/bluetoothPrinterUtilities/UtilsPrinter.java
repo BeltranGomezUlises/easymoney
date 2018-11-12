@@ -1,10 +1,8 @@
 package com.easymoney.utils.bluetoothPrinterUtilities;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 
 import com.easymoney.R;
 import com.easymoney.models.ModelImpresionAbono;
@@ -16,6 +14,7 @@ import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.graphics.ZebraImageFactory;
 import com.zebra.sdk.printer.PrinterLanguage;
+import com.zebra.sdk.printer.ZebraPrinter;
 import com.zebra.sdk.printer.ZebraPrinterFactory;
 
 public class UtilsPrinter {
@@ -59,11 +58,13 @@ public class UtilsPrinter {
      *
      * @param mia modelo con los atributos a imprimir en el recibo
      */
-    public static void imprimirRecibo(
-            @NonNull final ModelImpresionAbono mia,
-            final String macAddress,
-            final Context context,
-            final Funcion<Throwable> onError) {
+    public static void imprimirRecibo(final ModelImpresionAbono mia, final Funcion<Throwable> onError) {
+        //validaciones
+        String macAddress = UtilsPreferences.loadMacPrinter();
+        if (macAddress == null || macAddress.isEmpty()) {
+            onError.accept(new Exception("No hay impresora configurada"));
+            return;
+        }
         String modeloImpresora = UtilsPreferences.loadPrinterModel();
         if(modeloImpresora != null){
             switch (modeloImpresora){
@@ -76,6 +77,15 @@ public class UtilsPrinter {
                     imprimirZebra(mia,macAddress,context);
                     break;
             }
+        }
+        //mandar a imprimir
+        switch (modeloImpresora) {
+            case "Bixolon R200III":
+                imprimirBixolon(macAddress, onError);
+                break;
+            case "Zebra 220":
+                imprimirZebra(mia, macAddress, onError);
+                break;
         }
 
     }
@@ -126,28 +136,30 @@ public class UtilsPrinter {
             bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
             bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
         } catch (Exception e) {
+            onError.accept(e);
             e.printStackTrace();
         }
     }
 
     /**
      * Metodo para imprimir el ticket en formato CPCL
-     * @param mia objecto con los datos del recibo
-     * @param macAddress direccion MAC de la impresora
-     * @param context context a utilizar.
+     *
+     * @param mia        objecto con los datos del recibo
+     * @param macAddress direccion MAC de la impresora*
      */
-    private static void imprimirZebra(final ModelImpresionAbono mia, final String macAddress, final Context context){
+    private static void imprimirZebra(final ModelImpresionAbono mia, final String macAddress,
+                                      final Funcion<Throwable> onError) {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    int tamañoNombre = mia.getCliente().length();
+                    int longitudNombre = mia.getCliente().length();
                     String nombreRenglon1 = "";
                     String nombreRenglon2 = "";
-                    if (tamañoNombre > 30) {
+                    if (longitudNombre > 30) {
                         nombreRenglon1 = mia.getCliente().substring(0, 30);
-                        nombreRenglon2 = mia.getCliente().substring(30, tamañoNombre);
+                        nombreRenglon2 = mia.getCliente().substring(30, longitudNombre);
                     } else {
-                        nombreRenglon1 = mia.getCliente().substring(0, tamañoNombre);
+                        nombreRenglon1 = mia.getCliente();
                     }
                     int totalImporteAbono = mia.getAbono() + mia.getMulta() + mia.getMultaPosPlazo();
 
@@ -218,19 +230,13 @@ public class UtilsPrinter {
                             "T 4 0 4 690 --------------------------\r\n"
                             + "PRINT\r\n";
 
-                    Connection thePrinterConn = new BluetoothConnection(macAddress);
-                    thePrinterConn.open();
-//                    int x = 95;
-//                    int y = 53;
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inScaled = false;
-                    Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.easy, options);
-                    com.zebra.sdk.printer.ZebraPrinter printer = ZebraPrinterFactory.getInstance(PrinterLanguage.CPCL, thePrinterConn);
-                    thePrinterConn.write("! U1 setvar \"device.languages\" \"zpl\"\r\n! U1 JOURNAL\r\n! U1 SETFF 20 2\r\n".getBytes());
+                    Connection con = SingletonPrinterConnection.getZebraConnection(macAddress);
+//                    int x = 95, y = 53;
+                    Bitmap bm = SingletonPrinterConnection.getImageBitmap();
+                    ZebraPrinter printer = ZebraPrinterFactory.getInstance(PrinterLanguage.CPCL, con);
+                    con.write("! U1 setvar \"device.languages\" \"zpl\"\r\n! U1 JOURNAL\r\n! U1 SETFF 20 2\r\n".getBytes());
                     printer.printImage(ZebraImageFactory.getImage(bm), 0, 0, bm.getWidth(), bm.getHeight(), false);
-                    thePrinterConn.write(cpclData.getBytes());
-                    Thread.sleep(500);
-                    thePrinterConn.close();
+                    con.write(cpclData.getBytes());
 
                     //CONEXION POR CLASES GENERICAS
                     /*BTPrinterDevice.getInstance().connectToClient(macAddress);
@@ -242,7 +248,7 @@ public class UtilsPrinter {
                     BTPrinterDevice.getInstance().disconnectFromClient();*/
 
                 } catch (Exception e) {
-                    //onError.accept(e);
+                    onError.accept(e);
                 }
             }
         }).start();
