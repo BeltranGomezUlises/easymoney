@@ -46,7 +46,6 @@ public class DispositivosBTActivity extends AppCompatActivity {
     private Dialog dialog;
     private Button btnCancelarModelo;
     private Context context;
-    private ListView listTipoImpresora;
     private ImpresorasAdapter adapter;
     private String modelo;
 
@@ -136,7 +135,7 @@ public class DispositivosBTActivity extends AppCompatActivity {
             macAddress = item.getMacAddress();
             UtilsPreferences.saveMacPrinter(macAddress);
 
-            listTipoImpresora = (ListView) dialog.findViewById(R.id.listTipoImpresora);
+            ListView listTipoImpresora = (ListView) dialog.findViewById(R.id.listTipoImpresora);
             btnCancelarModelo = dialog.findViewById(R.id.btnCancelar);
             adapter = new ImpresorasAdapter(context);
             listTipoImpresora.setAdapter(adapter);

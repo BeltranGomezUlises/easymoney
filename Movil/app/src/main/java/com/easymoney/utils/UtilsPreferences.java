@@ -33,6 +33,10 @@ public class UtilsPreferences {
 
     private static Context mContext;
 
+    public static Context getContext(){
+        return mContext;
+    }
+
     private static Calendar getCalendar() {
         if (cal == null) {
             cal = new GregorianCalendar();

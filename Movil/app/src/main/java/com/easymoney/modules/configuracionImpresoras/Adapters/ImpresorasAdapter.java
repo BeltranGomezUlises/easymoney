@@ -8,18 +8,20 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.easymoney.R;
+import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ImpresorasAdapter extends BaseAdapter {
-    Context context;
-    List<String> modelos = new ArrayList<>();
+    private Context context;
+    private List<String> modelos = new ArrayList<>();
 
     public ImpresorasAdapter(Context context){
         this.context = context;
-        modelos.add("Zebra 220");
-        modelos.add("Bixolon R200III");
+
+        modelos.add(UtilsPrinter.MODELO_BIXOLONR200);
+        modelos.add(UtilsPrinter.MODELO_ZEBRA220);
     }
 
     @Override

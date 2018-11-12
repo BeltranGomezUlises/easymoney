@@ -380,7 +380,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                                             UtilsPrinter.imprimirRecibo(
                                                     modelImpresion,
                                                     macAddress,
-                                                    getFragment().getContext(),
+                                                    UtilsPreferences.getContext(),
                                                     new Funcion<Throwable>() {
                                                         @Override
                                                         public void accept(Throwable throwable) {
