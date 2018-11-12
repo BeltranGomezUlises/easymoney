@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Metodo para test de impresion
      */
-    private void testImpresion(){
+    /*private void testImpresion(){
         try{
             String macAddress = UtilsPreferences.loadMacPrinter();
             if (macAddress == null || macAddress.isEmpty()) {
@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         }catch (Exception ex){
             ex.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

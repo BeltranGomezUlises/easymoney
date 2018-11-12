@@ -20,10 +20,10 @@ public class SingletonPrinterConnection {
     public static BixolonPrinter getBxlInstance(String macAddress) {
         if (bxlPrinter == null) {
             bxlPrinter = new BixolonPrinter(UtilsPreferences.getContext());
-            bxlPrinter.printerOpen(0, "SPP-R200III", macAddress, true);
+            bxlPrinter.printerOpen(0, UtilsPrinter.MODELO_BIXOLONR200, macAddress, true);
         }
         if (!bxlPrinter.printerIsReady()) {
-            bxlPrinter.reanimate("SPP-R200III", true);
+            bxlPrinter.reanimate(UtilsPrinter.MODELO_BIXOLONR200, true);
         }
         return bxlPrinter;
     }

@@ -43,10 +43,6 @@ public class UtilsPreferences {
         return cal;
     }
 
-    public static Context getContext() {
-        return mContext;
-    }
-
     public static void setContext(final Context context) {
         mContext = context;
     }

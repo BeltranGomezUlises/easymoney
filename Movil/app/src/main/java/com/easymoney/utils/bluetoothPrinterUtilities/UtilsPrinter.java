@@ -1,5 +1,6 @@
 package com.easymoney.utils.bluetoothPrinterUtilities;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -19,7 +20,6 @@ import com.zebra.sdk.printer.ZebraPrinterFactory;
 
 public class UtilsPrinter {
 
-    private static BixolonPrinter bxlPrinter = null;
     public static final String MODELO_BIXOLONR200 = "SPP-R200III";
     public static final String MODELO_ZEBRA220 = "Zebra 220";
 
@@ -69,35 +69,24 @@ public class UtilsPrinter {
         if(modeloImpresora != null){
             switch (modeloImpresora){
                 case MODELO_BIXOLONR200 :
-                    bxlPrinter = new BixolonPrinter(context);
-                    bxlPrinter.printerOpen(0,MODELO_BIXOLONR200,macAddress,true);
-                    imprimirBixolon(context,macAddress,mia);
+                    imprimirBixolon(macAddress,mia,onError);
                     break;
                 case MODELO_ZEBRA220:
-                    imprimirZebra(mia,macAddress,context);
+                    imprimirZebra(mia,macAddress,onError);
                     break;
             }
-        }
-        //mandar a imprimir
-        switch (modeloImpresora) {
-            case "Bixolon R200III":
-                imprimirBixolon(macAddress, onError);
-                break;
-            case "Zebra 220":
-                imprimirZebra(mia, macAddress, onError);
-                break;
         }
 
     }
 
     /**
      * Metodo para imprimir el recibo en la impresora BIXOLON
-     * @param context contexto a utilizar para imprimir.
      * @param macAddress mac address de la impresora.
      * @param mia modelo de impresion de abono.
      */
-    private static void imprimirBixolon(Context context,String macAddress,ModelImpresionAbono mia){
+    private static void imprimirBixolon(String macAddress,ModelImpresionAbono mia,Funcion<Throwable> onError){
         try {
+            BixolonPrinter bxlPrinter = SingletonPrinterConnection.getBxlInstance(macAddress);
             //Caben 32 caracteres total tamaño 1 fondo normal
             int totalImporteAbono = mia.getAbono() + mia.getMulta() + mia.getMultaPosPlazo();
             int width = bxlPrinter.getPrinterMaxWidth();
