@@ -6,7 +6,7 @@
 package com.ub.easymoney.daos.admin;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
-import com.ub.easymoney.entities.admin.Usuario;
+import com.ub.easymoney.entities.negocio.Usuario;
 import com.ub.easymoney.utils.UtilsDB;
 import java.util.List;
 import static java.util.stream.Collectors.toList;

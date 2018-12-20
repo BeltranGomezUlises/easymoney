@@ -6,17 +6,11 @@
 package com.ub.easymoney.daos.negocio;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
-import com.ub.easymoney.entities.admin.Usuario;
-import com.ub.easymoney.entities.negocio.Capital;
-import com.ub.easymoney.entities.negocio.Cliente;
 import com.ub.easymoney.entities.negocio.Cobro;
-import com.ub.easymoney.entities.negocio.Prestamo;
-import com.ub.easymoney.models.ModelAbonarPrestamo;
 import com.ub.easymoney.models.ModelReporteCobro;
 import com.ub.easymoney.utils.UtilsDB;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 /**
@@ -30,37 +24,6 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
     }
 
     /**
-     * Construye la entidad del cobro, persite el cobro y actualiza el prestamo a la distrubucion del pago que se le ralizó
-     *
-     * @param model modelo contenedor de los valores necesarios
-     * @return prestamo actualizado
-     * @throws Exception si existe un error de I/O
-     */
-    public Prestamo generarAbonoPrestamo(ModelAbonarPrestamo model) throws Exception {
-        EntityManager em = this.getEMInstance();
-        //construir el cobro del abono
-        Cobro cobro = new Cobro();
-        cobro.setCantidad(model.getCantidadAbono());
-        cobro.setFecha(new Date());
-        cobro.setCliente(em.find(Cliente.class, model.getClienteId()));
-        cobro.setCobrador(em.find(Usuario.class, model.getCobradorId()));
-        cobro.setPrestamo(em.find(Prestamo.class, model.getPrestamo().getId()));
-
-        em.getTransaction().begin();
-        //persistir el cobro y actualizare el prestamo
-        em.persist(cobro);
-        em.merge(model.getPrestamo());
-        
-        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
-        capital.setCapital(capital.getCapital() + model.getCantidadAbono());
-        em.merge(capital);
-        
-        em.getTransaction().commit();
-        em.close();
-        return model.getPrestamo();
-    }
-
-    /**
      * Consulta los cobros realizados por un cobrador con un rango de fechas
      *
      * @param cobradorId id del cobrador
@@ -68,11 +31,11 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
      * @param fechaFinal fecha limite superior
      * @return
      */
-    public List<Cobro> cobrosDelCobrador(int cobradorId, Date fechaInicial, Date fechaFinal) {
+    public List<ModelReporteCobro> cobrosDelCobrador(int cobradorId, Date fechaInicial, Date fechaFinal) {
         //construccion de consulta
         String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro("
                 + "c.id, "
-                + "c.cliente.nombre, "
+                + "c.prestamo.cliente.nombre, "
                 + "c.cobrador.nombre, "
                 + "c.prestamo.id, "
                 + "c.cantidad, "
@@ -109,7 +72,9 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
      */
     public List<ModelReporteCobro> cobrosDelCliente(int clienteId, Date fechaInicial, Date fechaFinal) {
         //construccion de consulta
-        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro(c.id, c.cliente.nombre, c.cobrador.nombre, c.prestamo.id, c.cantidad, c.fecha) From Cobro c WHERE c.cliente.id = :clienteId";
+        
+        String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro(c.id, c.prestamo.cliente.nombre, c.cobrador.nombre, c.prestamo.id, c.cantidad, c.fecha)"
+                + " From Cobro c WHERE c.prestamo.cliente.id = :clienteId";
         //consulta dinamica
         if (fechaInicial != null) {
             query += " AND c.fecha >= :fechaInicial";
@@ -142,7 +107,7 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
         //construccion de consulta
         String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro("
                 + "c.id, "
-                + "c.cliente.nombre, "
+                + "c.prestamo.cliente.nombre, "
                 + "c.cobrador.nombre, "
                 + "c.prestamo.id, "
                 + "c.cantidad, "
@@ -179,7 +144,7 @@ public class DaoCobro extends DaoSQLFacade<Cobro, Integer> {
         //construccion de consulta
         String query = "SELECT NEW com.ub.easymoney.models.ModelReporteCobro("
                 + "c.id, "
-                + "c.cliente.nombre, "
+                + "c.prestamo.cliente.nombre, "
                 + "c.cobrador.nombre, "
                 + "c.prestamo.id, "
                 + "c.cantidad, "

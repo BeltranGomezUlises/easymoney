@@ -94,7 +94,7 @@ public class ConsultaFragment extends BaseFragment {
     }
 
     public void setTotalParaSaldar(ModelTotalAPagar modelTotalAPagar) {
-        tvTotalParaSaldar.setText(String.valueOf(modelTotalAPagar.getTotalPagar()));
+        tvTotalParaSaldar.setText("$" +modelTotalAPagar.getTotalPagar());
     }
 
     private void lanzarModalCobro() {

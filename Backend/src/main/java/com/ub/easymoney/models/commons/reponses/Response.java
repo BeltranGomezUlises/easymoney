@@ -6,7 +6,8 @@
 package com.ub.easymoney.models.commons.reponses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ub.easymoney.models.commons.commons.enums.Status;
+import com.ub.easymoney.models.commons.enums.Status;
+
 
 /**
  * modelo de respuesta generico para servicios

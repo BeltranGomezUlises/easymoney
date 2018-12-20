@@ -114,11 +114,10 @@ export default class Clientes extends React.Component{
         );
       }else{
         return (
-          <div>
+          <div style={{minHeight:300}}>
             <Dimmer active inverted>
               <Loader size='large'>Descargando...</Loader>
-            </Dimmer>
-            <Image src='assets/images/descargandoClientes.png'/>
+            </Dimmer>            
           </div>
         );
       }

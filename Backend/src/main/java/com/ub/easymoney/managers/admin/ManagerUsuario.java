@@ -5,10 +5,9 @@
  */
 package com.ub.easymoney.managers.admin;
 
-import com.sun.jersey.api.ParamException;
 import com.ub.easymoney.daos.admin.DaoConfig;
 import com.ub.easymoney.daos.admin.DaoUsuario;
-import com.ub.easymoney.entities.admin.Usuario;
+import com.ub.easymoney.entities.negocio.Usuario;
 import com.ub.easymoney.managers.commons.ManagerSQL;
 import com.ub.easymoney.models.ModelCambiarContra;
 import com.ub.easymoney.models.ModelLogin;

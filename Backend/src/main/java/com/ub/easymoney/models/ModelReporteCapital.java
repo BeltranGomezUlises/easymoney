@@ -7,6 +7,7 @@ package com.ub.easymoney.models;
 
 /**
  * Modelo de respuesta para el reporte de capital fisico en una fecha
+ *
  * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
  */
 public class ModelReporteCapital {

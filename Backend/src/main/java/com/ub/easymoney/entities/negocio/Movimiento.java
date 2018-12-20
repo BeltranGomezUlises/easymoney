@@ -5,19 +5,19 @@
  */
 package com.ub.easymoney.entities.negocio;
 
-import com.ub.easymoney.entities.admin.Usuario;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,17 +25,18 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * entidad de los movimientos de dinero fisico (ingreso, egreso, abono, multa, etc)
  *
- * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
  */
 @Entity
 @Table(name = "movimiento")
+@NamedQueries({
+    @NamedQuery(name = "Movimiento.findAll", query = "SELECT m FROM Movimiento m")
+    , @NamedQuery(name = "Movimiento.findById", query = "SELECT m FROM Movimiento m WHERE m.id = :id")
+    , @NamedQuery(name = "Movimiento.findByCantidad", query = "SELECT m FROM Movimiento m WHERE m.cantidad = :cantidad")
+    , @NamedQuery(name = "Movimiento.findByFecha", query = "SELECT m FROM Movimiento m WHERE m.fecha = :fecha")
+    , @NamedQuery(name = "Movimiento.findByDescripcion", query = "SELECT m FROM Movimiento m WHERE m.descripcion = :descripcion")})
 public class Movimiento implements Serializable, IEntity<Integer> {
-
-    @JoinColumn(name = "usuario_creador", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    private Usuario usuarioCreador;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,6 +56,9 @@ public class Movimiento implements Serializable, IEntity<Integer> {
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
+    @JoinColumn(name = "usuario_creador", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Usuario usuarioCreador;
 
     public Movimiento() {
     }
@@ -101,6 +105,14 @@ public class Movimiento implements Serializable, IEntity<Integer> {
         this.descripcion = descripcion;
     }
 
+    public Usuario getUsuarioCreador() {
+        return usuarioCreador;
+    }
+
+    public void setUsuarioCreador(Usuario usuarioCreador) {
+        this.usuarioCreador = usuarioCreador;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -129,14 +141,6 @@ public class Movimiento implements Serializable, IEntity<Integer> {
     @Override
     public Integer obtenerIdentificador() {
         return id;
-    }
-
-    public Usuario getUsuarioCreador() {
-        return usuarioCreador;
-    }
-
-    public void setUsuarioCreador(Usuario usuarioCreador) {
-        this.usuarioCreador = usuarioCreador;
     }
 
 }

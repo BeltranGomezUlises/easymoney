@@ -10,23 +10,31 @@ import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
- * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
  */
 @Entity
 @Table(name = "abono")
+@NamedQueries({
+    @NamedQuery(name = "Abono.findAll", query = "SELECT a FROM Abono a")
+    , @NamedQuery(name = "Abono.findByPrestamo", query = "SELECT a FROM Abono a WHERE a.abonoPK.prestamo = :prestamo")
+    , @NamedQuery(name = "Abono.findByFecha", query = "SELECT a FROM Abono a WHERE a.abonoPK.fecha = :fecha")
+    , @NamedQuery(name = "Abono.findByCantidad", query = "SELECT a FROM Abono a WHERE a.cantidad = :cantidad")
+    , @NamedQuery(name = "Abono.findByAbonado", query = "SELECT a FROM Abono a WHERE a.abonado = :abonado")
+    , @NamedQuery(name = "Abono.findByMulta", query = "SELECT a FROM Abono a WHERE a.multa = :multa")
+    , @NamedQuery(name = "Abono.findByMultaDes", query = "SELECT a FROM Abono a WHERE a.multaDes = :multaDes")})
 public class Abono implements Serializable, IEntity<AbonoPK> {
 
     private static final long serialVersionUID = 1L;
@@ -40,10 +48,14 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
     @NotNull
     @Column(name = "abonado")
     private boolean abonado;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "abono", fetch = FetchType.EAGER)
-    private Multa multa;
+    @Column(name = "multa")
+    private Integer multa;
+    @Size(max = 255)
+    @Column(name = "multa_des")
+    private String multaDes;
+    @JsonIgnore
     @JoinColumn(name = "prestamo", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     private Prestamo prestamo1;
 
     public Abono() {
@@ -63,6 +75,14 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.abonoPK = new AbonoPK(prestamo, fecha);
     }
 
+    public Abono(int prestamo, Date fecha, int cantidad, boolean abonado, Integer multa, String multaDes) {
+        this.abonoPK = new AbonoPK(prestamo, fecha);
+        this.cantidad = cantidad;
+        this.abonado = abonado;
+        this.multa = multa;
+        this.multaDes = multaDes;
+    }
+
     public AbonoPK getAbonoPK() {
         return abonoPK;
     }
@@ -79,7 +99,7 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.cantidad = cantidad;
     }
 
-    public boolean isAbonado() {
+    public boolean getAbonado() {
         return abonado;
     }
 
@@ -87,15 +107,22 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.abonado = abonado;
     }
 
-    public Multa getMulta() {
+    public Integer getMulta() {
         return multa;
     }
 
-    public void setMulta(Multa multa) {
+    public void setMulta(Integer multa) {
         this.multa = multa;
     }
 
-    @JsonIgnore
+    public String getMultaDes() {
+        return multaDes;
+    }
+
+    public void setMultaDes(String multaDes) {
+        this.multaDes = multaDes;
+    }
+
     public Prestamo getPrestamo1() {
         return prestamo1;
     }
@@ -131,7 +158,7 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
 
     @Override
     public AbonoPK obtenerIdentificador() {
-        return abonoPK;
+        return this.abonoPK;
     }
 
 }

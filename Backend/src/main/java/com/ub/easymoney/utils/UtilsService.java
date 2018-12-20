@@ -16,17 +16,10 @@
  */
 package com.ub.easymoney.utils;
 
-import com.ub.easymoney.models.commons.commons.enums.Status;
+import com.ub.easymoney.models.commons.enums.Status;
 import com.ub.easymoney.models.commons.exceptions.AccesoDenegadoException;
-import com.ub.easymoney.models.commons.exceptions.ElementosSinAccesoException;
 import com.ub.easymoney.models.commons.exceptions.ParametroInvalidoException;
 import com.ub.easymoney.models.commons.reponses.Response;
-import static com.ub.easymoney.utils.UtilsService.SistemaOperativo.ANDROID;
-import static com.ub.easymoney.utils.UtilsService.SistemaOperativo.DESCONOCIDO;
-import static com.ub.easymoney.utils.UtilsService.SistemaOperativo.IOS;
-import static com.ub.easymoney.utils.UtilsService.SistemaOperativo.LINUX;
-import static com.ub.easymoney.utils.UtilsService.SistemaOperativo.MAC;
-import static com.ub.easymoney.utils.UtilsService.SistemaOperativo.WIN;
 import java.util.Arrays;
 import java.util.logging.Level;
 
@@ -62,7 +55,7 @@ public class UtilsService {
      * @param response res
      */
     public static final void setInvalidTokenResponse(Response response) {
-        response.setStatus(Status.WARNING);
+        response.setStatus(Status.ACCESS_DENIED);
         response.setDevMessage("Token inválido");
     }
 
@@ -85,7 +78,7 @@ public class UtilsService {
      * @param ex exception de la cual obtener los mensajes
      */
     public static final void setAccesDeniedResponse(Response response, AccesoDenegadoException ex) {
-        response.setStatus(Status.ACCES_DENIED);
+        response.setStatus(Status.ACCESS_DENIED);
         response.setDevMessage(ex.toString());
         response.setMessage(ex.getMessage());
     }
@@ -97,7 +90,7 @@ public class UtilsService {
      * @param mensaje mensaje a asignar para el usuario
      */
     public static final void setAccesDeniedResponse(Response response, String mensaje) {
-        response.setStatus(Status.ACCES_DENIED);
+        response.setStatus(Status.ACCESS_DENIED);
         response.setMessage(mensaje);
     }
 
@@ -234,49 +227,4 @@ public class UtilsService {
         res.setDevMessage(devMessage);
     }
 
-    /**
-     * asignar a response el estatus PARCIAL_ACCESS y el metadata los elementos a los que no se le pudo realizar la operacion
-     *
-     * @param res response al cual asignar los valores
-     * @param e excepcion lanzada por manager de tipo ElementosSinAccesoException
-     */
-    public static final void setElementosSinAccesoResponse(Response res, ElementosSinAccesoException e) {
-        res.setStatus(Status.PARCIAL_ACCESS);
-        res.setMessage(e.getMessage());
-        res.setDevMessage("no se tiene acceso a los elementos");
-        res.setMetaData(e.getElementosSinAcceso());
-    }
-
-    /**
-     * genera el enum correspondiente al sistema operativo del cual la cabecera UserAgent de la peticion indica
-     *
-     * @param userAgent cadena con el texto de la cabecera User-Agent
-     * @return enumarador del sistema operativo
-     */
-    public static final String obtenerSistemaOperativo(String userAgent) {
-        if (userAgent.contains("Linux x")) {
-            return LINUX.toString();
-        }
-        if (userAgent.contains("Windows")) {
-            return WIN.toString();
-        }
-        if (userAgent.contains("iPhone OS")) {
-            return MAC.toString();
-        }
-        if (userAgent.contains("Android")) {
-            return ANDROID.toString();
-        }
-        if (userAgent.contains("Mac")) {
-            return IOS.toString();
-        } else {
-            return DESCONOCIDO.toString();
-        }
-    }
-
-    /**
-     * enumerador del los sistemas operativos conocidos
-     */
-    public static enum SistemaOperativo {
-        WIN, LINUX, MAC, ANDROID, IOS, DESCONOCIDO
-    }
 }

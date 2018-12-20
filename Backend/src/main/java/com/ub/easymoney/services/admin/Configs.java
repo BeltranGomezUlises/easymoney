@@ -5,8 +5,8 @@
  */
 package com.ub.easymoney.services.admin;
 
-import com.ub.easymoney.entities.admin.Config;
-import com.ub.easymoney.entities.admin.Usuario;
+import com.ub.easymoney.entities.negocio.Config;
+import com.ub.easymoney.entities.negocio.Usuario;
 import com.ub.easymoney.managers.admin.ManagerConfig;
 import com.ub.easymoney.managers.admin.ManagerUsuario;
 import com.ub.easymoney.models.commons.reponses.Response;

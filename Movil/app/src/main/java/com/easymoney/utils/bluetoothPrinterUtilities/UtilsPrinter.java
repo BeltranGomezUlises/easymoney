@@ -1,17 +1,13 @@
 package com.easymoney.utils.bluetoothPrinterUtilities;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
 
-import com.easymoney.R;
 import com.easymoney.models.ModelImpresionAbono;
 import com.easymoney.modules.configuracionImpresoras.Bixolon.PrinterControl.BixolonPrinter;
 import com.easymoney.utils.UtilsPreferences;
 import com.easymoney.utils.activities.Funcion;
 import com.google.common.base.Strings;
-import com.zebra.sdk.comm.BluetoothConnection;
 import com.zebra.sdk.comm.Connection;
 import com.zebra.sdk.graphics.ZebraImageFactory;
 import com.zebra.sdk.printer.PrinterLanguage;
@@ -66,13 +62,13 @@ public class UtilsPrinter {
             return;
         }
         String modeloImpresora = UtilsPreferences.loadPrinterModel();
-        if(modeloImpresora != null){
-            switch (modeloImpresora){
-                case MODELO_BIXOLONR200 :
-                    imprimirBixolon(macAddress,mia,onError);
+        if (modeloImpresora != null) {
+            switch (modeloImpresora) {
+                case MODELO_BIXOLONR200:
+                    imprimirBixolon(macAddress, mia, onError);
                     break;
                 case MODELO_ZEBRA220:
-                    imprimirZebra(mia,macAddress,onError);
+                    imprimirZebra(mia, macAddress, onError);
                     break;
             }
         }
@@ -81,53 +77,60 @@ public class UtilsPrinter {
 
     /**
      * Metodo para imprimir el recibo en la impresora BIXOLON
+     *
      * @param macAddress mac address de la impresora.
-     * @param mia modelo de impresion de abono.
+     * @param mia        modelo de impresion de abono.
      */
-    private static void imprimirBixolon(String macAddress,ModelImpresionAbono mia,Funcion<Throwable> onError){
-        try {
-            BixolonPrinter bxlPrinter = SingletonPrinterConnection.getBxlInstance(macAddress);
-            //Caben 32 caracteres total tamaño 1 fondo normal
-            int totalImporteAbono = mia.getAbono() + mia.getMulta() + mia.getMultaPosPlazo();
-            int width = bxlPrinter.getPrinterMaxWidth();
-            String imageUri = Environment.getExternalStorageDirectory() + "/" + "easy.jpg";
-            bxlPrinter.printImage(imageUri,width,2,50);
-            bxlPrinter.printText("\n",0,0,1);
-            bxlPrinter.printText("\n",0,0,1);
-            bxlPrinter.printText(aligmentText("Prestamo: ",String.valueOf(mia.getPrestamoId()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Fecha: ",mia.getFechaHoraPrestamo())+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Fecha limite: ",mia.getFechaLimite())+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Cantidad prestamo: ","$"+String.valueOf(mia.getCantidadPrestamo()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Cantidad a pagar: ","$"+String.valueOf(mia.getTotalAPagar()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Cliente: ",mia.getCliente())+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Cobrador: ",mia.getCobrador())+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Fecha abono: ",mia.getFechaHoraAbono())+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_BOLD,1);
-            bxlPrinter.printText(aligmentText("Importe abono: ","$"+String.valueOf(totalImporteAbono))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_BOLD,1);
-            bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Distribució pago: ","")+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_BOLD,1);
-            bxlPrinter.printText(aligmentText("--------------------------------","")+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_BOLD,1);
-            bxlPrinter.printText(aligmentText("Abono: ","$"+String.valueOf(mia.getAbono()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Multa: ","$"+String.valueOf(mia.getMulta()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Multa pos-plazo: ","$"+String.valueOf(mia.getMultaPosPlazo()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("--------------------------------","")+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_BOLD,1);
-            bxlPrinter.printText(aligmentText("Totales: ","")+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_BOLD,1);
-            bxlPrinter.printText(aligmentText("Total abonado: ","$"+String.valueOf(mia.getTotalAbonado()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Porcentaje pagado: ",String.valueOf(mia.getPorcentajeAbonado())+"%")+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Total multado: ","$"+String.valueOf(mia.getTotalMultado()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("Total multado post-plazo: ","$"+String.valueOf(mia.getTotalMultadoPosPlazo()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText(aligmentText("--------------------------------","")+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_BOLD,1);
-            bxlPrinter.printText(aligmentText("Por pagar: ","$"+String.valueOf(mia.getTotalParaSaldar()))+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText("Gracias por su interes en saldar su cuenta a tiempo en EasyMoney"+"\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-            bxlPrinter.printText("\n",BixolonPrinter.ALIGNMENT_LEFT,BixolonPrinter.ATTRIBUTE_NORMAL,1);
-        } catch (Exception e) {
-            onError.accept(e);
-            e.printStackTrace();
-        }
+    private static void imprimirBixolon(final String macAddress, final ModelImpresionAbono mia, final Funcion<Throwable> onError) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    BixolonPrinter bxlPrinter = SingletonPrinterConnection.getBxlInstance(macAddress);
+                    //Caben 32 caracteres total tamaño 1 fondo normal
+                    int totalImporteAbono = mia.getAbono() + mia.getMulta() + mia.getMultaPosPlazo();
+                    int width = bxlPrinter.getPrinterMaxWidth();
+                    String imageUri = Environment.getExternalStorageDirectory() + "/" + "easy.jpg";
+                    bxlPrinter.printImage(imageUri, width, 2, 50);
+                    bxlPrinter.printText("\n", 0, 0, 1);
+                    bxlPrinter.printText("\n", 0, 0, 1);
+                    bxlPrinter.printText(aligmentText("Prestamo: ", String.valueOf(mia.getPrestamoId())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Fecha: ", mia.getFechaHoraPrestamo()) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Fecha limite: ", mia.getFechaLimite()) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Cantidad prestamo: ", "$" + String.valueOf(mia.getCantidadPrestamo())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Cantidad a pagar: ", "$" + String.valueOf(mia.getTotalAPagar())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText("\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Cliente: ", mia.getCliente()) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Cobrador: ", mia.getCobrador()) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText("\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Fecha abono: ", mia.getFechaHoraAbono()) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_BOLD, 1);
+                    bxlPrinter.printText(aligmentText("Importe abono: ", "$" + String.valueOf(totalImporteAbono)) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_BOLD, 1);
+                    bxlPrinter.printText("\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Distribució pago: ", "") + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_BOLD, 1);
+                    bxlPrinter.printText(aligmentText("------------------------------", "") + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_BOLD, 1);
+                    bxlPrinter.printText(aligmentText("Abono: ", "$" + String.valueOf(mia.getAbono())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Multa: ", "$" + String.valueOf(mia.getMulta())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Multa pos-plazo: ", "$" + String.valueOf(mia.getMultaPosPlazo())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("------------------------------", "") + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_BOLD, 1);
+                    bxlPrinter.printText(aligmentText("Totales: ", "") + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_BOLD, 1);
+                    bxlPrinter.printText(aligmentText("Total abonado: ", "$" + String.valueOf(mia.getTotalAbonado())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Porcentaje pagado: ", String.valueOf(mia.getPorcentajeAbonado()) + "%") + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Total multado: ", "$" + String.valueOf(mia.getTotalMultado())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("Total multado post-plazo: ", "$" + String.valueOf(mia.getTotalMultadoPosPlazo())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText(aligmentText("------------------------------", "") + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_BOLD, 1);
+                    bxlPrinter.printText(aligmentText("Por pagar: ", "$" + String.valueOf(mia.getTotalParaSaldar())) + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText("\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText("Gracias por su interes\nen saldar su cuenta a\ntiempo en EasyMoney" + "\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText("\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText("\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                    bxlPrinter.printText("\n", BixolonPrinter.ALIGNMENT_CENTER, BixolonPrinter.ATTRIBUTE_NORMAL, 1);
+                } catch (Exception e) {
+                    onError.accept(e);
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     /**
@@ -246,18 +249,19 @@ public class UtilsPrinter {
     /**
      * Metodo para imprimir en una sola linea el texto de izquierda + el texto de la derecha separado
      * por espacios.
-     * @param leftString String lado izquierdo
+     *
+     * @param leftString  String lado izquierdo
      * @param rightString String lado derecho
-     * @return
+     * @return resultado de las variables ajustadas para el ticket
      */
-    public static String aligmentText(String leftString, String rightString){
+    private static String aligmentText(String leftString, String rightString) {
         int sizeLeft = leftString.length();
         int sizeRight = rightString.length();
-        int dif = 32 - (sizeLeft + sizeRight);
-        if(dif > 0){
-            return leftString + Strings.repeat(" ",dif) + rightString;
+        int dif = 28 - (sizeLeft + sizeRight);
+        if (dif > 0) {
+            return " " + leftString + Strings.repeat(" ", dif) + rightString + " ";
         }
-        return leftString + rightString;
+        return " " + leftString + rightString + " ";
     }
 
 }

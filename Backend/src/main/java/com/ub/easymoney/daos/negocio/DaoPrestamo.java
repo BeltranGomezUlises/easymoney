@@ -8,22 +8,19 @@ package com.ub.easymoney.daos.negocio;
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
 import com.ub.easymoney.entities.negocio.Abono;
 import com.ub.easymoney.entities.negocio.Capital;
-import com.ub.easymoney.entities.negocio.Multa;
-import com.ub.easymoney.entities.negocio.MultaPK;
 import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsConfig;
 import com.ub.easymoney.utils.UtilsDB;
-import com.ub.easymoney.utils.UtilsDate;
 import java.security.InvalidParameterException;
-import java.util.Date;
-import java.util.List;
-import org.jinq.jpa.JPAJinqStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import static java.util.stream.Collectors.toList;
 import javax.persistence.EntityManager;
+import org.jinq.jpa.JPAJinqStream;
 
 /**
  *
@@ -48,7 +45,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         em.persist(entity);
         em.flush(); //para obtener el id del prestamo
 
-        List<Abono> listaAbonos = new ArrayList<>();        
+        List<Abono> listaAbonos = new ArrayList<>();
 
         cal.setTime(entity.getFecha());
         //UtilsDate.setTimeToCero(cal);
@@ -59,12 +56,13 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
             Abono abono = new Abono(entity.getId(), cal.getTime());
             abono.setCantidad(cantidadPagarPorAbono);
             abono.setAbonado(false);
-            abono.setMulta(new Multa(new MultaPK(entity.getId(), cal.getTime()), 0, ""));
+            abono.setMulta(0);
+            abono.setMultaDes("");
             listaAbonos.add(abono);
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
         entity.setCobroDiario(cantidadPagarPorAbono);
-        entity.setAbonos(listaAbonos);
+        entity.setAbonoList(listaAbonos);
         em.merge(entity);
         em.merge(capital); //generar la actualización del capital                
         em.getTransaction().commit();
@@ -121,8 +119,8 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
                 .where(t -> t.getCobrador().getId().equals(cobradorId))
                 //filtrar los que no este 100% abonados
                 .filter(t -> {
-                    float totalAbonado = t.getAbonos().stream()
-                            .filter(a -> a.isAbonado()).mapToInt(a -> a.getCantidad()).sum();
+                    float totalAbonado = t.getAbonoList().stream()
+                            .filter(a -> a.getAbonado()).mapToInt(a -> a.getCantidad()).sum();
                     float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
                     return porcentajeAbonado < 100;
                 }).collect(toList());
@@ -158,8 +156,8 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
 
         //obtener lo que falta por abonar para dejar ese saldo 
         int cantidadPorSaldar = 0;
-        for (Abono abono : prestamoRenovar.getAbonos()) {
-            if (!abono.isAbonado()) {
+        for (Abono abono : prestamoRenovar.getAbonoList()) {
+            if (!abono.getAbonado()) {
                 cantidadPorSaldar += prestamoRenovar.getCobroDiario();
             } else {
                 if (abono.getCantidad() < prestamoRenovar.getCobroDiario()) {
@@ -187,15 +185,12 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         final int diasPlazo = UtilsConfig.getDiasPlazoPrestamo();
         final int cantidadPagarPorAbono = nuevoPrestamo.getCantidadPagar() / diasPlazo;
         for (int i = 0; i < diasPlazo; i++) {
-            abono = new Abono(nuevoPrestamo.getId(), cal.getTime());
-            abono.setCantidad(cantidadPagarPorAbono);
-            abono.setAbonado(false);
-            abono.setMulta(new Multa(new MultaPK(nuevoPrestamo.getId(), cal.getTime()), 0, ""));
+            abono = new Abono(nuevoPrestamo.getId(), cal.getTime(), cantidadPagarPorAbono, false, 0, "");
             listaAbonos.add(abono);
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
         nuevoPrestamo.setCobroDiario(cantidadPagarPorAbono);
-        nuevoPrestamo.setAbonos(listaAbonos);
+        nuevoPrestamo.setAbonoList(listaAbonos);
         em.merge(nuevoPrestamo);
 
         //generar la actualización del capital        

@@ -111,15 +111,15 @@ public class Reportes {
                     clienteLiquidado = false;
                 }
                 for (Prestamo prestamo : cliente.getPrestamoList()) {
-                    boolean todosAbonados = prestamo.getAbonos().stream().allMatch(a -> a.isAbonado());
+                    boolean todosAbonados = prestamo.getAbonoList().stream().allMatch(a -> a.getAbonado());
                     if (todosAbonados) {
-                        int totalCantidadAbonada = prestamo.getAbonos().stream().mapToInt(a -> a.getCantidad()).sum();
+                        int totalCantidadAbonada = prestamo.getAbonoList().stream().mapToInt(a -> a.getCantidad()).sum();
                         if (totalCantidadAbonada == prestamo.getCantidadPagar()) {
-                            prestamo.getAbonos().sort((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()));
+                            prestamo.getAbonoList().sort((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()));
                             if (fechaUltimoAbono == null) {
-                                fechaUltimoAbono = prestamo.getAbonos().get(prestamo.getAbonos().size() - 1).getAbonoPK().getFecha();
+                                fechaUltimoAbono = prestamo.getAbonoList().get(prestamo.getAbonoList().size() - 1).getAbonoPK().getFecha();
                             } else {
-                                Date fechaUltimoAbonoPrestamoActual = fechaUltimoAbono = prestamo.getAbonos().get(prestamo.getAbonos().size() - 1).getAbonoPK().getFecha();
+                                Date fechaUltimoAbonoPrestamoActual = fechaUltimoAbono = prestamo.getAbonoList().get(prestamo.getAbonoList().size() - 1).getAbonoPK().getFecha();
                                 if (fechaUltimoAbonoPrestamoActual.after(fechaUltimoAbono)) {
                                     fechaUltimoAbono = fechaUltimoAbonoPrestamoActual;
                                 }

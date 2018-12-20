@@ -439,7 +439,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
         if (sumaAbonos < prestamo.getCantidadPagar()) {
             this.getFragment().setBtnVisible(View.VISIBLE);
         } else {
-            this.getFragment().setBtnVisible(View.VISIBLE);
+            this.getFragment().setBtnVisible(View.GONE);
         }
 
     }

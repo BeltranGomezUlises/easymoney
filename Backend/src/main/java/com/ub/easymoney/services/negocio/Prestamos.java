@@ -6,8 +6,6 @@
 package com.ub.easymoney.services.negocio;
 
 import com.ub.easymoney.entities.negocio.Prestamo;
-import com.ub.easymoney.managers.admin.ManagerUsuario;
-import com.ub.easymoney.managers.negocio.ManagerCliente;
 import com.ub.easymoney.managers.negocio.ManagerPrestamo;
 import com.ub.easymoney.models.ModelCargarPrestamos;
 import com.ub.easymoney.models.ModelPrestamoTotales;
@@ -21,7 +19,6 @@ import com.ub.easymoney.utils.UtilsJWT;
 import com.ub.easymoney.utils.UtilsService;
 import static com.ub.easymoney.utils.UtilsService.*;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.GET;
@@ -154,55 +151,6 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             setErrorResponse(r, ex);
         }
         return r;
-    }
-
-    /**
-     * servicio que genera datos de prestamos para las pruebas
-     *
-     * @return
-     */
-    @GET
-    @Path("/generarPruebas")
-    public List<Prestamo> crearPrestamosDePruebas() {
-        List<Prestamo> prestamos = new ArrayList<>();
-
-        ManagerPrestamo managerPrestamo = new ManagerPrestamo();
-        ManagerCliente managerCliente = new ManagerCliente();
-        ManagerUsuario managerUsuario = new ManagerUsuario();
-
-        try {
-            //fecha dentro del rango de cobro
-            for (int i = 0; i < 3; i++) {
-                Prestamo p = new Prestamo();
-                p.setCliente(managerCliente.findFirst());
-                p.setCobrador(managerUsuario.stream().where(u -> u.getTipo() == false).findFirst().get());
-                p.setCantidad(5000);
-                managerPrestamo.persistPruebaDentroMes(p);
-                prestamos.add(p);
-            }
-            //fecha para cerrar el mes
-            for (int i = 0; i < 3; i++) {
-                Prestamo p = new Prestamo();
-                p.setCliente(managerCliente.findFirst());
-                p.setCobrador(managerUsuario.stream().where(u -> u.getTipo() == false).findFirst().get());
-                p.setCantidad(5000);
-                managerPrestamo.persistPruebaPorCerrarMes(p);
-                prestamos.add(p);
-            }
-            //fecha despues de cierre de mes
-            for (int i = 0; i < 3; i++) {
-                Prestamo p = new Prestamo();
-                p.setCliente(managerCliente.findFirst());
-                p.setCobrador(managerUsuario.stream().where(u -> u.getTipo() == false).findFirst().get());
-                p.setCantidad(5000);
-                managerPrestamo.persistPruebaCerrardoMes(p);
-                prestamos.add(p);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return prestamos;
     }
 
     /**

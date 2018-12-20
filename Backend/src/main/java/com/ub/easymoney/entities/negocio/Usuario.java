@@ -28,16 +28,15 @@ import javax.validation.constraints.Size;
  * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
  */
 @Entity
-@Table(name = "cliente")
+@Table(name = "usuario")
 @NamedQueries({
-    @NamedQuery(name = "Cliente.findAll", query = "SELECT c FROM Cliente c")
-    , @NamedQuery(name = "Cliente.findById", query = "SELECT c FROM Cliente c WHERE c.id = :id")
-    , @NamedQuery(name = "Cliente.findByNombre", query = "SELECT c FROM Cliente c WHERE c.nombre = :nombre")
-    , @NamedQuery(name = "Cliente.findByDireccion", query = "SELECT c FROM Cliente c WHERE c.direccion = :direccion")
-    , @NamedQuery(name = "Cliente.findByTelefono", query = "SELECT c FROM Cliente c WHERE c.telefono = :telefono")
-    , @NamedQuery(name = "Cliente.findByApodo", query = "SELECT c FROM Cliente c WHERE c.apodo = :apodo")
-    , @NamedQuery(name = "Cliente.findByDiasSinMulta", query = "SELECT c FROM Cliente c WHERE c.diasSinMulta = :diasSinMulta")})
-public class Cliente implements Serializable, IEntity<Integer> {
+    @NamedQuery(name = "Usuario.findAll", query = "SELECT u FROM Usuario u")
+    , @NamedQuery(name = "Usuario.findById", query = "SELECT u FROM Usuario u WHERE u.id = :id")
+    , @NamedQuery(name = "Usuario.findByNombre", query = "SELECT u FROM Usuario u WHERE u.nombre = :nombre")
+    , @NamedQuery(name = "Usuario.findByContra", query = "SELECT u FROM Usuario u WHERE u.contra = :contra")
+    , @NamedQuery(name = "Usuario.findByTipo", query = "SELECT u FROM Usuario u WHERE u.tipo = :tipo")
+    , @NamedQuery(name = "Usuario.findByNombreCompleto", query = "SELECT u FROM Usuario u WHERE u.nombreCompleto = :nombreCompleto")})
+public class Usuario implements Serializable, IEntity<Integer> {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,35 +49,43 @@ public class Cliente implements Serializable, IEntity<Integer> {
     @Size(min = 1, max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
-    @Size(max = 2147483647)
-    @Column(name = "direccion")
-    private String direccion;
-    @Size(max = 2147483647)
-    @Column(name = "telefono")
-    private String telefono;
-    @Size(max = 2147483647)
-    @Column(name = "apodo")
-    private String apodo;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 2147483647)
-    @Column(name = "dias_sin_multa")
-    private String diasSinMulta;
+    @Column(name = "contra")
+    private String contra;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "tipo")
+    private boolean tipo;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 2147483647)
+    @Column(name = "nombre_completo")
+    private String nombreCompleto;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cliente")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cobrador")
     private List<Prestamo> prestamoList;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cobrador")
+    private List<Cobro> cobroList;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "usuarioCreador")
+    private List<Movimiento> movimientoList;
 
-    public Cliente() {
+    public Usuario() {
     }
 
-    public Cliente(Integer id) {
+    public Usuario(Integer id) {
         this.id = id;
     }
 
-    public Cliente(Integer id, String nombre, String diasSinMulta) {
+    public Usuario(Integer id, String nombre, String contra, boolean tipo, String nombreCompleto) {
         this.id = id;
         this.nombre = nombre;
-        this.diasSinMulta = diasSinMulta;
+        this.contra = contra;
+        this.tipo = tipo;
+        this.nombreCompleto = nombreCompleto;
     }
 
     public Integer getId() {
@@ -97,36 +104,28 @@ public class Cliente implements Serializable, IEntity<Integer> {
         this.nombre = nombre;
     }
 
-    public String getDireccion() {
-        return direccion;
+    public String getContra() {
+        return contra;
     }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
+    public void setContra(String contra) {
+        this.contra = contra;
     }
 
-    public String getTelefono() {
-        return telefono;
+    public boolean getTipo() {
+        return tipo;
     }
 
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
+    public void setTipo(boolean tipo) {
+        this.tipo = tipo;
     }
 
-    public String getApodo() {
-        return apodo;
+    public String getNombreCompleto() {
+        return nombreCompleto;
     }
 
-    public void setApodo(String apodo) {
-        this.apodo = apodo;
-    }
-
-    public String getDiasSinMulta() {
-        return diasSinMulta;
-    }
-
-    public void setDiasSinMulta(String diasSinMulta) {
-        this.diasSinMulta = diasSinMulta;
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
     }
 
     public List<Prestamo> getPrestamoList() {
@@ -135,6 +134,22 @@ public class Cliente implements Serializable, IEntity<Integer> {
 
     public void setPrestamoList(List<Prestamo> prestamoList) {
         this.prestamoList = prestamoList;
+    }
+
+    public List<Cobro> getCobroList() {
+        return cobroList;
+    }
+
+    public void setCobroList(List<Cobro> cobroList) {
+        this.cobroList = cobroList;
+    }
+
+    public List<Movimiento> getMovimientoList() {
+        return movimientoList;
+    }
+
+    public void setMovimientoList(List<Movimiento> movimientoList) {
+        this.movimientoList = movimientoList;
     }
 
     @Override
@@ -147,10 +162,10 @@ public class Cliente implements Serializable, IEntity<Integer> {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Cliente)) {
+        if (!(object instanceof Usuario)) {
             return false;
         }
-        Cliente other = (Cliente) object;
+        Usuario other = (Usuario) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -159,7 +174,7 @@ public class Cliente implements Serializable, IEntity<Integer> {
 
     @Override
     public String toString() {
-        return "com.ub.easymoney.entities.negocio.Cliente[ id=" + id + " ]";
+        return "com.ub.easymoney.entities.negocio.Usuario[ id=" + id + " ]";
     }
 
     @Override

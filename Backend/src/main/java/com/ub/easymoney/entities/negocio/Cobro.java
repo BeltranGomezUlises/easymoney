@@ -5,7 +5,7 @@
  */
 package com.ub.easymoney.entities.negocio;
 
-import com.ub.easymoney.entities.admin.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ub.easymoney.entities.commons.commons.IEntity;
 import java.io.Serializable;
 import java.util.Date;
@@ -37,10 +37,6 @@ import javax.validation.constraints.NotNull;
     , @NamedQuery(name = "Cobro.findByFecha", query = "SELECT c FROM Cobro c WHERE c.fecha = :fecha")})
 public class Cobro implements Serializable, IEntity<Integer> {
 
-    @JoinColumn(name = "prestamo", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Prestamo prestamo;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,9 +52,10 @@ public class Cobro implements Serializable, IEntity<Integer> {
     @Column(name = "fecha")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    @JoinColumn(name = "cliente", referencedColumnName = "id")
+    @JsonIgnore
+    @JoinColumn(name = "prestamo", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Cliente cliente;
+    private Prestamo prestamo;    
     @JoinColumn(name = "cobrador", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Usuario cobrador;
@@ -100,20 +97,20 @@ public class Cobro implements Serializable, IEntity<Integer> {
         this.fecha = fecha;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public Prestamo getPrestamo() {
+        return prestamo;
     }
 
-    public void setCliente(Cliente clienteId) {
-        this.cliente = clienteId;
+    public void setPrestamo(Prestamo prestamo) {
+        this.prestamo = prestamo;
     }
 
     public Usuario getCobrador() {
         return cobrador;
     }
 
-    public void setCobrador(Usuario cobradorId) {
-        this.cobrador = cobradorId;
+    public void setCobrador(Usuario cobrador) {
+        this.cobrador = cobrador;
     }
 
     @Override
@@ -138,20 +135,12 @@ public class Cobro implements Serializable, IEntity<Integer> {
 
     @Override
     public String toString() {
-        return "com.ub.easymoney.entities.negocio.Cobros[ id=" + id + " ]";
+        return "com.ub.easymoney.entities.negocio.Cobro[ id=" + id + " ]";
     }
 
     @Override
     public Integer obtenerIdentificador() {
-        return id;
-    }
-
-    public Prestamo getPrestamo() {
-        return prestamo;
-    }
-
-    public void setPrestamo(Prestamo prestamoId) {
-        this.prestamo = prestamoId;
+        return this.id;
     }
 
 }

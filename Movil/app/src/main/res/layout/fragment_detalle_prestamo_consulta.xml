@@ -466,6 +466,7 @@
                 android:layout_margin="14dp"
                 android:background="@color/colorPrimary"
                 android:text="@string/action_abonar"
+                android:visibility="gone"
                 android:textStyle="bold" />
         </LinearLayout>
 

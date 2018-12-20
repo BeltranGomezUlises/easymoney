@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
  */
 @Embeddable
 public class AbonoPK implements Serializable {
@@ -28,7 +28,7 @@ public class AbonoPK implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date fecha;
 
     public AbonoPK() {

@@ -21,7 +21,7 @@ import com.ub.easymoney.entities.commons.commons.IEntity;
 import com.ub.easymoney.managers.commons.ManagerFacade;
 import com.ub.easymoney.managers.commons.ManagerSQL;
 import com.ub.easymoney.models.commons.ModelCantidad;
-import com.ub.easymoney.models.commons.commons.enums.Status;
+import com.ub.easymoney.models.commons.enums.Status;
 import com.ub.easymoney.models.commons.exceptions.EntidadYaExistenteException;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;

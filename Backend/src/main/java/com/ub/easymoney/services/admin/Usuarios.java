@@ -5,7 +5,7 @@
  */
 package com.ub.easymoney.services.admin;
 
-import com.ub.easymoney.entities.admin.Usuario;
+import com.ub.easymoney.entities.negocio.Usuario;
 import com.ub.easymoney.managers.admin.ManagerUsuario;
 import com.ub.easymoney.models.ModelCambiarContra;
 import com.ub.easymoney.models.commons.exceptions.ParametroInvalidoException;
@@ -75,5 +75,5 @@ public class Usuarios extends ServiceFacade<Usuario, Integer> {
         t.setContra(UtilsSecurity.cifrarMD5(t.getContra()));
         return super.modificar(token, t); //To change body of generated methods, choose Tools | Templates.
     }
-        
+
 }

@@ -14,16 +14,14 @@ import com.ub.easymoney.entities.negocio.Prestamo;
 public class ModelAbonarPrestamo {
 
     private int cantidadAbono;
-    private int clienteId;
     private int cobradorId;
     private Prestamo prestamo;
 
     public ModelAbonarPrestamo() {
     }
 
-    public ModelAbonarPrestamo(int cantidadAbono, int clienteId, int cobradorId, Prestamo prestamo) {
+    public ModelAbonarPrestamo(int cantidadAbono, int cobradorId, Prestamo prestamo) {
         this.cantidadAbono = cantidadAbono;
-        this.clienteId = clienteId;
         this.cobradorId = cobradorId;
         this.prestamo = prestamo;
     }
@@ -42,14 +40,6 @@ public class ModelAbonarPrestamo {
 
     public void setPrestamo(Prestamo prestamo) {
         this.prestamo = prestamo;
-    }
-
-    public int getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(int clienteId) {
-        this.clienteId = clienteId;
     }
 
     public int getCobradorId() {

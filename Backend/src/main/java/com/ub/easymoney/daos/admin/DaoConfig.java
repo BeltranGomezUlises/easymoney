@@ -6,7 +6,7 @@
 package com.ub.easymoney.daos.admin;
 
 import com.ub.easymoney.daos.commons.DaoSQLFacade;
-import com.ub.easymoney.entities.admin.Config;
+import com.ub.easymoney.entities.negocio.Config;
 import com.ub.easymoney.utils.UtilsDB;
 
 /**

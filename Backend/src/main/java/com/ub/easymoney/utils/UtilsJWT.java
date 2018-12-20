@@ -24,11 +24,11 @@ public class UtilsJWT {
     private static final String STRING_KEY = "LLAVE ULTRA SECRETA";
 
     public static String generateSessionToken(String userId) throws JsonProcessingException {
-        JwtBuilder builder = Jwts.builder();        
+        JwtBuilder builder = Jwts.builder();
         builder.setSubject(userId); //poner el sujeto en jwt
         return builder.signWith(SignatureAlgorithm.HS512, STRING_KEY).compact();
     }
-    
+
     public static String getBodyToken(String token) throws TokenInvalidoException, TokenExpiradoException {
         try {
             return Jwts.parser().setSigningKey(STRING_KEY).parseClaimsJws(token).getBody().getSubject();

@@ -7,9 +7,7 @@ package com.ub.easymoney.services.negocio;
 
 import com.ub.easymoney.daos.negocio.DaoCobro;
 import com.ub.easymoney.entities.negocio.Cobro;
-import com.ub.easymoney.entities.negocio.Prestamo;
 import com.ub.easymoney.managers.negocio.ManagerCobro;
-import com.ub.easymoney.models.ModelAbonarPrestamo;
 import com.ub.easymoney.models.ModelConsultaCobros;
 import com.ub.easymoney.models.ModelReporteCobro;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
@@ -33,27 +31,6 @@ public class Cobros extends ServiceFacade<Cobro, Integer> {
 
     public Cobros() {
         super(new ManagerCobro());
-    }
-
-    /**
-     * Genera el cobro a un usuario abonandole a su prestamo y actualizando la distribución del pago
-     *
-     * @param token token de sesion
-     * @param model modelo con el pago y su distribución
-     * @return prestamo actualizado
-     */
-    @POST
-    @Path("/generarAbono")
-    public Response<Prestamo> abonarAlPrestamo(@HeaderParam("Authorization") final String token, ModelAbonarPrestamo model) {
-        Response<Prestamo> r = new Response<>();
-        try {
-            ManagerCobro managerCobro = new ManagerCobro();
-            managerCobro.setToken(token);
-            UtilsService.setOkResponse(r, managerCobro.generarAbonoPrestamo(model), "Abono persitido con éxito", "");
-        } catch (Exception e) {
-            UtilsService.setErrorResponse(r, e);
-        }
-        return r;
     }
 
     /**
