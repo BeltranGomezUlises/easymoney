@@ -1,19 +1,17 @@
 package com.easymoney.models;
 
+import com.easymoney.entities.DistribucionCobro;
 import com.easymoney.entities.Prestamo;
 
 public class ModelPrestamoAbonado {
     Prestamo prestamo;
-    ModelPrestamoTotales modelPrestamoTotales;
-    ModelDistribucionAbono modelDistribucionAbono;
+    DistribucionCobro distribucionCobro;
 
     public ModelPrestamoAbonado() {
     }
 
-    public ModelPrestamoAbonado(Prestamo prestamo, ModelPrestamoTotales modelPrestamoTotales, ModelDistribucionAbono modelDistribucionAbono) {
+    public ModelPrestamoAbonado(Prestamo prestamo) {
         this.prestamo = prestamo;
-        this.modelPrestamoTotales = modelPrestamoTotales;
-        this.modelDistribucionAbono = modelDistribucionAbono;
     }
 
     public Prestamo getPrestamo() {
@@ -24,20 +22,12 @@ public class ModelPrestamoAbonado {
         this.prestamo = prestamo;
     }
 
-    public ModelPrestamoTotales getModelPrestamoTotales() {
-        return modelPrestamoTotales;
+    public DistribucionCobro getDistribucionCobro() {
+        return distribucionCobro;
     }
 
-    public void setModelPrestamoTotales(ModelPrestamoTotales modelPrestamoTotales) {
-        this.modelPrestamoTotales = modelPrestamoTotales;
-    }
-
-    public ModelDistribucionAbono getModelDistribucionAbono() {
-        return modelDistribucionAbono;
-    }
-
-    public void setModelDistribucionAbono(ModelDistribucionAbono modelDistribucionAbono) {
-        this.modelDistribucionAbono = modelDistribucionAbono;
+    public void setDistribucionCobro(DistribucionCobro distribucionCobro) {
+        this.distribucionCobro = distribucionCobro;
     }
 
 }

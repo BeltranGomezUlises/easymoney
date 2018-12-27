@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.easymoney.R;
+import com.easymoney.entities.DistribucionCobro;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.utils.UtilsDate;
@@ -134,7 +134,25 @@ public class ConsultaFragment extends BaseFragment {
         newFragment.show(getActivity().getFragmentManager(), "cobro");
     }
 
-    public void setBtnAbonarVisibility(int visibility) {
-        this.btnAbonar.setVisibility(visibility);
+    public void setTotales(final DistribucionCobro model) {
+        tvTotalAbonado.setText("$" + model.getTotalAbonado());
+        tvTotalMultado.setText("$" + model.getTotalMultado());
+        tvTotalRecuperado.setText("$" + model.getTotalRecuperado());
+        tvTotalPorcentaje.setText(model.getPorcentajePagado() + "%");
+        tvAAbonar.setText("$" + model.getTotalAbonar());
+        tvAMultar.setText("$" + model.getTotalMultar());
+        tvAMultarPostPlazo.setText("$" + model.getTotalMultarMes());
+        tvParaIrAlCorriente.setText("$" + model.getPorPagarIrAlCorriente());
+        tvParaLiquidar.setText("$" + model.getPorPagarLiquidar());
+
+        layoutLoading.setVisibility(View.GONE);
+        layoutTotales.setVisibility(View.VISIBLE);
+
+        if (model.getPorcentajePagado() == 100) {
+            btnAbonar.setVisibility(View.GONE);
+        } else {
+            cantidadParaIrAlCorriente = model.getPorPagarIrAlCorriente();
+            btnAbonar.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -10,11 +10,11 @@ import java.util.Date;
 
 public class Cobro implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     private Integer id;
     private int cantidad;
     private Date fecha;
     private Usuario cobrador;
+    private DistribucionCobro distribucionCobro;
 
     public Cobro() {
     }
@@ -59,6 +59,14 @@ public class Cobro implements Serializable {
 
     public void setCobrador(Usuario cobrador) {
         this.cobrador = cobrador;
+    }
+
+    public DistribucionCobro getDistribucionCobro() {
+        return distribucionCobro;
+    }
+
+    public void setDistribucionCobro(DistribucionCobro distribucionCobro) {
+        this.distribucionCobro = distribucionCobro;
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.ub.easymoney.utils.commons.IEntity;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +20,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -37,6 +39,9 @@ import javax.validation.constraints.NotNull;
     , @NamedQuery(name = "Cobro.findByFecha", query = "SELECT c FROM Cobro c WHERE c.fecha = :fecha")})
 public class Cobro implements Serializable, IEntity<Integer> {
 
+    @OneToOne(cascade = CascadeType.REMOVE, mappedBy = "cobro")
+    private DistribucionCobro distribucionCobro;
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -140,4 +145,12 @@ public class Cobro implements Serializable, IEntity<Integer> {
         return this.id;
     }
 
+    public DistribucionCobro getDistribucionCobro() {
+        return distribucionCobro;
+    }
+
+    public void setDistribucionCobro(DistribucionCobro distribucionCobro) {
+        this.distribucionCobro = distribucionCobro;
+    }
+    
 }

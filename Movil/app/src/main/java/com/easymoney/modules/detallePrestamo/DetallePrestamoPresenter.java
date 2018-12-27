@@ -1,6 +1,8 @@
 package com.easymoney.modules.detallePrestamo;
 
 import com.easymoney.data.repositories.PrestamoRepository;
+import com.easymoney.entities.Cobro;
+import com.easymoney.entities.DistribucionCobro;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelAbonar;
 import com.easymoney.models.ModelImpresionAbono;
@@ -74,8 +76,9 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                                         UtilsPreferences.setPrestamoCobradoHoy(prestamo.getId());
                                         prestamo = r.getData().getPrestamo();
                                         getFragment().llenarDatosGenerales(prestamo);
-                                        getFragment().llenarTotales(r.getData().getModelPrestamoTotales());
-                                        getFragment().showOK("Abono realizado");
+                                        getFragment().llenarTotales(r.getData().getDistribucionCobro());
+                                        //getFragment().showOK("Abono realizado");
+
                                         ModelImpresionAbono modelImpresion = crearModelImpresionAbono(r.getData());
                                         UtilsPrinter.imprimirRecibo(modelImpresion, new Funcion<Throwable>() {
                                             @Override
@@ -101,20 +104,35 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                 ));
     }
 
-    private ModelImpresionAbono crearModelImpresionAbono(ModelPrestamoAbonado model) {
-        int totalAbonado = model.getModelPrestamoTotales().getTotalAbonado();
-        int totalMultado = model.getModelPrestamoTotales().getTotalMultado();
-        int totalMultadoMes = model.getModelPrestamoTotales().getTotalMultarMes();
-        int porcentajeAbonado = model.getModelPrestamoTotales().getPorcentajePagado();
-        int totalParaSaldar = model.getModelPrestamoTotales().getPorPagarLiquidar();
+    @Override
+    void reimprimirTicket(Cobro c) {
+        ModelPrestamoAbonado mpa = new ModelPrestamoAbonado();
+        mpa.setPrestamo(this.prestamo);
+        mpa.setDistribucionCobro(c.getDistribucionCobro());
+        ModelImpresionAbono modelImpresion = crearModelImpresionAbono(mpa);
+        UtilsPrinter.imprimirRecibo(modelImpresion, new Funcion<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) {
+                getFragment().showERROR(throwable.getMessage());
+            }
+        });
+    }
 
-        int abonado = model.getModelDistribucionAbono().getAbonado();
-        int multado = model.getModelDistribucionAbono().getMultado();
-        int multadoPostPlazo = model.getModelDistribucionAbono().getMultadoPostPlazo();
+    private ModelImpresionAbono crearModelImpresionAbono(ModelPrestamoAbonado model) {
+        DistribucionCobro dc = model.getDistribucionCobro();
+        int totalAbonado = dc.getTotalAbonado();
+        int totalMultado = dc.getTotalMultado();
+        int totalMultadoMes = dc.getTotalMultarMes();
+        int porcentajeAbonado = dc.getPorcentajePagado();
+        int totalParaSaldar = dc.getPorPagarLiquidar();
+
+        int abonado = dc.getAbonado();
+        int multado = dc.getMultado();
+        int multadoPostPlazo = dc.getMultadoPostPlazo();
 
         Prestamo p = model.getPrestamo();
         String fechaHoraAbono = UtilsDate.format_D_MM_YYYY_HH_MM(new Date());
-        String fechaPrestamo = UtilsDate.format_D_MM_YYYY_HH_MM(p.getFecha());
+        String fechaPrestamo = UtilsDate.format_D_MM_YYYY(p.getFecha());
         String fechaLimite = UtilsDate.format_D_MM_YYYY(p.getFechaLimite());
 
         return new ModelImpresionAbono(

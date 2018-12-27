@@ -2,6 +2,7 @@ package com.easymoney.modules.detallePrestamo;
 
 import android.annotation.SuppressLint;
 
+import com.easymoney.entities.DistribucionCobro;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
 
@@ -32,6 +33,11 @@ public class FragmentController extends DetallePrestamoContract.Fragment {
     @Override
     void llenarTotales(ModelPrestamoTotales modelPrestamoTotales) {
         consultaFragment.setTotales(modelPrestamoTotales);
+    }
+
+    @Override
+    void llenarTotales(DistribucionCobro distribucion) {
+        consultaFragment.setTotales(distribucion);
     }
 
     @Override

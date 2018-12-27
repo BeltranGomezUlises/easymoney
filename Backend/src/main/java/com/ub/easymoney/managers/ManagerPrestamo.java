@@ -12,6 +12,7 @@ import com.ub.easymoney.daos.DaoPrestamo;
 import com.ub.easymoney.entities.Abono;
 import com.ub.easymoney.entities.Cobro;
 import com.ub.easymoney.entities.Config;
+import com.ub.easymoney.entities.DistribucionCobro;
 import com.ub.easymoney.entities.Prestamo;
 import com.ub.easymoney.entities.Usuario;
 import com.ub.easymoney.models.ModelAbonar;
@@ -92,6 +93,19 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         ModelPrestamoTotales mPrestamoTotales = new ModelPrestamoTotales();
 
         Prestamo prestamo = this.findOne(prestamoId);
+        List<Abono> abonos = prestamo.getAbonoList();
+        mPrestamoTotales.setTotalAbonado(abonos.stream().filter(t -> t.getAbonado()).mapToInt(t -> t.getCantidad()).sum());
+        mPrestamoTotales.setTotalMultado(abonos.stream().filter(t -> t.getAbonado()).mapToInt(t -> t.getMulta()).sum());
+        mPrestamoTotales.setTotalRecuperado(mPrestamoTotales.getTotalAbonado() + mPrestamoTotales.getTotalMultado());
+        mPrestamoTotales.setPorcentajePagado((int) ((float) mPrestamoTotales.getTotalAbonado() / (float) prestamo.getCantidadPagar() * 100f));
+        if (mPrestamoTotales.getPorcentajePagado() != 100) {
+            this.calcularTotalesPagar(prestamo, mPrestamoTotales);
+        }
+        return mPrestamoTotales;
+    }
+
+    public ModelPrestamoTotales totalesPrestamo(Prestamo prestamo) throws Exception {
+        ModelPrestamoTotales mPrestamoTotales = new ModelPrestamoTotales();
         List<Abono> abonos = prestamo.getAbonoList();
         mPrestamoTotales.setTotalAbonado(abonos.stream().filter(t -> t.getAbonado()).mapToInt(t -> t.getCantidad()).sum());
         mPrestamoTotales.setTotalMultado(abonos.stream().filter(t -> t.getAbonado()).mapToInt(t -> t.getMulta()).sum());
@@ -272,10 +286,11 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * accion de abonar una cantidad al prestamo
      *
      * @param model
-     * @return 
+     * @return
      * @throws Exception
      */
     public ModelPrestamoAbonado abonar(ModelAbonar model) throws InvalidParameterException, Exception {
+        ModelPrestamoAbonado mpa = new ModelPrestamoAbonado();
         ModelPrestamoTotales mpt = this.totalesPrestamo(model.getPrestamoId());
         if (mpt.getPorPagarLiquidar() < model.getCantidad()) {
             throw new InvalidParameterException("No puede abonar más de lo que debe el préstamo");
@@ -295,20 +310,30 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         boolean ignorarMulta = this.ignorarMulta(p);
 
         ModelDistribucionAbono distribucion = new ModelDistribucionAbono();
-        cantidadAbono = distribuirMultaPostPlazo(p.getId(), abonos, 
+        cantidadAbono = distribuirMultaPostPlazo(p.getId(), abonos,
                 p.getFechaLimite(), cantidadAbono, cantidadMultaPostPlazo, distribucion);
-        
+
         distribuirAbono(abonos, p.getFechaLimite(), p.getCobroDiario(),
                 cantidadAbono, cantidadMultaDiaria, ignorarMulta, model.getDescripcion(), distribucion);
 
         Cobro cobro = new Cobro(model.getCantidad(), new Date(), p, p.getCobrador());
-        p.getCobroList().add(cobro);
+        ModelPrestamoTotales nuevosTotales = this.totalesPrestamo(p);
+
         EntityManager em = UtilsDB.getEMFactoryCG().createEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(p);
             em.persist(cobro);
+            cobro = em.merge(cobro);
+            em.flush();
+
+            DistribucionCobro dc = this.generarDistribucionCobro(cobro, nuevosTotales, distribucion);
+            em.persist(dc);
+            
+            p.getCobroList().add(cobro);
+            em.merge(p);
             em.getTransaction().commit();
+            mpa.setPrestamo(p);
+            mpa.setDistribucionCobro(dc);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -317,11 +342,6 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
             }
         }
 
-        ModelPrestamoAbonado mpa = new ModelPrestamoAbonado();
-       
-        mpa.setPrestamo(p);
-        mpa.setModelPrestamoTotales(this.totalesPrestamo(p.getId()));
-        mpa.setModelDistribucionAbono(distribucion);
         return mpa;
     }
 
@@ -452,7 +472,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @param ignorarMulta si se ignora multa para el prestamo
      * @param descripcion descripcion del abono
      */
-    private void distribuirAbono(List<Abono> abonos, Date fechaLimite, int cobroDiario, int cantidadAbono, 
+    private void distribuirAbono(List<Abono> abonos, Date fechaLimite, int cobroDiario, int cantidadAbono,
             int cantidadMulta, boolean ignorarMulta, String descripcion, ModelDistribucionAbono distribucion) {
         Date hoy = UtilsDate.dateWithoutTime();
         for (Abono abono : abonos) {
@@ -586,6 +606,26 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }
         return cantidadAbono;
+    }
+
+    private DistribucionCobro generarDistribucionCobro(Cobro cobro,
+            ModelPrestamoTotales t, ModelDistribucionAbono d) {
+        DistribucionCobro dc = new DistribucionCobro(cobro.getId(),
+                d.getAbonado(),
+                d.getMultado(),
+                d.getMultadoPostPlazo(),
+                t.getTotalAbonado(),
+                t.getTotalMultado(),
+                t.getTotalRecuperado(),
+                t.getPorcentajePagado(),
+                t.getPorPagarIrAlCorriente(),
+                t.getPorPagarLiquidar(),
+                t.getTotalAbonar(),
+                t.getTotalMultar(),
+                t.getTotalMultarMes());
+        cobro.setDistribucionCobro(dc);
+        dc.setCobro(cobro);
+        return dc;
     }
 
 }
