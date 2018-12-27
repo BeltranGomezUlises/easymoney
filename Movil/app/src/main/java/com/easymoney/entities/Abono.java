@@ -1,19 +1,24 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.easymoney.entities;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- *
- * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
  */
 public class Abono implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     protected AbonoPK abonoPK;
     private int cantidad;
     private boolean abonado;
-    private Multa multa;
-    private Prestamo prestamo1;
+    private Integer multa;
+    private String multaDes;
 
     public Abono() {
     }
@@ -32,6 +37,14 @@ public class Abono implements Serializable {
         this.abonoPK = new AbonoPK(prestamo, fecha);
     }
 
+    public Abono(int prestamo, Date fecha, int cantidad, boolean abonado, Integer multa, String multaDes) {
+        this.abonoPK = new AbonoPK(prestamo, fecha);
+        this.cantidad = cantidad;
+        this.abonado = abonado;
+        this.multa = multa;
+        this.multaDes = multaDes;
+    }
+
     public AbonoPK getAbonoPK() {
         return abonoPK;
     }
@@ -48,7 +61,7 @@ public class Abono implements Serializable {
         this.cantidad = cantidad;
     }
 
-    public boolean isAbonado() {
+    public boolean getAbonado() {
         return abonado;
     }
 
@@ -56,27 +69,41 @@ public class Abono implements Serializable {
         this.abonado = abonado;
     }
 
-    public Multa getMulta() {
+    public Integer getMulta() {
         return multa;
     }
 
-    public void setMulta(Multa multa) {
+    public void setMulta(Integer multa) {
         this.multa = multa;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public String getMultaDes() {
+        return multaDes;
+    }
 
-        Abono abono = (Abono) o;
-
-        return abonoPK != null ? abonoPK.equals(abono.abonoPK) : abono.abonoPK == null;
+    public void setMultaDes(String multaDes) {
+        this.multaDes = multaDes;
     }
 
     @Override
     public int hashCode() {
-        return abonoPK != null ? abonoPK.hashCode() : 0;
+        int hash = 0;
+        hash += (abonoPK != null ? abonoPK.hashCode() : 0);
+        return hash;
     }
-}
 
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Abono)) {
+            return false;
+        }
+        Abono other = (Abono) object;
+        if ((this.abonoPK == null && other.abonoPK != null) || (this.abonoPK != null && !this.abonoPK.equals(other.abonoPK))) {
+            return false;
+        }
+        return true;
+    }
+
+
+}

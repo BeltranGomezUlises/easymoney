@@ -2,14 +2,13 @@ package com.easymoney.utils.services;
 
 
 import com.easymoney.entities.Abono;
-import com.easymoney.entities.Cliente;
 import com.easymoney.entities.Movimiento;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.entities.Usuario;
-import com.easymoney.models.ModelAbonarPrestamo;
+import com.easymoney.models.ModelAbonar;
 import com.easymoney.models.ModelCambiarContra;
 import com.easymoney.models.ModelFiltroMovimiento;
-import com.easymoney.models.ModelFiltroPrestamos;
+import com.easymoney.models.ModelPrestamoAbonado;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Login;
 import com.easymoney.models.services.Response;
@@ -32,7 +31,7 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-    String END_POINT = "http://192.168.43.162:8080/EasyMoney/api/";
+    String END_POINT = "http://192.168.1.68:8080/EasyMoney/api/";
     //String END_POINT = "http://74.208.178.83:8080/EasyMoney/api/";
 
     /**
@@ -129,26 +128,15 @@ public interface IService {
      * @param model modelo contenedor de los datos para generar el abono
      * @return prestamo actualizado
      */
-    @POST("cobros/generarAbono")
-    Flowable<Response<Prestamo, Object>> abonarPrestamo(@Header("Authorization") String token,
-                                                        @Body ModelAbonarPrestamo model);
-
-    /**
-     * Carga los prestamos que cumplan con los citerios de filtrado
-     *
-     * @param token token de sesion
-     * @param model modelo contenedor de los datos para filtrar
-     * @return lista de prestamos
-     */
-    @POST("cargarPrestamos")
-    Flowable<Response<List<Prestamo>, Object>> buscarPrestamos(@Header("Authorization") String token,
-                                                               @Body ModelFiltroPrestamos model);
-
+    @POST("prestamos/abonar")
+    Flowable<Response<ModelPrestamoAbonado, Object>> abonarPrestamo(@Header("Authorization") String token,
+                                                                    @Body ModelAbonar model);
 
     @GET("prestamos/renovar/{prestamoId}/{cantidadNuevoPrestamo}")
-    Flowable<Response<Integer, Object>> renovarPrestamo(@Header("Authorization") String token,
-                                                       @Path("prestamoId") int prestamoId,
-                                                       @Path("cantidadNuevoPrestamo") int cantidadNuevoPrestamo);
+    Flowable<Response<Integer, Object>> renovarPrestamo(
+            @Header("Authorization") String token,
+            @Path("prestamoId") int prestamoId,
+            @Path("cantidadNuevoPrestamo") int cantidadNuevoPrestamo);
 
     /**
      * Busca todos los clientes del sistema

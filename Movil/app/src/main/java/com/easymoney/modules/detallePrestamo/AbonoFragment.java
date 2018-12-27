@@ -15,6 +15,8 @@ import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.baseClases.BaseFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,25 +24,27 @@ import java.util.List;
  */
 public class AbonoFragment extends BaseFragment {
 
-    private AbonoAdapter abonoAdapter;
+    private AbonoAdapter abonoAdapter = new AbonoAdapter(new ArrayList<Abono>());
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detalle_prestamo_abonos, container, false);
-
         ListView listView = rootView.findViewById(R.id.abonoList);
-        abonoAdapter = new AbonoAdapter(new ArrayList<Abono>());
         listView.setAdapter(abonoAdapter);
-
         return rootView;
     }
-
 
     public void replaceData(List<Abono> abonos) {
         List<Abono> abonosFiltrado = new ArrayList<>();
         for (Abono abono : abonos) {
-            if (abono.isAbonado()) abonosFiltrado.add(abono);
+            if (abono.getAbonado()) abonosFiltrado.add(abono);
         }
+        Collections.sort(abonosFiltrado, new Comparator<Abono>() {
+            @Override
+            public int compare(Abono a1, Abono a2) {
+                return a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha());
+            }
+        });
         abonoAdapter.replaceData(abonosFiltrado);
     }
 
@@ -93,8 +97,8 @@ public class AbonoFragment extends BaseFragment {
 
             tvFecha.setText(UtilsDate.format_D_MM_YYYY(abono.getAbonoPK().getFecha()));
             tvAbono.setText("$" + abono.getCantidad());
-            tvMulta.setText("$" + abono.getMulta().getMulta());
-            tvDescripcion.setText(abono.getMulta().getMultaDes());
+            tvMulta.setText("$" + abono.getMulta());
+            tvDescripcion.setText(abono.getMultaDes());
 
             return rowView;
         }

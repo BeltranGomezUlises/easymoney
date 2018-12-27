@@ -5,7 +5,7 @@
  */
 package com.ub.easymoney.models;
 
-import com.ub.easymoney.entities.negocio.Prestamo;
+import com.ub.easymoney.entities.Prestamo;
 
 /**
  *

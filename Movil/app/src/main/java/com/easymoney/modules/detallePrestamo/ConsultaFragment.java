@@ -6,12 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
-import com.easymoney.models.ModelTotalAPagar;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.baseClases.BaseFragment;
 
@@ -28,13 +29,22 @@ public class ConsultaFragment extends BaseFragment {
     private TextView tvCantidadPagar;
     private TextView tvFechaHoraPrestamo;
     private TextView tvFechaLimite;
+
     private TextView tvTotalAbonado;
     private TextView tvTotalRecuperado;
     private TextView tvTotalMultado;
     private TextView tvTotalPorcentaje;
-    private TextView tvTotalPorPagar;
-    private TextView tvTotalParaSaldar;
+    private TextView tvAAbonar;
+    private TextView tvAMultar;
+    private TextView tvAMultarPostPlazo;
+    private TextView tvParaIrAlCorriente;
+    private TextView tvParaLiquidar;
+
+    private LinearLayout layoutTotales;
+    private LinearLayout layoutLoading;
+
     private Button btnAbonar;
+    private int cantidadParaIrAlCorriente;
 
     @Nullable
     @Override
@@ -51,12 +61,16 @@ public class ConsultaFragment extends BaseFragment {
         tvTotalMultado = rootView.findViewById(R.id.tvTotalMultado);
         tvTotalRecuperado = rootView.findViewById(R.id.tvTotalRecuperado);
         tvTotalPorcentaje = rootView.findViewById(R.id.tvTotalPorcentaje);
-        tvTotalPorPagar = rootView.findViewById(R.id.tvTotalporPagar);
         tvNumPrestamo = rootView.findViewById(R.id.tvNumPrestamo);
         tvAbonoDiario = rootView.findViewById(R.id.tvAbonoDiario);
-        tvTotalParaSaldar = rootView.findViewById(R.id.tvTotalParaSaldar);
-        btnAbonar = rootView.findViewById(R.id.btnAbonar);
 
+        tvAAbonar = rootView.findViewById(R.id.tvAAbonar);
+        tvAMultar = rootView.findViewById(R.id.tvAMultar);
+        tvAMultarPostPlazo = rootView.findViewById(R.id.tvAMultarPostPlazo);
+        tvParaIrAlCorriente = rootView.findViewById(R.id.tvParaIrAlCorriente);
+        tvParaLiquidar = rootView.findViewById(R.id.tvParaLiquidar);
+
+        btnAbonar = rootView.findViewById(R.id.btnAbonar);
         btnAbonar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,6 +82,12 @@ public class ConsultaFragment extends BaseFragment {
                 });
             }
         });
+
+        layoutTotales = rootView.findViewById(R.id.layoutTotales);
+        layoutTotales.setVisibility(View.GONE);
+
+        layoutLoading = rootView.findViewById(R.id.layoutLoading);
+        layoutLoading.setVisibility(View.VISIBLE);
 
         getPresenter().subscribe();
 
@@ -81,28 +101,40 @@ public class ConsultaFragment extends BaseFragment {
         tvCantidadPrestamo.setText("$" + prestamo.getCantidad());
         tvCantidadPagar.setText("$" + prestamo.getCantidadPagar());
         tvAbonoDiario.setText("$" + prestamo.getCobroDiario());
-        tvFechaHoraPrestamo.setText(UtilsDate.format_D_MM_YYYY_HH_MM(prestamo.getFecha()));
+        tvFechaHoraPrestamo.setText(UtilsDate.format_D_MM_YYYY(prestamo.getFecha()));
         tvFechaLimite.setText(UtilsDate.format_D_MM_YYYY(prestamo.getFechaLimite()));
     }
 
-    public void setTotales(ModelPrestamoTotales data) {
-        tvTotalAbonado.setText("$" + data.getTotalAbonado());
-        tvTotalMultado.setText("$" + data.getTotalMultado());
-        tvTotalRecuperado.setText("$" + data.getTotalRecuperado());
-        tvTotalPorcentaje.setText(data.getPorcentajePagado() + "%");
-        tvTotalPorPagar.setText("$" + data.getPorPagar());
-    }
+    public void setTotales(ModelPrestamoTotales model) {
+        tvTotalAbonado.setText("$" + model.getTotalAbonado());
+        tvTotalMultado.setText("$" + model.getTotalMultado());
+        tvTotalRecuperado.setText("$" + model.getTotalRecuperado());
+        tvTotalPorcentaje.setText(model.getPorcentajePagado() + "%");
+        tvAAbonar.setText("$" + model.getTotalAbonar());
+        tvAMultar.setText("$" + model.getTotalMultar());
+        tvAMultarPostPlazo.setText("$" + model.getTotalMultarMes());
+        tvParaIrAlCorriente.setText("$" + model.getPorPagarIrAlCorriente());
+        tvParaLiquidar.setText("$" + model.getPorPagarLiquidar());
 
-    public void setTotalParaSaldar(ModelTotalAPagar modelTotalAPagar) {
-        tvTotalParaSaldar.setText("$" +modelTotalAPagar.getTotalPagar());
+        layoutLoading.setVisibility(View.GONE);
+        layoutTotales.setVisibility(View.VISIBLE);
+
+        if (model.getPorcentajePagado() == 100) {
+            btnAbonar.setVisibility(View.GONE);
+        } else {
+            this.cantidadParaIrAlCorriente = model.getPorPagarIrAlCorriente();
+            btnAbonar.setVisibility(View.VISIBLE);
+        }
     }
 
     private void lanzarModalCobro() {
-        CobroDialogFragment newFragment = new CobroDialogFragment((DetallePrestamoContract.Presenter) getPresenter());
+        CobroDialogFragment newFragment = new CobroDialogFragment(
+                (DetallePrestamoContract.Presenter) getPresenter(),
+                this.cantidadParaIrAlCorriente);
         newFragment.show(getActivity().getFragmentManager(), "cobro");
     }
 
-    public void setBtnVisible(int visible) {
-        btnAbonar.setVisibility(visible);
+    public void setBtnAbonarVisibility(int visibility) {
+        this.btnAbonar.setVisibility(visibility);
     }
 }

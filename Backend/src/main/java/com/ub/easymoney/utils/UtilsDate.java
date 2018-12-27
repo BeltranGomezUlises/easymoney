@@ -20,6 +20,10 @@ public class UtilsDate {
         return cal.getTime();
     }
     
+    public static boolean esHoy(Date fecha){
+       return dateWithoutTime().equals(fecha);
+    }
+    
     /**
      * modelo contenedor de una fecha
      */

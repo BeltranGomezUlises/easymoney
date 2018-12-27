@@ -5,8 +5,8 @@
  */
 package com.ub.easymoney.models;
 
-import com.ub.easymoney.entities.negocio.Config;
-import com.ub.easymoney.entities.negocio.Usuario;
+import com.ub.easymoney.entities.Config;
+import com.ub.easymoney.entities.Usuario;
 
 /**
  *

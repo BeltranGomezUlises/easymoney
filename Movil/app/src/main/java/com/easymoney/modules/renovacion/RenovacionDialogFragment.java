@@ -153,7 +153,7 @@ public class RenovacionDialogFragment extends android.support.v4.app.DialogFragm
         tvTotalMultado.setText("$" + data.getTotalMultado());
         tvTotalRecuperado.setText("$" + data.getTotalRecuperado());
         tvTotalPorcentaje.setText(data.getPorcentajePagado() + "%");
-        tvTotalPorPagar.setText("$" + data.getPorPagar());
+        //tvTotalPorPagar.setText("$" + data.getPorPagar());
         calcularTotalEntregar();
     }
 
@@ -161,7 +161,7 @@ public class RenovacionDialogFragment extends android.support.v4.app.DialogFragm
         String edtValue = edtRenovacion.getText().toString();
         if (!edtValue.isEmpty()) {
             int renovacion = Integer.parseInt(edtValue);
-            tvTotalEntregar.setText("$ " + (renovacion - modelTotales.getPorPagar()));
+          //  tvTotalEntregar.setText("$ " + (renovacion - modelTotales.getPorPagar()));
         }
     }
 

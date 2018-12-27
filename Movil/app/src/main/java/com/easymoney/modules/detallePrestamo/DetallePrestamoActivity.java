@@ -1,7 +1,7 @@
 package com.easymoney.modules.detallePrestamo;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -9,21 +9,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
-import com.easymoney.utils.UtilsDate;
-
-import java.util.Date;
-import java.util.TimeZone;
 
 public class DetallePrestamoActivity extends AppCompatActivity {
 
     private DetallePrestamoPresenter presenter;
     private AbonoFragment abonoFragment;
     private ConsultaFragment consultaFragment;
-
+    private CobroFragment cobroFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +28,11 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
 
         presenter = new DetallePrestamoPresenter(prestamo);
-
         abonoFragment = new AbonoFragment();
         consultaFragment = new ConsultaFragment();
+        cobroFragment = new CobroFragment();
 
-        FragmentController fragmentController = new FragmentController(abonoFragment, consultaFragment);
+        FragmentController fragmentController = new FragmentController(abonoFragment, consultaFragment, cobroFragment);
         presenter.setFragment(fragmentController);
         fragmentController.setPresenter(presenter);
 
@@ -46,8 +41,12 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
         ViewPager mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager); //bind with view pager
     }
 
     @Override
@@ -61,7 +60,11 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         return true;
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.unsubscribe();
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -80,6 +83,8 @@ public class DetallePrestamoActivity extends AppCompatActivity {
                     return consultaFragment;
                 case 1:
                     return abonoFragment;
+                case 2:
+                    return cobroFragment;
                 default:
                     return null;
             }
@@ -87,14 +92,21 @@ public class DetallePrestamoActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
-    }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.unsubscribe();
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "Detalle";
+                case 1:
+                    return "Abonos";
+                case 2:
+                    return "Cobros";
+                default:
+                    return "";
+            }
+        }
     }
 }

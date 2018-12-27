@@ -1,0 +1,58 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.ub.easymoney.services;
+
+import com.ub.easymoney.entities.Abono;
+import com.ub.easymoney.entities.AbonoPK;
+import com.ub.easymoney.managers.ManagerAbono;
+import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
+import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
+import com.ub.easymoney.models.commons.reponses.Response;
+import com.ub.easymoney.utils.commons.ServiceFacade;
+import com.ub.easymoney.utils.UtilsService;
+import java.util.List;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
+/**
+ * servicios para registros de abono a un prestamo
+ *
+ * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
+ */
+@Path("/abonos")
+public class Abonos extends ServiceFacade<Abono, AbonoPK> {
+
+    public Abonos() {
+        super(new ManagerAbono());
+    }
+
+    /**
+     * devuelve la lista de abonos de un prestamo (detalle del prestamo)
+     *
+     * @param token token de sesion
+     * @param id identificador del prestamo al que se busca su detalle
+     * @return lista de abonos del prestamo buscado en data
+     */
+    @GET
+    @Path("/prestamo/{id}")
+    public Response<List<Abono>> abonosDelPrestamo(@HeaderParam("Authorization") String token, @PathParam("id") int id) {
+        Response<List<Abono>> res = new Response<>();
+        try {
+            ManagerAbono managerAbono = new ManagerAbono();
+            managerAbono.setToken(token);
+            List<Abono> abonosDelPrestamo = managerAbono.abonosDelPrestamo(id);
+            UtilsService.setOkResponse(res, abonosDelPrestamo, "Abonos del prestamo " + id, "lista de abonos del prestamo");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            UtilsService.setInvalidTokenResponse(res);
+        } catch (Exception ex) {
+            UtilsService.setErrorResponse(res, ex);
+        }
+        return res;
+    }
+
+}

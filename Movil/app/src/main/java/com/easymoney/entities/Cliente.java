@@ -1,12 +1,15 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.easymoney.entities;
 
 import java.io.Serializable;
 
-/**
- * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
- */
 public class Cliente implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private Integer id;
     private String nombre;
     private String direccion;
@@ -21,9 +24,10 @@ public class Cliente implements Serializable {
         this.id = id;
     }
 
-    public Cliente(Integer id, String nombre) {
+    public Cliente(Integer id, String nombre, String diasSinMulta) {
         this.id = id;
         this.nombre = nombre;
+        this.diasSinMulta = diasSinMulta;
     }
 
     public Integer getId() {
@@ -66,7 +70,6 @@ public class Cliente implements Serializable {
         this.apodo = apodo;
     }
 
-
     public String getDiasSinMulta() {
         return diasSinMulta;
     }
@@ -84,6 +87,7 @@ public class Cliente implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Cliente)) {
             return false;
         }
@@ -93,6 +97,5 @@ public class Cliente implements Serializable {
         }
         return true;
     }
-
 
 }
