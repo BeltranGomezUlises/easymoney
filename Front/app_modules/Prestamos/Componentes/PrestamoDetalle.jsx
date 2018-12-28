@@ -80,10 +80,11 @@ export default class PrestamoDetalle extends Component {
 
   renderAbonos() {
     return this.state.prestamo.abonoList.map((abono) => {
+      let fechaAbono = new Date(abono.abonoPK.fecha).toJSON().split('T')[0];
       return (
         <Table.Row key={abono.abonoPK.fecha}>
           <Table.Cell>
-            {new Date(abono.abonoPK.fecha).toLocaleDateString()}
+            {fechaAbono}
           </Table.Cell>
           <Table.Cell textAlign='center'>
             <Form size='small'>
@@ -226,6 +227,8 @@ export default class PrestamoDetalle extends Component {
         </div>
       )
     }
+    let fechaPrestamo = new Date(prestamo.fecha).toJSON().split('T')[0];
+    let fechaLimite = new Date(prestamo.fechaLimite).toJSON().split('T')[0];
     return (
       <Segment>
         <Table celled>
@@ -247,10 +250,8 @@ export default class PrestamoDetalle extends Component {
               <Table.Cell>{prestamo.cobrador.nombre}</Table.Cell>
               <Table.Cell textAlign='right'>${prestamo.cantidad}</Table.Cell>
               <Table.Cell textAlign='right'>${prestamo.cantidadPagar}</Table.Cell>
-              <Table.Cell>{new Date(prestamo.fecha).toLocaleDateString()}</Table.Cell>
-              <Table.Cell>
-                {new Date(prestamo.fechaLimite).toLocaleDateString()}
-              </Table.Cell>
+              <Table.Cell>{fechaPrestamo}</Table.Cell>
+              <Table.Cell>{fechaLimite}</Table.Cell>
             </Table.Row>
           </Table.Body>
         </Table>

@@ -5,8 +5,10 @@
  */
 package com.ub.easymoney.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ub.easymoney.daos.DaoUsuario;
 import com.ub.easymoney.daos.DaoCliente;
+import com.ub.easymoney.daos.DaoPrestamo;
 import com.ub.easymoney.entities.Cliente;
 import com.ub.easymoney.entities.Prestamo;
 import com.ub.easymoney.entities.Usuario;
@@ -28,8 +30,10 @@ import static com.ub.easymoney.utils.UtilsService.*;
 import java.security.InvalidParameterException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -47,7 +51,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
     public Prestamos() {
         super(new ManagerPrestamo());
     }
-
+    
     @GET
     @Path("/totales/{id}")
     public Response<ModelPrestamoTotales> totalesDelPrestamo(@HeaderParam("Authorization") String token,
@@ -290,5 +294,22 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
             setErrorResponse(res, e);
         }  
         return res;
+    }
+    
+    @GET
+    @Path("/fechas/{id}")
+    public Map fechas(@PathParam("id") int id) throws Exception{
+        
+        Prestamo prestamo = new DaoPrestamo().findOne(id);
+        
+        Map<String, Object> map = new HashMap<>();
+        map.put("fecha", UtilsDate.dateWithoutTime());
+        map.put("fechaString", UtilsDate.dateWithoutTime().toString());
+        map.put("fechaInstant", UtilsDate.dateWithoutTime().toInstant().toString());
+        map.put("pFecha", prestamo.getFecha());
+        map.put("pFechaString", prestamo.getFecha().toString());
+        map.put("pFechaInstant", prestamo.getFecha().toInstant().toString());
+        
+        return map;
     }
 }

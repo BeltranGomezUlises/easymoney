@@ -23,12 +23,13 @@
             
             
             <!-- development -->
-            <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
+            <!--<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
             <property name="javax.persistence.jdbc.password" value="2424"/>-->
       
             <!--remove for production-->
-            <!--      <property name="eclipselink.logging.level" value="FINE"/>
+            <!--            <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.logging.parameters" value="true"/>-->
+            
         </properties>
     </persistence-unit>
 </persistence>

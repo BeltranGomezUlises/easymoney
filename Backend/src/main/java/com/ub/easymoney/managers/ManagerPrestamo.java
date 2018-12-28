@@ -56,11 +56,12 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      */
     @Override
     public Prestamo persist(Prestamo entity) throws Exception {
+        if (entity.getFecha() == null) {
+            throw new InvalidParameterException("Prestamo debe tener fecha");
+        }        
         Config conf = new DaoConfig().findFirst();
         int cantImpuesto = (int) (entity.getCantidad() * ((float) conf.getPorcentajeInteresPrestamo() / 100f));
         entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
-        entity.setFecha(UtilsDate.dateWithoutTime());
-
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(entity.getFecha());
         cal.add(Calendar.DAY_OF_YEAR, conf.getDiasPrestamo()); //apartir del dia siguiente        

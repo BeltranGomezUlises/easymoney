@@ -1,8 +1,10 @@
 package com.ub.easymoney.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * utileria de conversion de fechas, herramienta de manejo de fechas donde incluye suma de tiempo, días y conversiones diferentes formatos de presentación
@@ -12,7 +14,7 @@ import java.util.GregorianCalendar;
 public class UtilsDate {
 
     public static Date dateWithoutTime(){
-        Calendar cal = new GregorianCalendar();
+        Calendar cal = new GregorianCalendar();        
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
