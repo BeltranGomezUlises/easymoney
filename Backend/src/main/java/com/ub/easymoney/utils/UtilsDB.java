@@ -7,7 +7,6 @@ package com.ub.easymoney.utils;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import org.jinq.jpa.JinqJPAStreamProvider;
 
 /**
  *
@@ -23,7 +22,6 @@ public class UtilsDB {
      */
     //</editor-fold>
     private static EntityManagerFactory eMFactory;
-    private static JinqJPAStreamProvider streamProvider;
 
     /**
      * PERSISTENCE UNIT NAMES

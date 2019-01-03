@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.ub.easymoney.models.commons.commons.enums;
+package com.ub.easymoney.models.commons.enums;
 
 /**
  * enumerador de estado de operacion
@@ -11,5 +11,5 @@ package com.ub.easymoney.models.commons.commons.enums;
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
 public enum Status {
-    OK, ERROR, WARNING, ACCES_DENIED, INVALID_PARAM, PARCIAL_ACCESS
+    OK, ERROR, WARNING, ACCESS_DENIED, INVALID_PARAM
 }

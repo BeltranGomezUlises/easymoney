@@ -9,7 +9,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.6"
+        versionName "1.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -76,4 +76,12 @@ dependencies {
 
     //ZEBRA SDK
     implementation files('libs/ZSDK_ANDROID_API.jar')
+    //BIXOLON JARs
+    implementation files('libs/jpos118-controls.jar')
+    implementation files('libs/bixolon_printer_v130.jar')
+    implementation files('libs/xerces.jar')
+
+
+    //soom images
+    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 }

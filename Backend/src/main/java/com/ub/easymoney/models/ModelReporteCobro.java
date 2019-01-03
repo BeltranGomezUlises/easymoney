@@ -9,6 +9,7 @@ import java.util.Date;
 
 /**
  * Modelo para generar reporte de cobros
+ *
  * @author Ulises Beltrán Gómez - beltrangomezulises@gmail.com
  */
 public class ModelReporteCobro {

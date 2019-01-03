@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class UtilsWS {
 
-    public static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static IService webServices() {
         return SingletonRetrofit.getIntance().create(IService.class);

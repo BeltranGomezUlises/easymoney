@@ -82,6 +82,7 @@ export default class MovimientoList extends React.Component {
     const limiteSuperior = this.state.activePage * 10;
     let movs = this.state.movimientos.slice(limiteSuperior - 10, limiteSuperior);
     return movs.map((ie) =>{
+      let fechaMov = utils.longToDate(ie.fecha);
       return(
         <Table.Row key={ie.id}>
           <Table.Cell>
@@ -90,7 +91,7 @@ export default class MovimientoList extends React.Component {
             </Header>
           </Table.Cell>
           <Table.Cell>
-            {new Date(ie.fecha).toLocaleDateString()}
+            {fechaMov}            
           </Table.Cell>
           <Table.Cell>
             {ie.usuarioCreador.nombre}

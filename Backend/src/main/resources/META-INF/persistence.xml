@@ -2,25 +2,37 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
     <persistence-unit name="easymoney" transaction-type="RESOURCE_LOCAL">
         <class>com.ub.easymoney.entities.negocio.Multa</class>
-        <class>com.ub.easymoney.entities.negocio.Abono</class>
-        <class>com.ub.easymoney.entities.negocio.Cliente</class>
-        <class>com.ub.easymoney.entities.negocio.Prestamo</class>
-        <class>com.ub.easymoney.entities.admin.Usuario</class>
-        <class>com.ub.easymoney.entities.admin.Config</class>
-        <class>com.ub.easymoney.entities.negocio.Movimiento</class>
         <class>com.ub.easymoney.entities.negocio.EstadoCuenta</class>
-        <class>com.ub.easymoney.entities.negocio.Cobro</class   >
-        <class>com.ub.easymoney.entities.negocio.Capital</class>
+        <class>com.ub.easymoney.entities.Abono</class>
+        <class>com.ub.easymoney.entities.Prestamo</class>
+        <class>com.ub.easymoney.entities.Config</class>
+        <class>com.ub.easymoney.entities.Cliente</class>
+        <class>com.ub.easymoney.entities.Usuario</class>
+        <class>com.ub.easymoney.entities.Cobro</class>
+        <class>com.ub.easymoney.entities.Capital</class>
+        <class>com.ub.easymoney.entities.Movimiento</class>
+        <class>com.ub.easymoney.entities.DistribucionCobro</class>
         <properties>
             <!-- jdbc -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.user" value="postgres"/>
-                        
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em_pruebas"/>
+            <!-- production -->
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
             <property name="javax.persistence.jdbc.password" value=".toString(24);"/>    
             
-<!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
+            <!-- test -->
+            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em_pruebas"/>
+            <property name="javax.persistence.jdbc.password" value=".toString(24);"/>-->
+            
+            
+            <!-- development -->
+            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
             <property name="javax.persistence.jdbc.password" value="2424"/>-->
+      
+            <!--remove for production-->
+            <!--            <property name="eclipselink.logging.level" value="FINE"/>
+            <property name="eclipselink.logging.parameters" value="true"/>-->
+            
         </properties>
     </persistence-unit>
 </persistence>

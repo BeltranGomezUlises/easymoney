@@ -1,7 +1,6 @@
 package com.easymoney.modules.main;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -34,7 +33,6 @@ import com.easymoney.modules.login.LoginActivity;
 import com.easymoney.modules.renovacion.RenovacionActivity;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +43,6 @@ import io.reactivex.functions.Consumer;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView tvInfo;
-    private ListView listaPrestamos;
     private PrestamoAdapter adapterPrestamo;
     private PrestamoRepository prestamoRepository;
     private List<Prestamo> prestamos;
@@ -84,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView txtTipoUsuario = navigationView.getHeaderView(0).findViewById(R.id.tipoUsuario);
 
         //si no es administrador, remover del menu
-        if (!UtilsPreferences.loadLogedUser().isTipo()){
+        if (!UtilsPreferences.loadLogedUser().getTipo()) {
             navigationView.getMenu().findItem(R.id.renovacion).setVisible(false);
         }
 
@@ -95,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tvInfo.setText("Cargando prestamos...");
 
         //crear la lista de prestamos
-        listaPrestamos = findViewById(R.id.prestamoList);
+        ListView listaPrestamos = findViewById(R.id.prestamoList);
         adapterPrestamo = new PrestamoAdapter(new ArrayList<Prestamo>());
         listaPrestamos.setAdapter(adapterPrestamo);
         listaPrestamos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -110,10 +107,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         prestamoRepository = PrestamoRepository.getInstance();
         this.cargarPrestamos(EnumPrestamos.POR_COBRAR_HOY);
-    }
-
-    public String getURLForResource (int resourceId) {
-        return Uri.parse("android.resource://"+R.class.getPackage().getName()+"/" +resourceId).toString();
     }
 
     @Override
@@ -137,13 +130,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.compositeDisposable.clear();
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         Intent intent;
         switch (id) {
-            case R.id.cobros:
+            case R.id.prestamos:
                 break;
             case R.id.renovacion:
                 intent = new Intent(MainActivity.this, RenovacionActivity.class);
@@ -173,32 +172,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void cargarPrestamos(final EnumPrestamos enumPrestamos) {
         compositeDisposable.add(
-                prestamoRepository.findAll(enumPrestamos)
-                        .subscribeOn(SchedulerProvider.ioT())
-                        .observeOn(SchedulerProvider.uiT())
-                        .subscribe(new Consumer<Response<List<Prestamo>, Object>>() {
-                                       @Override
-                                       public void accept(Response<List<Prestamo>, Object> r) throws Exception {
-                                           if (!r.getData().isEmpty()) {
-                                               tvInfo.setVisibility(View.GONE);
-                                               if (enumPrestamos == EnumPrestamos.POR_COBRAR_HOY) {
-                                                   setPrestamos(filtrarPorCobrarHoy(r.getData()));
-                                               } else {
-                                                   setPrestamos(r.getData());
-                                               }
-
-                                               adapterPrestamo.replaceData(getPrestamos());
-                                           } else {
-                                               tvInfo.setText("Sin préstamos por cobrar");
-                                           }
-                                       }
-                                   }, new Consumer<Throwable>() {
-                                       @Override
-                                       public void accept(Throwable throwable) throws Exception {
-                                           throwable.printStackTrace();
-                                       }
-                                   }
-                        )
+                prestamoRepository.findAll(enumPrestamos, new Consumer<Response<List<Prestamo>, Object>>() {
+                    @Override
+                    public void accept(Response<List<Prestamo>, Object> r) throws Exception {
+                        if (!r.getData().isEmpty()) {
+                            if (enumPrestamos == EnumPrestamos.POR_COBRAR_HOY) {
+                                setPrestamos(filtrarPorCobrarHoy(r.getData()));
+                            } else {
+                                setPrestamos(r.getData());
+                            }
+                            if (!getPrestamos().isEmpty()){
+                                tvInfo.setVisibility(View.GONE);
+                            }else{
+                                tvInfo.setVisibility(View.VISIBLE);
+                                tvInfo.setText("Sín prestamos");
+                            }
+                            adapterPrestamo.replaceData(getPrestamos());
+                        } else {
+                            tvInfo.setVisibility(View.VISIBLE);
+                            tvInfo.setText("Sin préstamos por cobrar");
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
+                    }
+                })
         );
     }
 

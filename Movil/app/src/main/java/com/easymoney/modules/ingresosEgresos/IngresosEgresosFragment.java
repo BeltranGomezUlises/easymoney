@@ -26,7 +26,6 @@ import java.util.List;
 public class IngresosEgresosFragment extends IngresosEgresosContract.Fragment {
 
     private MovimientoAdapter movimientoAdapter;
-    private IngresosEgresosPresenter presenter;
 
     @Nullable
     @Override
@@ -37,7 +36,7 @@ public class IngresosEgresosFragment extends IngresosEgresosContract.Fragment {
         movimientoAdapter = new MovimientoAdapter(new ArrayList<Movimiento>());
         listView.setAdapter(movimientoAdapter);
 
-        this.presenter.subscribe();
+        getPresenter().subscribe();
 
         return root;
     }

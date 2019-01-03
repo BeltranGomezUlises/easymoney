@@ -46,7 +46,7 @@ public class LoginPresenter extends LoginContract.Presenter {
                                            String token = t.getMeta().getMetaData().toString();
                                            Usuario usuario = t.getData().getUsuario();
                                            Config config = t.getData().getConfig();
-                                           String tipoUsuario = usuario.isTipo() ? "Administrador" : "Cobrador";
+                                           String tipoUsuario = usuario.getTipo() ? "Administrador" : "Cobrador";
 
                                            UtilsPreferences.saveToken(token);
                                            UtilsPreferences.saveLogedUser(usuario);

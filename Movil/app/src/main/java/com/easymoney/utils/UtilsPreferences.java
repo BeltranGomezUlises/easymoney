@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -27,10 +26,15 @@ public class UtilsPreferences {
     private static final String CONFIG = "config";
     private static final String COBRADO = "cobrado";
     private static final String MACIMPRESORA = "macImpresora";
+    private static final String MODELOIMPRESORA = "modeloImpresora";
 
     private static Calendar cal;
 
     private static Context mContext;
+
+    public static Context getContext(){
+        return mContext;
+    }
 
     private static Calendar getCalendar() {
         if (cal == null) {
@@ -98,9 +102,9 @@ public class UtilsPreferences {
             Login.Request req = objectMapper.readValue(settings.getString(LOGIN, ""), Login.Request.class);
             long lastLoginTime = settings.getLong(LOGIN_TIME, 0);
             long actualTime = System.currentTimeMillis();
-            if ((actualTime - lastLoginTime) > (1000 * 60 * 60)){ // si ya paso una hora, regresar null
+            if ((actualTime - lastLoginTime) > (1000 * 60 * 60)) { // si ya paso una hora, regresar null
                 return null;
-            }else{
+            } else {
                 return req;
             }
         } catch (IOException e) {
@@ -210,5 +214,37 @@ public class UtilsPreferences {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Metodo para guardar el modelo de la impresora seleccionada
+     *
+     * @param modeloImpresora
+     */
+    public static void savePrinterModel(String modeloImpresora) {
+        SharedPreferences settings = mContext.getSharedPreferences(MODELOIMPRESORA, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        try {
+            editor.putString(MODELOIMPRESORA, modeloImpresora);
+            editor.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo para obtener el modelo de la impresora guardada.
+     *
+     * @return cadena con el nombre del modelo
+     */
+    public static String loadPrinterModel() {
+        SharedPreferences settings = mContext.getSharedPreferences(MODELOIMPRESORA, 0);
+        String modelo = "";
+        try {
+            modelo = settings.getString(MODELOIMPRESORA, "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return modelo;
     }
 }

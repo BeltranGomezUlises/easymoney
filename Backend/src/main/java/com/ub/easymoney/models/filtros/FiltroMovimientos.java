@@ -21,7 +21,7 @@ public class FiltroMovimientos {
     /**
      * true si es de tipo ingreso, false si es de tipo egreso
      */
-    private Boolean tipoMovimiento;   
+    private Boolean tipoMovimiento;
     /**
      * fecha inicial del filtro de fechas
      */
@@ -45,7 +45,7 @@ public class FiltroMovimientos {
 
     public void setCobradorId(Integer cobradorId) {
         this.cobradorId = cobradorId;
-    }  
+    }
 
     public Date getFechaInicial() {
         return fechaInicial;

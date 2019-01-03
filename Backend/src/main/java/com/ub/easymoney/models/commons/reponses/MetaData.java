@@ -7,7 +7,8 @@ package com.ub.easymoney.models.commons.reponses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.ub.easymoney.models.commons.commons.enums.Status;
+import com.ub.easymoney.models.commons.enums.Status;
+
 
 /**
  * modelo contenedor de los metadatos de una respuesta
@@ -21,7 +22,6 @@ public class MetaData {
     private Status status;
     private String devMessage;
 
-    @com.webcohesion.enunciate.metadata.ClientName(value = "data")
     private Object metaData;
 
     public MetaData() {

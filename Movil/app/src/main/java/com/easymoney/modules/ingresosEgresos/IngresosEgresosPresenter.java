@@ -6,6 +6,7 @@ import com.easymoney.entities.Movimiento;
 import com.easymoney.models.EnumRangoFecha;
 import com.easymoney.models.EnumTipoMovimiento;
 import com.easymoney.models.services.Response;
+import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class IngresosEgresosPresenter extends IngresosEgresosContract.Presenter 
                 repository.altaMovimiento(movimiento)
                         .subscribe(new Consumer<Response<Movimiento, Object>>() {
                             @Override
-                            public void accept(Response<Movimiento, Object> r) throws Exception {
+                            public void accept(Response<Movimiento, Object> r) {
                                 getFragment().stopShowLoading();
                                 agregarMovimientoLista(r.getData());
                             }
@@ -55,8 +56,6 @@ public class IngresosEgresosPresenter extends IngresosEgresosContract.Presenter 
         getFragment().showLoading();
         compositeDisposable.add(
                 repository.findAll(tipoMovimiento, enumRangoFecha)
-                        .subscribeOn(SchedulerProvider.ioT())
-                        .observeOn(SchedulerProvider.uiT())
                         .subscribe(new Consumer<Response<List<Movimiento>, Object>>() {
                                        @Override
                                        public void accept(final Response<List<Movimiento>, Object> r) throws Exception {
@@ -64,7 +63,8 @@ public class IngresosEgresosPresenter extends IngresosEgresosContract.Presenter 
                                            evalResponse(r, new Runnable() {
                                                @Override
                                                public void run() {
-                                                   getFragment().replaceMovimientoList(r.getData());
+                                                   List<Movimiento> movimientos = r.getData();
+                                                   getFragment().replaceMovimientoList(movimientos);
                                                }
                                            });
                                        }

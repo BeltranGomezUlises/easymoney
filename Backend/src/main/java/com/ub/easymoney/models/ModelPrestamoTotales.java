@@ -12,37 +12,18 @@ package com.ub.easymoney.models;
  */
 public class ModelPrestamoTotales {
 
+    /*totales informativos*/
     private int totalAbonado;
     private int totalMultado;
     private int totalRecuperado;
     private int porcentajePagado;
-    private int porPagar;
+    private int porPagarIrAlCorriente;
+    private int porPagarLiquidar;
 
-    public ModelPrestamoTotales() {
-    }
-
-    public ModelPrestamoTotales(int totalAbonado, int totalMultado, int totalRecuperado, int porcentajePagado) {
-        this.totalAbonado = totalAbonado;
-        this.totalMultado = totalMultado;
-        this.totalRecuperado = totalRecuperado;
-        this.porcentajePagado = porcentajePagado;
-    }
-
-    public ModelPrestamoTotales(int totalAbonado, int totalMultado, int totalRecuperado, int porcentajePagado, int porPagar) {
-        this.totalAbonado = totalAbonado;
-        this.totalMultado = totalMultado;
-        this.totalRecuperado = totalRecuperado;
-        this.porcentajePagado = porcentajePagado;
-        this.porPagar = porPagar;
-    }
-
-    public int getPorPagar() {
-        return porPagar;
-    }
-
-    public void setPorPagar(int porPagar) {
-        this.porPagar = porPagar;
-    }
+    /*Totales a cobrar*/
+    private int totalAbonar;
+    private int totalMultar;
+    private int totalMultarMes;
 
     public int getTotalAbonado() {
         return totalAbonado;
@@ -74,6 +55,46 @@ public class ModelPrestamoTotales {
 
     public void setPorcentajePagado(int porcentajePagado) {
         this.porcentajePagado = porcentajePagado;
+    }
+
+    public int getTotalAbonar() {
+        return totalAbonar;
+    }
+
+    public void setTotalAbonar(int totalAbonar) {
+        this.totalAbonar = totalAbonar;
+    }
+
+    public int getTotalMultar() {
+        return totalMultar;
+    }
+
+    public void setTotalMultar(int totalMultar) {
+        this.totalMultar = totalMultar;
+    }
+
+    public int getTotalMultarMes() {
+        return totalMultarMes;
+    }
+
+    public void setTotalMultarMes(int totalMultarMes) {
+        this.totalMultarMes = totalMultarMes;
+    }
+
+    public int getPorPagarIrAlCorriente() {
+        return porPagarIrAlCorriente;
+    }
+
+    public void setPorPagarIrAlCorriente(int porPagarIrAlCorriente) {
+        this.porPagarIrAlCorriente = porPagarIrAlCorriente;
+    }
+
+    public int getPorPagarLiquidar() {
+        return porPagarLiquidar;
+    }
+
+    public void setPorPagarLiquidar(int porPagarLiquidar) {
+        this.porPagarLiquidar = porPagarLiquidar;
     }
 
 }

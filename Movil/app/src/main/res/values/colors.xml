@@ -6,7 +6,9 @@
     <color name="colorAccent">#000000</color>
     <color name="darkGray">#545252</color>
     <color name="black">#000000</color>
-    <color name="warning">#c2bb3b</color>
-    <color name="positive">#58c744</color>
-    <color name="error">#c91d1d</color>
+
+    <color name="warning">#d1c71a</color>
+    <color name="positive">#51bc3e</color>
+    <color name="error">#b61818</color>
+
 </resources>

@@ -1,6 +1,8 @@
 package com.easymoney.modules.configuracionImpresoras;
 
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,11 +17,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.easymoney.R;
+import com.easymoney.modules.configuracionImpresoras.Adapters.ImpresorasAdapter;
 import com.easymoney.utils.UtilsPreferences;
 
 import java.io.IOException;
@@ -38,12 +42,13 @@ public class DispositivosBTActivity extends AppCompatActivity {
     private static final int BLUETOOTH_ENABLED = 1;
     private DevicesListAdapter devicesAdapter;
     private BluetoothAdapter bluetoothAdapter;
-    private ListView listDevices;
-    private TextView emptySector;
     private ProgressBar progressBar;
-    private DevicesListAdapter.BluetoothItem item;
-    private BluetoothDevice device;
     private String macAddress;
+    private Dialog dialog;
+    private Button btnCancelarModelo;
+    private Context context;
+    private ImpresorasAdapter adapter;
+    private String modelo;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -56,8 +61,13 @@ public class DispositivosBTActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 showMessage("Búsqueda finalizada");
             } else {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                devicesAdapter.addItem(device.getName(), device.getAddress(), true);
+                int tipoDevice = device.getBluetoothClass().getDeviceClass(); //1664
+                int tipoDeviceMajor = device.getBluetoothClass().getMajorDeviceClass();//1536
+                if(tipoDevice == 1664 && tipoDeviceMajor == BluetoothClass.Device.Major.IMAGING){
+                    devicesAdapter.addItem(device.getName(), device.getAddress(), true);
+                }
             }
         }
     };
@@ -68,11 +78,12 @@ public class DispositivosBTActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dispositivos_bt);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        context = DispositivosBTActivity.this;
 
         progressBar = findViewById(R.id.indeterminateBar);
 
-        listDevices = findViewById(R.id.listBluetooth);
-        emptySector = findViewById(R.id.emptyList);
+        ListView listDevices = findViewById(R.id.listBluetooth);
+        TextView emptySector = findViewById(R.id.emptyList);
 
         listDevices.setEmptyView(emptySector);
         devicesAdapter = new DevicesListAdapter();
@@ -121,25 +132,52 @@ public class DispositivosBTActivity extends AppCompatActivity {
      * @param position posición de la lista del dispositivo seleccionado.
      */
     protected void onListViewClick(int position) {
-        item = (DevicesListAdapter.BluetoothItem) devicesAdapter.getItem(position);
-        macAddress = item.getMacAddress();
-        UtilsPreferences.saveMacPrinter(macAddress);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BTPrinterDevice btPrinterDevice = BTPrinterDevice.getInstance();
-                try {
-                    btPrinterDevice.connectToClient(macAddress);
-                    Thread.sleep(150);
-                    btPrinterDevice.disconnectFromClient();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        try {
+            dialog = new Dialog(context);
+            dialog.setContentView(R.layout.dialog_modelos_impresoras);
+            dialog.setTitle("Seleccione modelo de impresora");
+            dialog.setCancelable(true);
+            DevicesListAdapter.BluetoothItem item = (DevicesListAdapter.BluetoothItem) devicesAdapter.getItem(position);
+            macAddress = item.getMacAddress();
+            UtilsPreferences.saveMacPrinter(macAddress);
+
+            ListView listTipoImpresora = (ListView) dialog.findViewById(R.id.listTipoImpresora);
+            btnCancelarModelo = dialog.findViewById(R.id.btnCancelar);
+            adapter = new ImpresorasAdapter(context);
+            listTipoImpresora.setAdapter(adapter);
+            listTipoImpresora.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                public void onItemClick(AdapterView<?> parent, View view, int position,	long id) {
+                    modelo = (String) adapter.getItem(position);
+                    UtilsPreferences.savePrinterModel(modelo);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            BTPrinterDevice btPrinterDevice = BTPrinterDevice.getInstance();
+                            try {
+                                btPrinterDevice.connectToClient(macAddress);
+                                Thread.sleep(150);
+                                btPrinterDevice.disconnectFromClient();
+                            } catch (IOException | InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            finish();
+                        }
+                    }).start();
                 }
-                finish();
+            });
+            dialog.show();
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+
+        btnCancelarModelo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
             }
-        }).start();
+        });
     }
 
     @Override

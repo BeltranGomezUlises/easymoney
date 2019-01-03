@@ -26,13 +26,13 @@ public abstract class BasePresenter<T extends BaseFragment> {
                 }
                 break;
             case WARNING:
-                if (msg != null & !msg.isEmpty()) {
+                if (msg != null && !msg.isEmpty()) {
                     getFragment().showWARNING(msg);
                     getFragment().hideKeyBoard();
                 }
                 break;
             case ERROR:
-                if (msg != null & !msg.isEmpty()) {
+                if (msg != null && !msg.isEmpty()) {
                     getFragment().showERROR(msg);
                     getFragment().hideKeyBoard();
                 }
@@ -54,7 +54,7 @@ public abstract class BasePresenter<T extends BaseFragment> {
                 }
                 break;
             case ERROR:
-                if (msg != null & !msg.isEmpty()) {
+                if (msg != null && !msg.isEmpty()) {
                     getFragment().showERROR(msg);
                     getFragment().hideKeyBoard();
                 }

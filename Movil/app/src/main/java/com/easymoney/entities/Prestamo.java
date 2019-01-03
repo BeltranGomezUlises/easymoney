@@ -1,30 +1,42 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.easymoney.entities;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
- */
 public class Prestamo implements Serializable {
 
-
+    private static final long serialVersionUID = 1L;
     private Integer id;
     private Date fecha;
     private int cantidad;
     private int cantidadPagar;
     private Date fechaLimite;
-    private List<Abono> abonos;
+    private int cobroDiario;
     private Cliente cliente;
     private Usuario cobrador;
-    private int cobroDiario;
+    private List<Cobro> cobroList;
+    private List<Abono> abonoList;
 
     public Prestamo() {
     }
 
     public Prestamo(Integer id) {
         this.id = id;
+    }
+
+    public Prestamo(Integer id, Date fecha, int cantidad, int cantidadPagar, Date fechaLimite, int cobroDiario) {
+        this.id = id;
+        this.fecha = fecha;
+        this.cantidad = cantidad;
+        this.cantidadPagar = cantidadPagar;
+        this.fechaLimite = fechaLimite;
+        this.cobroDiario = cobroDiario;
     }
 
     public Integer getId() {
@@ -67,12 +79,12 @@ public class Prestamo implements Serializable {
         this.fechaLimite = fechaLimite;
     }
 
-    public List<Abono> getAbonos() {
-        return abonos;
+    public int getCobroDiario() {
+        return cobroDiario;
     }
 
-    public void setAbonos(List<Abono> abonos) {
-        this.abonos = abonos;
+    public void setCobroDiario(int cobroDiario) {
+        this.cobroDiario = cobroDiario;
     }
 
     public Cliente getCliente() {
@@ -91,41 +103,40 @@ public class Prestamo implements Serializable {
         this.cobrador = cobrador;
     }
 
-    public int getCobroDiario() {
-        return cobroDiario;
+    public List<Cobro> getCobroList() {
+        return cobroList;
     }
 
-    public void setCobroDiario(int cobroDiario) {
-        this.cobroDiario = cobroDiario;
+    public void setCobroList(List<Cobro> cobroList) {
+        this.cobroList = cobroList;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public List<Abono> getAbonoList() {
+        return abonoList;
+    }
 
-        Prestamo prestamo = (Prestamo) o;
-
-        return id != null ? id.equals(prestamo.id) : prestamo.id == null;
+    public void setAbonoList(List<Abono> abonoList) {
+        this.abonoList = abonoList;
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
 
     @Override
-    public String toString() {
-        return "Prestamo{" +
-                "id=" + id +
-                ", fecha=" + fecha +
-                ", cantidad=" + cantidad +
-                ", cantidadPagar=" + cantidadPagar +
-                ", fechaLimite=" + fechaLimite +
-                ", abonos=" + abonos +
-                ", cliente=" + cliente +
-                ", cobrador=" + cobrador +
-                '}';
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Prestamo)) {
+            return false;
+        }
+        Prestamo other = (Prestamo) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
-}
 
+}

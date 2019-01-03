@@ -1,15 +1,18 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.easymoney.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Created by ulises on 03/03/2018.
- */
+public class Movimiento implements Serializable{
 
-public class Movimiento {
-
+    private static final long serialVersionUID = 1L;
     private Integer id;
-    private double cantidad;
+    private int cantidad;
     private Date fecha;
     private String descripcion;
     private Usuario usuarioCreador;
@@ -21,24 +24,16 @@ public class Movimiento {
         this.id = id;
     }
 
-    public Movimiento(Integer id, double cantidad, Date fecha) {
+    public Movimiento(Integer id, int cantidad, Date fecha) {
         this.id = id;
         this.cantidad = cantidad;
         this.fecha = fecha;
     }
 
-    public Movimiento(double cantidad, Date fecha, String descripcion, Usuario usuarioCreador) {
+    public Movimiento(int cantidad, Date fecha, String descripcion, Usuario usuarioCreador) {
         this.cantidad = cantidad;
         this.fecha = fecha;
         this.descripcion = descripcion;
-        this.usuarioCreador = usuarioCreador;
-    }
-
-    public Usuario getUsuarioCreador() {
-        return usuarioCreador;
-    }
-
-    public void setUsuarioCreador(Usuario usuarioCreador) {
         this.usuarioCreador = usuarioCreador;
     }
 
@@ -50,11 +45,11 @@ public class Movimiento {
         this.id = id;
     }
 
-    public double getCantidad() {
+    public int getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(double cantidad) {
+    public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
 
@@ -74,6 +69,14 @@ public class Movimiento {
         this.descripcion = descripcion;
     }
 
+    public Usuario getUsuarioCreador() {
+        return usuarioCreador;
+    }
+
+    public void setUsuarioCreador(Usuario usuarioCreador) {
+        this.usuarioCreador = usuarioCreador;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -83,11 +86,15 @@ public class Movimiento {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Movimiento)) {
             return false;
         }
         Movimiento other = (Movimiento) object;
-        return this.id.equals(other.id);
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override

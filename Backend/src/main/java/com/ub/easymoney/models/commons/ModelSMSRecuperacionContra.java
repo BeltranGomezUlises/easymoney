@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.ub.easymoney.models.commons.commons;
+package com.ub.easymoney.models.commons;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;

@@ -122,11 +122,10 @@ export default class Cobradores extends React.Component{
         )
       }else{
         return (
-          <div>
+          <div style={{minHeight:300}}>
             <Dimmer active inverted>
               <Loader size='large'>Descargando...</Loader>
-            </Dimmer>
-            <Image src='assets/images/descargandoCobradores.png'/>
+            </Dimmer>            
           </div>
         )
       }

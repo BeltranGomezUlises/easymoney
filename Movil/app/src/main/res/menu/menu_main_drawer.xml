@@ -5,9 +5,9 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/cobros"
+            android:id="@+id/prestamos"
             android:icon="@drawable/ic_cobros"
-            android:title="Cobros" />
+            android:title="Prestamos" />
         <item
             android:id="@+id/IE"
             android:icon="@drawable/ic_money_square"

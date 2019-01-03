@@ -11,10 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.easymoney.R;
-import com.easymoney.models.ModelTotalAPagar;
 
 /**
  * Created by ulises on 21/01/2018.
@@ -22,37 +20,28 @@ import com.easymoney.models.ModelTotalAPagar;
 @SuppressLint("ValidFragment")
 public class CobroDialogFragment extends DialogFragment {
 
-    private DetallePrestamoPresenter presenter;
+    private DetallePrestamoContract.Presenter presenter;
     private EditText txtAbonar;
     private EditText txtDescripcion;
+    private final int cantidadParaIrAlCorriente;
 
     @SuppressLint("ValidFragment")
-    public CobroDialogFragment(DetallePrestamoPresenter presenter) {
+    public CobroDialogFragment(DetallePrestamoContract.Presenter presenter, int cantidadParaIrAlCorriente) {
         this.presenter = presenter;
+        this.cantidadParaIrAlCorriente = cantidadParaIrAlCorriente;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
         View rootView = inflater.inflate(R.layout.dialog_cobro, null);
-        TextView tvAbono = rootView.findViewById(R.id.tvAbono);
-        TextView tvMulta = rootView.findViewById(R.id.tvMulta);
-        TextView tvMultaMes = rootView.findViewById(R.id.tvMultaMes);
+
         txtAbonar = rootView.findViewById(R.id.txtAbonar);
         txtDescripcion = rootView.findViewById(R.id.txtDes);
 
-        final ModelTotalAPagar model = presenter.getModelTotalAPagar();
-
-        tvAbono.setText("$" + String.valueOf(model.getTotalAbonar()));
-        tvMulta.setText("$" + String.valueOf(model.getTotalMultar()));
-        tvMultaMes.setText("$" + String.valueOf(model.getTotalMultarMes()));
-
-        txtAbonar.setText(String.valueOf(model.getTotalPagar()));
+        txtAbonar.setText(String.valueOf(cantidadParaIrAlCorriente));
 
         builder.setView(rootView)
                 .setTitle("Abonar")
@@ -73,8 +62,7 @@ public class CobroDialogFragment extends DialogFragment {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (validateIns()) {
-                            abonar(model);
+                        if (validateIns() && abonar()) {
                             dialog.dismiss();
                         }
                     }
@@ -87,10 +75,16 @@ public class CobroDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void abonar(final ModelTotalAPagar model) {
+    private boolean abonar() {
         final int abono = Integer.parseInt(txtAbonar.getText().toString());
+        if (abono <= 0) {
+            txtAbonar.setError("Abono debe ser mayor a 0");
+            txtAbonar.requestFocus();
+            return false;
+        }
         final String multaDes = txtDescripcion.getText().toString();
-        presenter.abonarAlPrestamo(abono,multaDes, model);
+        presenter.abonar(abono, multaDes);
+        return true;
     }
 
     private boolean validateIns() {

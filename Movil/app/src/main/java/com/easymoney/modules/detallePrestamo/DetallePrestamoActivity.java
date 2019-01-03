@@ -1,7 +1,7 @@
 package com.easymoney.modules.detallePrestamo;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -9,14 +9,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.easymoney.R;
 import com.easymoney.entities.Prestamo;
 
 public class DetallePrestamoActivity extends AppCompatActivity {
 
-    DetallePrestamoPresenter presenter;
+    private DetallePrestamoPresenter presenter;
+    private AbonoFragment abonoFragment;
+    private ConsultaFragment consultaFragment;
+    private CobroFragment cobroFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,25 +26,28 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detalle_prestamo);
         //asegurar primero el presentador para poder enlazar los fragmentos
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
+        boolean enRenovacion = getIntent().getBooleanExtra("renovacion", false);
+
         presenter = new DetallePrestamoPresenter(prestamo);
+        consultaFragment = new ConsultaFragment(enRenovacion);
+        abonoFragment = new AbonoFragment();
+        cobroFragment = new CobroFragment();
+
+        FragmentController fragmentController = new FragmentController(this, abonoFragment, consultaFragment, cobroFragment);
+        presenter.setFragment(fragmentController);
+        fragmentController.setPresenter(presenter);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
         ViewPager mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DetallePrestamoActivity.this.lanzarModalCobro();
-            }
-        });
-        fab.setVisibility(View.GONE);
-        presenter.setFab(fab);
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager); //bind with view pager
     }
 
     @Override
@@ -57,14 +62,9 @@ public class DetallePrestamoActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    protected void onDestroy() {
+        super.onDestroy();
         presenter.unsubscribe();
-        super.onBackPressed();
-    }
-
-    private void lanzarModalCobro() {
-        CobroDialogFragment newFragment = new CobroDialogFragment(presenter);
-        newFragment.show(getFragmentManager(), "cobro");
     }
 
     /**
@@ -81,9 +81,11 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return ConsultaFragment.getInstance(presenter);
+                    return consultaFragment;
                 case 1:
-                    return AbonoFragment.getInstance(presenter);
+                    return abonoFragment;
+                case 2:
+                    return cobroFragment;
                 default:
                     return null;
             }
@@ -91,8 +93,21 @@ public class DetallePrestamoActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "Detalle";
+                case 1:
+                    return "Abonos";
+                case 2:
+                    return "Cobros";
+                default:
+                    return "";
+            }
         }
     }
-
 }

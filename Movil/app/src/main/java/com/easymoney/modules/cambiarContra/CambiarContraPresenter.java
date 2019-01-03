@@ -4,7 +4,6 @@ import com.easymoney.data.repositories.UsuarioRepository;
 import com.easymoney.entities.Usuario;
 import com.easymoney.models.ModelCambiarContra;
 import com.easymoney.models.services.Response;
-import com.easymoney.utils.schedulers.SchedulerProvider;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -30,12 +29,10 @@ public class CambiarContraPresenter extends CambiarContraContract.Presenter {
     public void cambiarContra(ModelCambiarContra modelCambiarContra) {
         compositeDisposable.clear();
         getFragment().showLoading();
-        compositeDisposable.add(this.usuarioRepository.cambiarContraseña(modelCambiarContra)
-                .observeOn(SchedulerProvider.uiT())
-                .subscribeOn(SchedulerProvider.ioT())
-                .subscribe(new Consumer<Response<Usuario, Object>>() {
+        compositeDisposable.add(
+                this.usuarioRepository.cambiarContraseña(modelCambiarContra, new Consumer<Response<Usuario, Object>>() {
                     @Override
-                    public void accept(Response<Usuario, Object> r) throws Exception {
+                    public void accept(Response<Usuario, Object> r) {
                         getFragment().stopShowLoading();
                         evalResponse(r, new Runnable() {
                             @Override
@@ -46,7 +43,7 @@ public class CambiarContraPresenter extends CambiarContraContract.Presenter {
                     }
                 }, new Consumer<Throwable>() {
                     @Override
-                    public void accept(Throwable throwable) throws Exception {
+                    public void accept(Throwable throwable) {
                         getFragment().stopShowLoading();
                         getFragment().showERROR(ERROR_COMUNICACION);
                     }

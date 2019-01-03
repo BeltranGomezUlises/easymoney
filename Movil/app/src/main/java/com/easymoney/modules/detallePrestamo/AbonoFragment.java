@@ -2,7 +2,6 @@ package com.easymoney.modules.detallePrestamo;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,40 +12,39 @@ import android.widget.TextView;
 import com.easymoney.R;
 import com.easymoney.entities.Abono;
 import com.easymoney.utils.UtilsDate;
+import com.easymoney.utils.baseClases.BaseFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by ulises on 16/01/2018.
  */
-public class AbonoFragment extends Fragment {
+public class AbonoFragment extends BaseFragment {
 
-    private AbonoAdapter abonoAdapter;
-
-    public static AbonoFragment getInstance(DetallePrestamoPresenter presenter) {
-        AbonoFragment fragment = new AbonoFragment();
-        presenter.setAbonoFragment(fragment);
-        return fragment;
-    }
+    private AbonoAdapter abonoAdapter = new AbonoAdapter(new ArrayList<Abono>());
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detalle_prestamo_abonos, container, false);
-
         ListView listView = rootView.findViewById(R.id.abonoList);
-        abonoAdapter = new AbonoAdapter(new ArrayList<Abono>());
         listView.setAdapter(abonoAdapter);
-
         return rootView;
     }
-
 
     public void replaceData(List<Abono> abonos) {
         List<Abono> abonosFiltrado = new ArrayList<>();
         for (Abono abono : abonos) {
-            if (abono.isAbonado()) abonosFiltrado.add(abono);
+            if (abono.getAbonado()) abonosFiltrado.add(abono);
         }
+        Collections.sort(abonosFiltrado, new Comparator<Abono>() {
+            @Override
+            public int compare(Abono a1, Abono a2) {
+                return a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha());
+            }
+        });
         abonoAdapter.replaceData(abonosFiltrado);
     }
 
@@ -99,8 +97,8 @@ public class AbonoFragment extends Fragment {
 
             tvFecha.setText(UtilsDate.format_D_MM_YYYY(abono.getAbonoPK().getFecha()));
             tvAbono.setText("$" + abono.getCantidad());
-            tvMulta.setText("$" + abono.getMulta().getMulta());
-            tvDescripcion.setText(abono.getMulta().getMultaDes());
+            tvMulta.setText("$" + abono.getMulta());
+            tvDescripcion.setText(abono.getMultaDes());
 
             return rowView;
         }

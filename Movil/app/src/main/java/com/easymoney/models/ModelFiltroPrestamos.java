@@ -3,7 +3,6 @@ package com.easymoney.models;
 import java.util.Date;
 
 public class ModelFiltroPrestamos {
-
     private Integer clienteId;
     private Integer cobradorId;
     private Date fechaPrestamoInicial;
@@ -67,5 +66,4 @@ public class ModelFiltroPrestamos {
     public void setFechaLimiteFinal(Date fechaLimiteFinal) {
         this.fechaLimiteFinal = fechaLimiteFinal;
     }
-
 }
