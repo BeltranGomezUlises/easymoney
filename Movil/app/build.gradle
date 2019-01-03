@@ -80,4 +80,8 @@ dependencies {
     implementation files('libs/jpos118-controls.jar')
     implementation files('libs/bixolon_printer_v130.jar')
     implementation files('libs/xerces.jar')
+
+
+    //soom images
+    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
 }

@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.easymoney.R;
 import com.easymoney.entities.Cliente;
+import com.easymoney.utils.DownloadImageTask;
+import com.easymoney.utils.services.IService;
 
 import java.util.List;
 
@@ -73,6 +75,11 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClienteC
 
         public void setCliente(Cliente cliente) {
             this.cliente = cliente;
+
+            if (cliente.getImagen() != null) {
+                new DownloadImageTask(img)
+                        .execute(IService.END_POINT + "utilerias/getFile/" + cliente.getImagen());
+            }
             txtNombre.setText(cliente.getNombre());
             txtApodo.setText(cliente.getApodo());
             txtDireccion.setText(cliente.getDireccion());

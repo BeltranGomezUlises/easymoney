@@ -16,6 +16,7 @@ public class Cliente implements Serializable {
     private String telefono;
     private String apodo;
     private String diasSinMulta;
+    private String imagen;
 
     public Cliente() {
     }
@@ -76,6 +77,14 @@ public class Cliente implements Serializable {
 
     public void setDiasSinMulta(String diasSinMulta) {
         this.diasSinMulta = diasSinMulta;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     @Override

@@ -1,21 +1,28 @@
 package com.easymoney.modules.detallePrestamo;
 
 import android.annotation.SuppressLint;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.easymoney.R;
+import com.easymoney.entities.Cliente;
 import com.easymoney.entities.DistribucionCobro;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.ModelPrestamoTotales;
+import com.easymoney.utils.DownloadImageTask;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.baseClases.BaseFragment;
+import com.easymoney.utils.services.IService;
+import com.github.chrisbanes.photoview.PhotoView;
 
 /**
  * Created by ulises on 15/01/2018.
@@ -23,6 +30,7 @@ import com.easymoney.utils.baseClases.BaseFragment;
 @SuppressLint("ValidFragment")
 public class ConsultaFragment extends BaseFragment {
 
+    private ImageView imgCliente;
     private TextView tvNombreCliente;
     private TextView tvApodoCliente;
     private TextView tvNumPrestamo;
@@ -61,6 +69,21 @@ public class ConsultaFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detalle_prestamo_consulta, container, false);
+
+        imgCliente = rootView.findViewById(R.id.imgCliente);
+        imgCliente.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
+                View mView = getLayoutInflater().inflate(R.layout.dialog_image, null);
+                PhotoView photoView = mView.findViewById(R.id.imageView);
+                photoView.setImageBitmap(((BitmapDrawable)imgCliente.getDrawable()).getBitmap());
+                mBuilder.setView(mView);
+                AlertDialog mDialog = mBuilder.create();
+                mDialog.show();
+            }
+        });
+
 
         tvNombreCliente = rootView.findViewById(R.id.tvNombreCliente);
         tvApodoCliente = rootView.findViewById(R.id.tvApodoCliente);
@@ -131,6 +154,13 @@ public class ConsultaFragment extends BaseFragment {
         tvAbonoDiario.setText("$" + prestamo.getCobroDiario());
         tvFechaHoraPrestamo.setText(UtilsDate.format_D_MM_YYYY(prestamo.getFecha()));
         tvFechaLimite.setText(UtilsDate.format_D_MM_YYYY(prestamo.getFechaLimite()));
+
+        Cliente cliente = prestamo.getCliente();
+        if (cliente.getImagen() != null) {
+            new DownloadImageTask(imgCliente)
+                    .execute(IService.END_POINT + "utilerias/getFile/" + cliente.getImagen());
+        }
+
     }
 
     public void setTotales(ModelPrestamoTotales model) {
