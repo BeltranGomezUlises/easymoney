@@ -42,7 +42,7 @@ export default class ClientesLiquidados extends React.Component{
           <Table.Cell>{c.nombre}</Table.Cell>
           <Table.Cell>{c.apodo}</Table.Cell>
           <Table.Cell>{c.telefono}</Table.Cell>
-          <Table.Cell>{new Date(c.fechaUltimoAbono).toJSON().split('T')[0]}</Table.Cell>
+          <Table.Cell>{utils.longToDate(c.fechaUltimoAbono)}</Table.Cell>
         </Table.Row>
       );
     })

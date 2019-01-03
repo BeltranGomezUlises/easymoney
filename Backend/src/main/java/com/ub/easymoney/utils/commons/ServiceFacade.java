@@ -33,6 +33,7 @@ import static com.ub.easymoney.utils.UtilsService.setOkResponse;
 import static com.ub.easymoney.utils.UtilsService.setWarningResponse;
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -42,6 +43,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -64,19 +66,21 @@ public class ServiceFacade<T extends IEntity<K>, K> {
     public final ManagerFacade<T, K> getManager() {
         return manager;
     }
-
-    /**
-     * proporciona el listado de las entidades de esta clase servicio
-     *
-     * @param token token de sesion
-     * @return reponse, con su campo data asignado con una lista de las entidades de esta clase servicio
-     */
+    
     @GET
-    public Response<List<T>> listar(@HeaderParam("Authorization") String token) {
+    public Response<List> findAll(@HeaderParam("Authorization") String token,
+            @QueryParam("select") String select,
+            @QueryParam("from") Integer from,
+            @QueryParam("to") Integer to,
+            @QueryParam("orderBy") String orderBy) {
         Response response = new Response();
         try {
-            this.manager.setToken(token);
-            setOkResponse(response, manager.findAll(), "Entidades encontradas");
+            manager.setToken(token);
+            if (select == null) {
+                setOkResponse(response, manager.findAll(), "Entidades encontradas");
+            } else {
+                setOkResponse(response, manager.findAll(select, orderBy, from, to), "Entidades encontradas");
+            }
         } catch (TokenExpiradoException | TokenInvalidoException e) {
             setInvalidTokenResponse(response);
         } catch (Exception ex) {
@@ -196,42 +200,4 @@ public class ServiceFacade<T extends IEntity<K>, K> {
         return new ModelCantidad(manager.count());
     }
 
-    /**
-     * proporciona el listado de entidades comprendidas desde la posicion {from} hasta la posicion {to}
-     *
-     * @param from posicion inicial del rango a consultar
-     * @param to posicion final del rango a consulta
-     * @return lista de entidades dentro del rango solicitado
-     */
-    @GET
-    @Path("/{from}/{to}")
-    public List<T> listarRango(@PathParam("from") final Integer from, @PathParam("to") final Integer to) {
-        return manager.findRange(from, to);
-    }
-
-    /**
-     * consulta en la entidad de este modulo, los atributos solicitados con un rango de posiciones
-     *
-     * @param from índice inferior del rango
-     * @param to índice superior del rango
-     * @param select cadena con los nombres de los atributos concatenados por un '+', ejemplo: nombre+correo+direccion
-     * @return lista de arreglos de objetos con los atributos solicitados
-     */
-    @GET
-    @Path("/select/{from}/{to}/{select}")
-    public List select(@PathParam("from") Integer from, @PathParam("t") Integer to, @PathParam("select") String select) {
-        return manager.select(from, to, select.split("\\+"));
-    }
-
-    /**
-     * consulta en la entidad de este modulo, los atributos solicitados
-     *
-     * @param select cadena con los nombres de los atributos concatenados por un '+', ejemplo: nombre+correo+direccion
-     * @return lista de arreglos con los objetos de los atributos solicitados
-     */
-    @GET
-    @Path("/select/{select}")
-    public List select(@PathParam("select") String select) {
-        return manager.select(select.split("\\+"));
-    }
 }

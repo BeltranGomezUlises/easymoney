@@ -7,8 +7,11 @@ package com.ub.easymoney.daos;
 
 import com.ub.easymoney.utils.commons.DaoSQLFacade;
 import com.ub.easymoney.entities.Cliente;
+import com.ub.easymoney.entities.Prestamo;
+import com.ub.easymoney.models.ModelSaldoPrestamos;
 import com.ub.easymoney.models.filtros.FiltroCliente;
 import com.ub.easymoney.utils.UtilsDB;
+import java.util.ArrayList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import org.jinq.jpa.JPAJinqStream;
@@ -44,6 +47,23 @@ public class DaoCliente extends DaoSQLFacade<Cliente, Integer> {
         return stream
                 .sortedBy(u -> u.getNombre())
                 .collect(toList());
+    }
+    
+    public List<ModelSaldoPrestamos> saldoPrestamosCliente(int clienteId) {
+        List<Prestamo> prestamosDelCliente = this.<Prestamo>createQuery("SELECT p FROM Prestamo p WHERE p.cliente.id = :clienteId", Prestamo.class)
+                .setParameter("clienteId", clienteId)
+                .getResultList();
+        List<ModelSaldoPrestamos> modelos = new ArrayList<>();
+        
+        prestamosDelCliente.forEach((p) -> {
+            int abonado = p.getAbonoList().stream()
+                    .filter(a -> a.getAbonado())
+                    .mapToInt(a -> a.getCantidad())
+                    .sum();
+            modelos.add(new ModelSaldoPrestamos(p.getId(), p.getCantidadPagar(), abonado));
+        });
+        
+        return modelos;
     }
 
 }

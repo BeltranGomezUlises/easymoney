@@ -3,12 +3,14 @@ package com.easymoney.data.repositories;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.models.EnumPrestamos;
 import com.easymoney.models.ModelAbonar;
+import com.easymoney.models.ModelFiltroPrestamos;
 import com.easymoney.models.ModelPrestamoAbonado;
 import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsPreferences;
 
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -109,5 +111,14 @@ public class PrestamoRepository {
                     .subscribeOn(ioT())
                     .subscribe(onNext, onError);
         }
+    }
+
+    public Disposable prestamosDelCliente(int clienteId,
+                                      Consumer<Response<List<Prestamo>, Object>> onNext,
+                                      Consumer<Throwable> onError) {
+        return webServices().prestamosDelCliente(UtilsPreferences.loadToken(), clienteId)
+                .subscribeOn(ioT())
+                .observeOn(uiT())
+                .subscribe(onNext, onError);
     }
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Loader, Dimmer, Segment, Checkbox, Form, Button } from 'semantic-ui-react';
 import ModalRenovar from './ModalRenovar.jsx';
 import ModalReasignar from './ModalReasignar.jsx';
-
+import * as utils from '../../../utils';
 export default class PrestamoDetalle extends Component {
 
   constructor(props) {
@@ -80,7 +80,7 @@ export default class PrestamoDetalle extends Component {
 
   renderAbonos() {
     return this.state.prestamo.abonoList.map((abono) => {
-      let fechaAbono = new Date(abono.abonoPK.fecha).toJSON().split('T')[0];
+      let fechaAbono = utils.longToDate(abono.abonoPK.fecha);
       return (
         <Table.Row key={abono.abonoPK.fecha}>
           <Table.Cell>
@@ -227,8 +227,8 @@ export default class PrestamoDetalle extends Component {
         </div>
       )
     }
-    let fechaPrestamo = new Date(prestamo.fecha).toJSON().split('T')[0];
-    let fechaLimite = new Date(prestamo.fechaLimite).toJSON().split('T')[0];
+    let fechaPrestamo = utils.longToDate(prestamo.fecha);
+    let fechaLimite = utils.longToDate(prestamo.fechaLimite);
     return (
       <Segment>
         <Table celled>

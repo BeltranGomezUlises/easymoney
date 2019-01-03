@@ -16,12 +16,10 @@
  */
 package com.ub.easymoney.utils.commons;
 
-import com.ub.easymoney.utils.commons.DaoSQLFacade;
-import com.ub.easymoney.utils.commons.ForeignKeyException;
-import com.ub.easymoney.utils.commons.IEntity;
 import com.ub.easymoney.models.commons.exceptions.TokenExpiradoException;
 import com.ub.easymoney.models.commons.exceptions.TokenInvalidoException;
 import java.util.List;
+import java.util.Map;
 import org.jinq.jpa.JPAJinqStream;
 
 /**
@@ -52,7 +50,6 @@ public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, 
 
     @Override
     public T persist(T entity) throws Exception {
-
         dao.persist(entity);
         return entity;
     }
@@ -87,6 +84,10 @@ public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, 
         return dao.findAll(max);
     }
 
+    public List<Map<String, Object>> findAll(String select, String orderby, Integer from, Integer to){
+        return this.dao.findAll(select, orderby, from, to);
+    }
+    
     @Override
     public long count() throws Exception {
         return dao.count();
@@ -105,31 +106,5 @@ public abstract class ManagerSQL<T extends IEntity, K> extends ManagerFacade<T, 
     public K stringToKey(String s) {
         return dao.stringToPK(s);
     }
-
-    public List<T> findRange(int initialPosition, int lastPosition) {
-        return dao.findRange(initialPosition, lastPosition);
-    }
-
-    /**
-     * consulta los atributos proporcionados en la entidad de manejador
-     *
-     * @param attributes lista de nombres de los atributos a consultar
-     * @return lista de arreglo de objetos con los atributos solicitados
-     */
-    public List select(String... attributes) {
-        return this.dao.select(attributes);
-    }
-
-    /**
-     * consulta los atributos proporcionados de la entidad de manejador con un rango de posiciones
-     *
-     * @param from indice inferior
-     * @param to indice superior
-     * @param attributes lista de nombre de los atributos a consultar
-     * @return lista de arreglo de objetos con los atributos solicitados
-     */
-    public List select(Integer from, Integer to, String... attributes) {
-        return this.dao.select(from, to, attributes);
-    }
-
+    
 }

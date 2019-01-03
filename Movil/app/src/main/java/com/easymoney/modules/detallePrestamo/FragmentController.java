@@ -1,6 +1,7 @@
 package com.easymoney.modules.detallePrestamo;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 
 import com.easymoney.entities.DistribucionCobro;
 import com.easymoney.entities.Prestamo;
@@ -13,10 +14,13 @@ public class FragmentController extends DetallePrestamoContract.Fragment {
     private AbonoFragment abonoFragment;
     private ConsultaFragment consultaFragment;
     private CobroFragment cobroFragment;
+    private Activity activity;
 
-    public FragmentController(AbonoFragment abonoFragment,
+    public FragmentController(Activity activity,
+                              AbonoFragment abonoFragment,
                               ConsultaFragment consultaFragment,
                               CobroFragment cobroFragment) {
+        this.activity = activity;
         this.abonoFragment = abonoFragment;
         this.consultaFragment = consultaFragment;
         this.cobroFragment = cobroFragment;
@@ -41,6 +45,11 @@ public class FragmentController extends DetallePrestamoContract.Fragment {
     }
 
     @Override
+    void salir() {
+        activity.finish();
+    }
+
+    @Override
     public void showMessage(String message) {
         abonoFragment.showMessage(message);
         consultaFragment.showMessage(message);
@@ -56,14 +65,11 @@ public class FragmentController extends DetallePrestamoContract.Fragment {
 
     @Override
     public void showWARNING(String message) {
-        abonoFragment.showWARNING(message);
         consultaFragment.showWARNING(message);
-        cobroFragment.showWARNING(message);
     }
 
     @Override
     public void showERROR(String message) {
-        abonoFragment.showERROR(message);
         consultaFragment.showERROR(message);
         cobroFragment.showERROR(message);
     }

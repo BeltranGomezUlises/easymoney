@@ -176,14 +176,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void accept(Response<List<Prestamo>, Object> r) throws Exception {
                         if (!r.getData().isEmpty()) {
-                            tvInfo.setVisibility(View.GONE);
                             if (enumPrestamos == EnumPrestamos.POR_COBRAR_HOY) {
                                 setPrestamos(filtrarPorCobrarHoy(r.getData()));
                             } else {
                                 setPrestamos(r.getData());
                             }
+                            if (!getPrestamos().isEmpty()){
+                                tvInfo.setVisibility(View.GONE);
+                            }else{
+                                tvInfo.setVisibility(View.VISIBLE);
+                                tvInfo.setText("Sín prestamos");
+                            }
                             adapterPrestamo.replaceData(getPrestamos());
                         } else {
+                            tvInfo.setVisibility(View.VISIBLE);
                             tvInfo.setText("Sin préstamos por cobrar");
                         }
                     }

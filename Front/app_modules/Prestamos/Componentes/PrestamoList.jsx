@@ -132,8 +132,8 @@ export default class PrestamoList extends React.Component {
     const limiteSuperior = this.state.activePage * 10;
     let prestamos = this.state.prestamos.slice(limiteSuperior - 10, limiteSuperior);
     return prestamos.map((prestamo) => {
-      let fechaPrestamo = new Date(prestamo.fecha).toJSON().split('T')[0];
-      let fechaLimite = new Date(prestamo.fechaLimite).toJSON().split('T')[0];
+      let fechaPrestamo = utils.longToDate(prestamo.fecha);
+      let fechaLimite = utils.longToDate(prestamo.fechaLimite);
       return (
         <Table.Row key={prestamo.id}
           positive={prestamo.estado === 'ACREDITADO'}

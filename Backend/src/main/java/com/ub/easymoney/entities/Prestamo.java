@@ -207,4 +207,15 @@ public class Prestamo implements Serializable, IEntity<Integer> {
         return id;
     }
 
+    /**
+     * calcula si el prestamo esta saldado o no, saldado es 100% abonado del total a pagar
+     * @return true, si el prestamo esta 100% abonado, false en case contrario
+     */
+    public boolean saldado() {
+        float totalAbonado = this.getAbonoList().stream()
+                .filter(a -> a.getAbonado()).mapToInt(a -> a.getCantidad()).sum();
+        float porcentajeAbonado = (totalAbonado / (float) this.getCantidadPagar() * 100f);
+        return porcentajeAbonado == 100;
+    }
+
 }

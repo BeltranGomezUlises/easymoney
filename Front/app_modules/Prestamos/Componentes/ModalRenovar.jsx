@@ -73,9 +73,8 @@ export default class PrestamoDetalle extends Component{
 
   renderTotales(){
     let {totales, prestamo} = this.props;
-    if (totales !== null) {
-      var paraSaldar = prestamo.cantidadAPagar - totales.totalAbonado;
-      var entregarAlRenovar = this.state.cantNuevoPrestamo - paraSaldar;
+    if (totales !== null) {      
+      var entregarAlRenovar = this.state.cantNuevoPrestamo - totales.porPagarLiquidar;
       return(
         <Table.Body>
           <Table.Cell textAlign='center'>${totales.totalAbonado}</Table.Cell>
@@ -83,7 +82,7 @@ export default class PrestamoDetalle extends Component{
           <Table.Cell textAlign='center'>${totales.totalRecuperado}</Table.Cell>
           <Table.Cell textAlign='center'>{totales.porcentajePagado}%</Table.Cell>
           <Table.Cell textAlign='center'>${prestamo.cantidadAPagar}</Table.Cell>
-          <Table.Cell textAlign='center'>${paraSaldar}</Table.Cell>
+          <Table.Cell textAlign='center'>${totales.porPagarLiquidar}</Table.Cell>
           <Table.Cell textAlign='center'><b>${entregarAlRenovar}</b></Table.Cell>
         </Table.Body>
       );

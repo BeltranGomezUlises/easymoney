@@ -16,12 +16,15 @@ public interface DetallePrestamoContract {
         abstract void llenarDatosGenerales(Prestamo prestamo);
         abstract void llenarTotales(ModelPrestamoTotales ModelPrestamoTotales);
         abstract void llenarTotales(DistribucionCobro distribucion);
+        abstract void salir();
     }
 
     abstract class Presenter extends BasePresenter<Fragment> {
         abstract void prestamoTotales();
         abstract void abonar(int abono, String multaDes);
         abstract void reimprimirTicket(Cobro c);
+        abstract void renovar(int prestamoId, int cantidadRenovar);
+        abstract Prestamo getPrestamo();
     }
 
 }

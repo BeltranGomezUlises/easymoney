@@ -1,5 +1,6 @@
 package com.easymoney.modules.detallePrestamo;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import com.easymoney.utils.baseClases.BaseFragment;
 /**
  * Created by ulises on 15/01/2018.
  */
+@SuppressLint("ValidFragment")
 public class ConsultaFragment extends BaseFragment {
 
     private TextView tvNombreCliente;
@@ -44,7 +46,16 @@ public class ConsultaFragment extends BaseFragment {
     private LinearLayout layoutLoading;
 
     private Button btnAbonar;
+    private Button btnRenovar;
     private int cantidadParaIrAlCorriente;
+    private int porPagarLiquidar;
+
+    private boolean enRenovacion;
+
+    @SuppressLint("ValidFragment")
+    public ConsultaFragment(boolean enRenovacion) {
+        this.enRenovacion = enRenovacion;
+    }
 
     @Nullable
     @Override
@@ -83,6 +94,23 @@ public class ConsultaFragment extends BaseFragment {
             }
         });
 
+        btnRenovar = rootView.findViewById(R.id.btnRenovar);
+        btnRenovar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                preventDoubleClick(new Runnable() {
+                    @Override
+                    public void run() {
+                        lanzarModalRenovar();
+                    }
+                });
+            }
+        });
+
+        //botones invisibles hasta tener totales
+        btnAbonar.setVisibility(View.GONE);
+        btnRenovar.setVisibility(View.GONE);
+
         layoutTotales = rootView.findViewById(R.id.layoutTotales);
         layoutTotales.setVisibility(View.GONE);
 
@@ -119,12 +147,16 @@ public class ConsultaFragment extends BaseFragment {
         layoutLoading.setVisibility(View.GONE);
         layoutTotales.setVisibility(View.VISIBLE);
 
-        if (model.getPorcentajePagado() == 100) {
-            btnAbonar.setVisibility(View.GONE);
-        } else {
-            this.cantidadParaIrAlCorriente = model.getPorPagarIrAlCorriente();
-            btnAbonar.setVisibility(View.VISIBLE);
+        if (model.getPorcentajePagado() < 100) {
+            if (!enRenovacion) {
+                this.cantidadParaIrAlCorriente = model.getPorPagarIrAlCorriente();
+                btnAbonar.setVisibility(View.VISIBLE);
+            } else {
+                btnRenovar.setVisibility(View.VISIBLE);
+                this.porPagarLiquidar = model.getPorPagarLiquidar();
+            }
         }
+
     }
 
     private void lanzarModalCobro() {
@@ -132,6 +164,12 @@ public class ConsultaFragment extends BaseFragment {
                 (DetallePrestamoContract.Presenter) getPresenter(),
                 this.cantidadParaIrAlCorriente);
         newFragment.show(getActivity().getFragmentManager(), "cobro");
+    }
+
+    private void lanzarModalRenovar() {
+        DetallePrestamoContract.Presenter presenter = (DetallePrestamoContract.Presenter) getPresenter();
+        RenovarDialogFragment newFragment = new RenovarDialogFragment(presenter, presenter.getPrestamo(), this.porPagarLiquidar);
+        newFragment.show(getActivity().getFragmentManager(), "Renovación");
     }
 
     public void setTotales(final DistribucionCobro model) {

@@ -48,14 +48,7 @@ export default class PrestamoForm extends Component {
       || nuevoPrestamo.cliente.id == 0
       || nuevoPrestamo.cobrador.id == 0) {
       this.setState({ warning: 'Verifique que tenga todos los datos llenos' });
-    } else {
-      var f = new Date();
-      f.setHours(0);
-      f.setMinutes(0);
-      f.setSeconds(0);
-      f.setMilliseconds(0);
-      f.setUTCHours(0);
-      nuevoPrestamo.fecha = f;
+    } else {    
       this.setState({ loading: true, warning: null });
       fetch(localStorage.getItem('url') + 'prestamos', {
         method: 'POST',

@@ -544,8 +544,18 @@
                     android:layout_margin="14dp"
                     android:background="@color/colorPrimary"
                     android:text="@string/action_abonar"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:textStyle="bold"/>
+
+                <Button
+                    android:id="@+id/btnRenovar"
+                    style="?android:textAppearanceSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="14dp"
+                    android:background="@color/colorPrimary"
+                    android:text="@string/btnRenovar"
+                    android:textStyle="bold" />
+
             </LinearLayout>
 
             <!--Cargando-->

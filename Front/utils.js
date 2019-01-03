@@ -39,6 +39,13 @@ export function toUtcDate(dateString){
 }
 
 /*
+* Devuelve el valor legible de la fecha en zona horaria utc GMT 0
+*/
+export function longToDate(long){
+  return new Date(long).toJSON().split('T')[0];
+}
+
+/*
 * develve true si value solo contiene letras, falso en caso contrario
 *
 */

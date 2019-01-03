@@ -5,7 +5,6 @@
  */
 package com.ub.easymoney.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ub.easymoney.daos.DaoUsuario;
 import com.ub.easymoney.daos.DaoCliente;
 import com.ub.easymoney.daos.DaoPrestamo;
@@ -33,7 +32,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -166,6 +164,23 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         return r;
     }
 
+    @GET
+    @Path("/cliente/{clienteId}")
+    public Response<List<Prestamo>> prestamosDelCliente(@HeaderParam("Authorization") String token,
+            @PathParam("clienteId") int clienteId) {
+        Response<List<Prestamo>> r = new Response<>();
+        try {
+            ManagerPrestamo managerPrestamo = new ManagerPrestamo();
+            managerPrestamo.setToken(token);
+            setOkResponse(r, managerPrestamo.prestamosDelCliente(clienteId), "prestamos del cobrador");
+        } catch (TokenExpiradoException | TokenInvalidoException e) {
+            setInvalidTokenResponse(r);
+        } catch (Exception ex) {
+            setErrorResponse(r, ex);
+        }
+        return r;
+    }
+    
     /**
      * Genera una renovacion de prestamo, salda el prestamoa actual y genera uno nuevo por la cantidad establecida
      *
@@ -299,9 +314,7 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
     @GET
     @Path("/fechas/{id}")
     public Map fechas(@PathParam("id") int id) throws Exception{
-        
         Prestamo prestamo = new DaoPrestamo().findOne(id);
-        
         Map<String, Object> map = new HashMap<>();
         map.put("fecha", UtilsDate.dateWithoutTime());
         map.put("fechaString", UtilsDate.dateWithoutTime().toString());

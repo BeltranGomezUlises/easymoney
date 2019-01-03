@@ -53,7 +53,12 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.9.0.pr3</version>
         </dependency>                   
-                              
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-multipart</artifactId>
+            <version>1.19.4</version>
+        </dependency>     
+                                   
         <!--  ECLIPSE LINK  -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

@@ -45,6 +45,7 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
         compositeDisposable.clear();
     }
 
+    @Override
     public Prestamo getPrestamo() {
         return prestamo;
     }
@@ -116,6 +117,30 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                 getFragment().showERROR(throwable.getMessage());
             }
         });
+    }
+
+    @Override
+    void renovar(int prestamoId, int cantidadRenovar) {
+        getFragment().showLoading("Renovando", "Espere un momento por favor...");
+        compositeDisposable.add(repository.renovar(prestamoId, cantidadRenovar, new Consumer<Response<Integer, Object>>() {
+            @Override
+            public void accept(final Response<Integer, Object> r) throws Exception {
+                getFragment().stopShowLoading();
+                evalResponse(r, new Runnable() {
+                    @Override
+                    public void run() {
+                        getFragment().salir();
+                    }
+                });
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                getFragment().stopShowLoading();
+                getFragment().showERROR(ERROR_COMUNICACION);
+                getFragment().salir();
+            }
+        }));
     }
 
     private ModelImpresionAbono crearModelImpresionAbono(ModelPrestamoAbonado model) {

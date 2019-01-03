@@ -8,6 +8,8 @@ package com.ub.easymoney.managers;
 import com.ub.easymoney.daos.DaoConfig;
 import com.ub.easymoney.daos.DaoUsuario;
 import com.ub.easymoney.daos.DaoAbono;
+import com.ub.easymoney.daos.DaoCapital;
+import com.ub.easymoney.daos.DaoCliente;
 import com.ub.easymoney.daos.DaoPrestamo;
 import com.ub.easymoney.entities.Abono;
 import com.ub.easymoney.entities.Cobro;
@@ -22,6 +24,7 @@ import com.ub.easymoney.models.ModelDistribucionAbono;
 import com.ub.easymoney.models.ModelPrestamoAbonado;
 import com.ub.easymoney.models.ModelPrestamoTotales;
 import com.ub.easymoney.models.ModelPrestamoTotalesGenerales;
+import com.ub.easymoney.models.ModelSaldoPrestamos;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsDB;
 import com.ub.easymoney.utils.UtilsDate;
@@ -56,12 +59,12 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      */
     @Override
     public Prestamo persist(Prestamo entity) throws Exception {
-        if (entity.getFecha() == null) {
-            throw new InvalidParameterException("Prestamo debe tener fecha");
-        }        
+        validarMultiplesPrestamos(entity.getCliente().getId());
         Config conf = new DaoConfig().findFirst();
         int cantImpuesto = (int) (entity.getCantidad() * ((float) conf.getPorcentajeInteresPrestamo() / 100f));
         entity.setCantidadPagar(entity.getCantidad() + cantImpuesto);
+        entity.setFecha(UtilsDate.dateWithoutTime());
+
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(entity.getFecha());
         cal.add(Calendar.DAY_OF_YEAR, conf.getDiasPrestamo()); //apartir del dia siguiente        
@@ -150,42 +153,32 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      */
     public List<ModelCargarPrestamos> cargarPrestamos(FiltroPrestamo filtro) {
         List<ModelCargarPrestamos> models = new ArrayList<>();
-        List<Prestamo> prestamosFiltrados = new DaoPrestamo().findAll(filtro);
+        List<Prestamo> prestamos = new DaoPrestamo().findAll(filtro);
         Date now = UtilsDate.dateWithoutTime();
-        //filtrar los 100% acreditados
-        if (!filtro.isAcreditados()) {
-            prestamosFiltrados = prestamosFiltrados.stream()
-                    .filter(t -> {
-                        float totalAbonado = t.getAbonoList().stream().filter(a -> a.getAbonado()).mapToInt(a -> a.getCantidad()).sum();
-                        float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
-                        return porcentajeAbonado < 100;
-                    }).collect(toList());
-            //no hay prestamos acreditados
-            prestamosFiltrados.forEach(p -> {
-                ModelCargarPrestamos model = new ModelCargarPrestamos(p.getId(), p.getCliente().getNombre(), p.getCobrador().getNombre(), p.getCantidad(), p.getCantidadPagar(), p.getFecha(), p.getFechaLimite());
+        for (Prestamo p : prestamos) {
+            boolean saldado = p.saldado();
+            if (!filtro.isAcreditados() && saldado) {
+                continue;
+            }
+            ModelCargarPrestamos model = new ModelCargarPrestamos(
+                    p.getId(),
+                    p.getCliente().getNombre(),
+                    p.getCobrador().getNombre(),
+                    p.getCantidad(),
+                    p.getCantidadPagar(),
+                    p.getFecha(),
+                    p.getFechaLimite()
+            );
+
+            if (saldado) {
+                model.setEstado(ModelCargarPrestamos.EstadoPrestamo.ACREDITADO);
+            } else {
                 if (now.after(p.getFechaLimite())) {
                     model.setEstado(ModelCargarPrestamos.EstadoPrestamo.VENCIDO);
                 }
-                models.add(model);
-            });
-        } else {
-            prestamosFiltrados.forEach(p -> {
-                ModelCargarPrestamos model = new ModelCargarPrestamos(p.getId(), p.getCliente().getNombre(), p.getCobrador().getNombre(), p.getCantidad(), p.getCantidadPagar(), p.getFecha(), p.getFechaLimite());
-                float totalAbonado = p.getAbonoList().stream().filter(a -> a.getAbonado()).mapToInt(a -> a.getCantidad()).sum();
-                float porcentajeAbonado = (totalAbonado / (float) p.getCantidadPagar() * 100f);
-                if (porcentajeAbonado == 100) {
-                    model.setEstado(ModelCargarPrestamos.EstadoPrestamo.ACREDITADO);
-                } else {
-                    if (now.after(p.getFechaLimite())) {
-                        if (porcentajeAbonado < 100) {
-                            model.setEstado(ModelCargarPrestamos.EstadoPrestamo.VENCIDO);
-                        }
-                    }
-                }
-                models.add(model);
-            });
-        }
-
+            }
+            models.add(model);
+        }       
         return models;
     }
 
@@ -196,7 +189,11 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     public List<Prestamo> prestamosDelCobrador(final int cobradorId) {
         return new DaoPrestamo().prestamosDelCobrador(cobradorId);
     }
-
+    
+    public List<Prestamo> prestamosDelCliente(final int clienteId) {
+        return new DaoPrestamo().prestamosDelCliente(clienteId);
+    }
+   
     /**
      * Genera el resultado de los totales generales de los prestamos segun un filtrado
      *
@@ -242,6 +239,10 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @throws Exception
      */
     public int renovarPrestamo(final int prestamoId, final int cantNuevoPrestamo) throws InvalidParameterException, Exception {
+        ModelPrestamoTotales model = this.totalesPrestamo(prestamoId);        
+        if (model.getPorPagarLiquidar() > cantNuevoPrestamo) {
+            throw new InvalidParameterException("No puede renovar el prestamo por una cantidad menor a la deuda");
+        }        
         Prestamo prestamoRenovar = this.findOne(prestamoId);
 
         Prestamo nuevoPrestamo = new Prestamo();
@@ -255,15 +256,14 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         cantImpuesto *= ((float) conf.getPorcentajeInteresPrestamo() / 100f);
 
         nuevoPrestamo.setCantidadPagar(nuevoPrestamo.getCantidad() + cantImpuesto);
-        nuevoPrestamo.setFecha(new Date());
+        nuevoPrestamo.setFecha(UtilsDate.dateWithoutTime());
 
         GregorianCalendar cal = new GregorianCalendar();
         cal.add(Calendar.DAY_OF_YEAR, conf.getDiasPrestamo());
-
         nuevoPrestamo.setFechaLimite(cal.getTime());
 
         DaoPrestamo daoPrestamo = new DaoPrestamo();
-        return daoPrestamo.renovarPrestamo(prestamoRenovar, nuevoPrestamo);
+        return daoPrestamo.renovarPrestamo(prestamoRenovar, nuevoPrestamo, model.getPorPagarLiquidar());
     }
 
     /**
@@ -329,7 +329,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
             DistribucionCobro dc = this.generarDistribucionCobro(cobro, nuevosTotales, distribucion);
             em.persist(dc);
-            
+
             p.getCobroList().add(cobro);
             em.merge(p);
             em.getTransaction().commit();
@@ -629,4 +629,18 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         return dc;
     }
 
+    /**
+     * Verifica que el cliente no tenga 1 prestamo que no este 100 abonado
+     *
+     * @param clienteId
+     */
+    private void validarMultiplesPrestamos(int clienteId) throws InvalidParameterException {
+        DaoCliente daoCliente = new DaoCliente();
+        List<ModelSaldoPrestamos> saldos = daoCliente.saldoPrestamosCliente(clienteId);
+        for (ModelSaldoPrestamos saldo : saldos) {
+            if (saldo.getAbonado() < saldo.getCantidadAPagar()) {
+                throw new InvalidParameterException("El cliente tiene prestamos no saldados");
+            }
+        }
+    }
 }

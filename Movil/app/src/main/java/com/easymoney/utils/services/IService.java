@@ -2,6 +2,7 @@ package com.easymoney.utils.services;
 
 
 import com.easymoney.entities.Abono;
+import com.easymoney.entities.Cliente;
 import com.easymoney.entities.Movimiento;
 import com.easymoney.entities.Prestamo;
 import com.easymoney.entities.Usuario;
@@ -31,8 +32,9 @@ public interface IService {
     /**
      * endpoint de los servicios
      */
-    //String END_POINT = "http://192.168.1.68:8080/EasyMoney/api/";
+    //String END_POINT = "http://192.168.1.76:8080/EasyMoney/api/";
     String END_POINT = "http://74.208.178.83:8080/EasyMoney/api/";
+    //String END_POINT = "http://74.208.178.83:8080/EasyMoneyPruebas/api/";
 
     /**
      * Inicio de sesion
@@ -148,4 +150,16 @@ public interface IService {
     Flowable<Response<Prestamo, Object>> getPrestamo(@Header("Authorization") String token,
                                                      @Path("prestamoId") int prestamoId);
 
+    /**
+     * obtiene los prestamos del cliente sin saldar
+     *
+     * @param token token de sesion
+     * @return lista de prestamos del cliente sin saldar
+     */
+    @GET("prestamos/cliente/{id}")
+    Flowable<Response<List<Prestamo>, Object>> prestamosDelCliente(@Header("Authorization") String token,
+                                                                   @Path("id") int clienteId);
+
+    @GET("clientes")
+    Flowable<Response<List<Cliente>, Object>> cargarClientes(@Header("Authorization") String token);
 }

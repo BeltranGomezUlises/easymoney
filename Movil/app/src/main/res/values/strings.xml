@@ -30,7 +30,7 @@
     <string name="edtPrestamoId">Identificador de prestamo</string>
     <string name="cmbNombreCliente">Nombre cliente</string>
     <string name="cmdApodoCliente">Apodo cliente</string>
-
+    <string name="btnRenovar">Renovar</string>
 
 
 </resources>

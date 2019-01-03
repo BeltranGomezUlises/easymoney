@@ -1,5 +1,6 @@
 package com.easymoney.modules.renovacion;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -7,6 +8,8 @@ import android.view.MenuItem;
 import com.easymoney.R;
 import com.easymoney.data.repositories.PrestamoRepository;
 import com.easymoney.utils.activities.ActivityUtils;
+
+import static com.easymoney.modules.renovacion.RenovacionPresenter.RESULT_RENOVACION;
 
 public class RenovacionActivity extends AppCompatActivity {
 
@@ -25,9 +28,8 @@ public class RenovacionActivity extends AppCompatActivity {
         }
 
         PrestamoRepository prestamoRepository = PrestamoRepository.getInstance();
-        presenter = new RenovacionPresenter(prestamoRepository);
+        presenter = new RenovacionPresenter(prestamoRepository, this);
         ActivityUtils.contract(fragment, presenter);
-
     }
 
     @Override
@@ -44,5 +46,12 @@ public class RenovacionActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RESULT_RENOVACION){
+            this.finish();
+        }
     }
 }

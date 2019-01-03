@@ -26,13 +26,14 @@ public class DetallePrestamoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detalle_prestamo);
         //asegurar primero el presentador para poder enlazar los fragmentos
         Prestamo prestamo = (Prestamo) getIntent().getSerializableExtra("Prestamo");
+        boolean enRenovacion = getIntent().getBooleanExtra("renovacion", false);
 
         presenter = new DetallePrestamoPresenter(prestamo);
+        consultaFragment = new ConsultaFragment(enRenovacion);
         abonoFragment = new AbonoFragment();
-        consultaFragment = new ConsultaFragment();
         cobroFragment = new CobroFragment();
 
-        FragmentController fragmentController = new FragmentController(abonoFragment, consultaFragment, cobroFragment);
+        FragmentController fragmentController = new FragmentController(this, abonoFragment, consultaFragment, cobroFragment);
         presenter.setFragment(fragmentController);
         fragmentController.setPresenter(presenter);
 

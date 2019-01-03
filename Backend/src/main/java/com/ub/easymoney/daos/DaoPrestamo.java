@@ -5,7 +5,6 @@
  */
 package com.ub.easymoney.daos;
 
-import com.ub.easymoney.daos.DaoConfig;
 import com.ub.easymoney.utils.commons.DaoSQLFacade;
 import com.ub.easymoney.entities.Abono;
 import com.ub.easymoney.entities.Capital;
@@ -47,7 +46,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
 
         List<Abono> listaAbonos = new ArrayList<>();
 
-        cal.setTime(entity.getFecha());        
+        cal.setTime(entity.getFecha());
         cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
         final int diasPlazo = new DaoConfig().findFirst().getDiasPrestamo();
         final int cantidadPagarPorAbono = entity.getCantidadPagar() / diasPlazo;
@@ -114,15 +113,22 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      */
     public List<Prestamo> prestamosPorCobrar(final int cobradorId) {
         return this.stream()
-                //buscar los que pertenescan al cobrador
                 .where(t -> t.getCobrador().getId().equals(cobradorId))
-                //filtrar los que no este 100% abonados
-                .filter(t -> {
-                    float totalAbonado = t.getAbonoList().stream()
-                            .filter(a -> a.getAbonado()).mapToInt(a -> a.getCantidad()).sum();
-                    float porcentajeAbonado = (totalAbonado / (float) t.getCantidadPagar() * 100f);
-                    return porcentajeAbonado < 100;
-                }).collect(toList());
+                .filter(t -> !t.saldado())
+                .collect(toList());
+    }
+
+    /**
+     * retorna los prestamos asignados al cliente y que aun se pueden cobrar
+     *
+     * @param clienteId identificador del cliente
+     * @return lista de prestamos por cobrar
+     */
+    public List<Prestamo> prestamosDelCliente(final int clienteId) {
+        return this.stream()
+                .where(t -> t.getCliente().getId().equals(clienteId))
+                .filter(t -> !t.saldado())
+                .collect(toList());
     }
 
     /**
@@ -149,20 +155,11 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      * @return cantidad a entregar de dinero fisico al cliente
      * @throws Exception
      */
-    public int renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo) throws InvalidParameterException, Exception {
+    public int renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo, int cantidadPorSaldar) throws InvalidParameterException, Exception {
         EntityManager em = this.getEMInstance();
         Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
 
-        //obtener lo que falta por abonar para dejar ese saldo 
-        int cantidadPorSaldar = 0;
-        for (Abono abono : prestamoRenovar.getAbonoList()) {
-            if (!abono.getAbonado()) {
-                cantidadPorSaldar += prestamoRenovar.getCobroDiario();
-            } else {
-                if (abono.getCantidad() < prestamoRenovar.getCobroDiario()) {
-                    cantidadPorSaldar += (prestamoRenovar.getCobroDiario() - abono.getCantidad());
-                }
-            }
+        for (Abono abono : prestamoRenovar.getAbonoList()) {            
             abono.setAbonado(true);
             abono.setCantidad(prestamoRenovar.getCobroDiario());
         }
@@ -173,18 +170,15 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         em.merge(prestamoRenovar);
 
         Calendar cal = new GregorianCalendar();
-
         em.persist(nuevoPrestamo);
         em.flush(); //para obtener el id del prestamo
-
         List<Abono> listaAbonos = new ArrayList<>();
-        Abono abono;
         cal.setTime(nuevoPrestamo.getFecha());
         cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
         final int diasPlazo = new DaoConfig().findFirst().getDiasPrestamo();
         final int cantidadPagarPorAbono = nuevoPrestamo.getCantidadPagar() / diasPlazo;
         for (int i = 0; i < diasPlazo; i++) {
-            abono = new Abono(nuevoPrestamo.getId(), cal.getTime(), cantidadPagarPorAbono, false, 0, "");
+            Abono abono = new Abono(nuevoPrestamo.getId(), cal.getTime(), cantidadPagarPorAbono, false, 0, "");
             listaAbonos.add(abono);
             cal.add(Calendar.DAY_OF_YEAR, 1);
         }

@@ -6,13 +6,18 @@
 package com.ub.easymoney.utils.commons;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import org.jinq.jpa.JPAJinqStream;
@@ -81,6 +86,18 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
      */
     protected Query createQuery(String jpql) {
         return this.getEMInstance().createQuery(jpql);
+    }
+
+    /**
+     * construye un JPQL Query con el parametro obtenido
+     *
+     * @param <X> tipado de retorno
+     * @param jpql cadena con el JPQL para construir un query
+     * @param clazz tipado de retorno de la instruccion JPQL
+     * @return query contruido con el JPQL
+     */
+    protected <X> TypedQuery createQuery(String jpql, Class<X> clazz) {
+        return this.getEMInstance().createQuery(jpql, clazz);
     }
 
     /**
@@ -206,7 +223,7 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
 
     public T findFirst() throws Exception {
         try {
-            return findAll(false, 1, 0).get(0);
+            return DaoSQLFacade.this.findAll(false, 1, 0).get(0);
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -217,15 +234,15 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
     }
 
     public List<T> findAll(int max) throws Exception {
-        return findAll(false, max, 0);
+        return DaoSQLFacade.this.findAll(false, max, 0);
     }
 
     public List<T> findAll() throws Exception {
-        return findAll(true, -1, -1);
+        return DaoSQLFacade.this.findAll(true, -1, -1);
     }
 
     public List<T> findAll(int maxResults, int firstResult) throws Exception {
-        return findAll(false, maxResults, firstResult);
+        return DaoSQLFacade.this.findAll(false, maxResults, firstResult);
     }
 
     private List<T> findAll(boolean all, int maxResults, int firstResult) throws Exception {
@@ -248,6 +265,153 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
         }
     }
 
+    /**
+     * Set the page to query with the from and to query param
+     *
+     * @param q query to set tha page
+     * @param from index to start the query
+     * @param to index to stop que query
+     */
+    protected void paginateQuery(Query q, Integer from, Integer to) {
+        if (from != null && to != null) {
+            q.setMaxResults(to - from + 1);
+            q.setFirstResult(from);
+        } else {
+            if (to != null) {
+                q.setMaxResults(to);
+            }
+        }
+    }
+
+    /**
+     * Creates de result set mapped as a generic list from the query string provided
+     *
+     * @param select contains the columns and filters
+     * @param orderBy
+     * @param from pagination index from
+     * @param to pagination index to
+     * @return result set mapped with properties names
+     */
+    protected List<Map<String, Object>> findAll(String select, String orderBy, Integer from, Integer to) {
+        String entityName = this.claseEntity.getSimpleName();
+        String queryToExcecute = "SELECT ";
+        String queryFrom = " From " + entityName + " t";
+        Set<String> querySelects = new LinkedHashSet<>();
+        Set<String> queryWheres = new LinkedHashSet<>();
+        Set<String> queryFroms = new LinkedHashSet<>();
+        Set<String> queryOrder = new LinkedHashSet<>();
+        String[] querySelections = select.split(",");
+        for (String selection : querySelections) {
+            String whereSelection = whereSelection(selection);
+            if (whereSelection.isEmpty()) {
+                querySelects.add("t." + selection);
+            } else {
+                if (whereSelection.equals("><")) { //between operator
+                    String[] selectionParts = selection.split(whereSelection);
+                    String[] values = selectionParts[1].split("\\|");
+                    querySelects.add("t." + selectionParts[0]);
+                    queryWheres.add("t." + selectionParts[0] + " BETWEEN " + values[0] + " AND " + values[1]);
+                } else {
+                    if (whereSelection.equals("%")) {
+                        String[] selectionParts = selection.split(whereSelection);
+                        querySelects.add("t." + selectionParts[0]);
+                        queryWheres.add("t." + selectionParts[0] + " LIKE CONCAT(" + selectionParts[1] + ",'%')");
+                    } else {
+                        String[] selectionParts = selection.split(whereSelection);
+                        querySelects.add("t." + selectionParts[0]);
+                        queryWheres.add("t." + selectionParts[0] + " " + whereSelection + " " + selectionParts[1]);
+                    }
+                }
+            }
+        }
+
+        queryToExcecute += String.join(",", querySelects);
+        queryToExcecute += queryFrom + String.join("", queryFroms);
+        if (!queryWheres.isEmpty()) {
+            queryToExcecute += " WHERE " + String.join(" AND ", queryWheres);
+        }
+
+        if (orderBy != null && !orderBy.isEmpty()) {
+            String[] orderParts = orderBy.split(",");
+            for (String orderPart : orderParts) {
+                String[] fieldAndWay = orderPart.split("\\|");
+                String field = fieldAndWay[0];
+                String way = "asc";
+                if (fieldAndWay.length > 1) {
+                    way = fieldAndWay[1];
+                }
+                queryOrder.add("t." + field + " " + way);
+            }
+        }
+
+        if (!queryOrder.isEmpty()) {
+            queryToExcecute += " ORDER BY " + String.join(" , ", queryOrder);
+        }
+
+        EntityManager em = this.getEMInstance();
+        Query query = em.createQuery(queryToExcecute);
+        paginateQuery(query, from, to);
+
+        //mapping to the list of object array into maps with the properties requested
+        List<Object[]> result = query.getResultList();
+        List<Map<String, Object>> mappedResults = new ArrayList<>();
+
+        int index = 0;
+        for (int i = 0; i < result.size(); i++) {
+            HashMap<String, Object> mappedResult = new HashMap<>(querySelects.size());
+            for (String querySelect : querySelects) {
+                String[] selectParts = querySelect.split("\\.");
+                if (selectParts.length == 2) {
+                    mappedResult.put(selectParts[1], result.get(i)[index]);
+                } else {
+                    mappedResult.put(selectParts[selectParts.length - 2] + "_" + selectParts[selectParts.length - 1], result.get(i)[index]);
+                }
+                index++;
+            }
+            index = 0;
+            mappedResults.add(mappedResult);
+        }
+        em.close();
+        return mappedResults;
+    }
+
+    /**
+     * check if there is a where condition in a selection
+     *
+     * @param selection the field selection
+     * @return the operator to use in the where clause like '=' or '!='
+     */
+    protected String whereSelection(String selection) {
+        if (selection.contains("%")) {
+            return "%";
+        }
+        if (selection.contains(">=")) {
+            return ">=";
+        }
+        if (selection.contains("<=")) {
+            return "<=";
+        }
+        if (selection.contains("><")) { //between, its important the order of the questions
+            return "><";
+        }
+        if (selection.contains("!=")) {
+            return "!=";
+        }
+        if (selection.contains("=")) {
+            return "=";
+        }
+        if (selection.contains(">")) {
+            return ">";
+        }
+        if (selection.contains("<")) {
+            return "<";
+        }
+        return "";
+    }
+
+
+
+    
     /**
      * Cuenta el numero de registros de una entidad
      *
@@ -277,59 +441,6 @@ public abstract class DaoSQLFacade<T extends IEntity, K> {
             incidencias.add(m.group(1));
         }
         return "No se pudo " + accionAMostrar + " " + incidencias.get(0) + " por que aun está siendo utilizado en algún " + incidencias.get(incidencias.size() - 1);
-    }
-
-    /**
-     * ejecuta un select con los atributos en attributes y efectua una paginación desde from hasta to
-     *
-     * @param from indice inferior
-     * @param to indice superior
-     * @param attributes strings con los nombres de los atributos
-     * @return lista de resutados de la consulta a db
-     */
-    public List select(Integer from, Integer to, String... attributes) {
-        EntityManager em = this.getEMInstance();
-        String selects = "";
-        for (String attribute : attributes) {
-            selects += "t." + attribute + ",";
-        }
-        selects = selects.substring(0, selects.length() - 1);
-        Query q = em.createQuery("SELECT " + selects + " FROM " + claseEntity.getSimpleName() + " t");
-        if (from != null) {
-            q.setFirstResult(from);
-        }
-        if (to != null) {
-            q.setMaxResults(to - from + 1);
-        }
-        return q.getResultList();
-    }
-
-    /**
-     * ejecuta un select con los atributos en attributes y efectua una paginación desde from hasta to
-     *
-     * @param attributes strings con los nombres de los atributos
-     * @return lista de resutados de la consulta a db
-     */
-    public List select(String... attributes) {
-        EntityManager em = this.getEMInstance();
-        String selects = "";
-        for (String attribute : attributes) {
-            selects += "t." + attribute + ",";
-        }
-        selects = selects.substring(0, selects.length() - 1);
-        Query q = em.createQuery("SELECT " + selects + " FROM " + claseEntity.getSimpleName() + " t");
-        return q.getResultList();
-    }
-
-    public List<T> findRange(final int rangoInicial, final int rangoFinal) {
-        int resultados = rangoFinal - rangoInicial + 1;
-        EntityManager em = this.getEMInstance();
-        CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-        cq.select(cq.from(claseEntity));
-        Query q = em.createQuery(cq);
-        q.setMaxResults(resultados);
-        q.setFirstResult(rangoInicial);
-        return q.getResultList();
     }
 
 }
