@@ -47,10 +47,8 @@ export default class PrestamoDetalle extends Component {
         'Authorization': localStorage.getItem('tokenSesion')
       }
     }).then((res) => res.json())
-      .then((response) => {
-        console.log(response);
-        response.data.abonoList = response.data.abonoList.sort((a, b) => (a.abonoPK.fecha > b.abonoPK.fecha) ? 1 : ((b.abonoPK.fecha > a.abonoPK.fecha) ? -1 : 0));
-        console.log(response);
+      .then((response) => {        
+        response.data.abonoList = response.data.abonoList.sort((a, b) => (a.abonoPK.fecha > b.abonoPK.fecha) ? 1 : ((b.abonoPK.fecha > a.abonoPK.fecha) ? -1 : 0));        
         this.setState({ prestamo: response.data, loadingDetail: false })
       });
   }

@@ -1,8 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import {
-  Header, Table, Divider, Form, Checkbox, Input, Dimmer, Loader,
-  Message, Segment, Container, Modal, Button, Menu, Pagination, Grid
+  Header, Table, Divider, Form, Checkbox,
+  Message, Segment, Modal, Button, Pagination
 } from 'semantic-ui-react'
 import PrestamoForm from './PrestamoForm.jsx'
 import PrestamoDetalle from './PrestamoDetalle.jsx'
@@ -16,7 +15,7 @@ export default class PrestamoList extends React.Component {
     super(props);
     this.state = {
       activePage: 1,
-      totalPages: 10,
+      totalPages: 1,
       prestamos: [],
       totalesPrestamos: {},
       modalOpenAgregar: false,

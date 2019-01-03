@@ -17,9 +17,8 @@
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="javax.persistence.jdbc.user" value="postgres"/>
             <!-- production -->
-      
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
-            <property name="javax.persistence.jdbc.password" value=".toString(24);"/>    
+            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
+            <property name="javax.persistence.jdbc.password" value=".toString(24);"/>    -->
             
             <!-- test -->
             <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em_pruebas"/>
@@ -27,8 +26,8 @@
             
             
             <!-- development -->
-            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
-            <property name="javax.persistence.jdbc.password" value="2424"/>-->
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
+            <property name="javax.persistence.jdbc.password" value="2424"/>
       
             <!--remove for production-->
             <!--            <property name="eclipselink.logging.level" value="FINE"/>

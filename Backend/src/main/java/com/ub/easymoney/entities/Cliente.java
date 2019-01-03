@@ -39,6 +39,10 @@ import javax.validation.constraints.Size;
     , @NamedQuery(name = "Cliente.findByDiasSinMulta", query = "SELECT c FROM Cliente c WHERE c.diasSinMulta = :diasSinMulta")})
 public class Cliente implements Serializable, IEntity<Integer> {
 
+    @Size(max = 2147483647)
+    @Column(name = "imagen")
+    private String imagen;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -165,6 +169,14 @@ public class Cliente implements Serializable, IEntity<Integer> {
     @Override
     public Integer obtenerIdentificador() {
         return id;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
 }
