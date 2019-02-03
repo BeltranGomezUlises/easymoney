@@ -108,7 +108,6 @@ public class UtilsPreferences {
                 return req;
             }
         } catch (IOException e) {
-            e.printStackTrace();
         }
         return null;
     }

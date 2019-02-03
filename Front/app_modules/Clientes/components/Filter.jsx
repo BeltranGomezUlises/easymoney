@@ -29,7 +29,7 @@ export default class Filter extends React.Component {
         this.load();
     }
 
-    load() {        
+    load() {
         fetch(localStorage.getItem('url') + "clientes", {
             method: 'GET',
             headers: {
@@ -44,7 +44,16 @@ export default class Filter extends React.Component {
                 utils.evalResponse(r, () => {
                     let { filter } = this.state;
                     filter.name = '';
-                    this.setState({ data: r.data, filter });
+
+                    let data = r.data.sort((item1, item2) => {
+                        if (item1.nombre < item2.nombre)
+                            return -1;
+                        if (item1.nombre > item2.nombre)
+                            return 1;
+                        return 0;
+                    });
+                    
+                    this.setState({ data, filter });
                     this.props.updateCollection(r.data);
                 })
             });
@@ -90,7 +99,7 @@ export default class Filter extends React.Component {
                                     let { filter } = this.state;
                                     filter.name = evt.target.value;
                                     this.setState({ filter });
-                                    if(filter.name == ''){
+                                    if (filter.name == '') {
                                         this.filter();
                                     }
                                 }}

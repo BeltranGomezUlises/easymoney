@@ -94,18 +94,8 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @throws Exception si existe un error de I/O
      */
     public ModelPrestamoTotales totalesPrestamo(int prestamoId) throws Exception {
-        ModelPrestamoTotales mPrestamoTotales = new ModelPrestamoTotales();
-
         Prestamo prestamo = this.findOne(prestamoId);
-        List<Abono> abonos = prestamo.getAbonoList();
-        mPrestamoTotales.setTotalAbonado(abonos.stream().filter(t -> t.getAbonado()).mapToInt(t -> t.getCantidad()).sum());
-        mPrestamoTotales.setTotalMultado(abonos.stream().filter(t -> t.getAbonado()).mapToInt(t -> t.getMulta()).sum());
-        mPrestamoTotales.setTotalRecuperado(mPrestamoTotales.getTotalAbonado() + mPrestamoTotales.getTotalMultado());
-        mPrestamoTotales.setPorcentajePagado((int) ((float) mPrestamoTotales.getTotalAbonado() / (float) prestamo.getCantidadPagar() * 100f));
-        if (mPrestamoTotales.getPorcentajePagado() != 100) {
-            this.calcularTotalesPagar(prestamo, mPrestamoTotales);
-        }
-        return mPrestamoTotales;
+        return this.totalesPrestamo(prestamo);
     }
 
     public ModelPrestamoTotales totalesPrestamo(Prestamo prestamo) throws Exception {
@@ -178,7 +168,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
                 }
             }
             models.add(model);
-        }       
+        }
         return models;
     }
 
@@ -189,11 +179,11 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     public List<Prestamo> prestamosDelCobrador(final int cobradorId) {
         return new DaoPrestamo().prestamosDelCobrador(cobradorId);
     }
-    
+
     public List<Prestamo> prestamosDelCliente(final int clienteId) {
         return new DaoPrestamo().prestamosDelCliente(clienteId);
     }
-   
+
     /**
      * Genera el resultado de los totales generales de los prestamos segun un filtrado
      *
@@ -239,10 +229,10 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @throws Exception
      */
     public int renovarPrestamo(final int prestamoId, final int cantNuevoPrestamo) throws InvalidParameterException, Exception {
-        ModelPrestamoTotales model = this.totalesPrestamo(prestamoId);        
+        ModelPrestamoTotales model = this.totalesPrestamo(prestamoId);
         if (model.getPorPagarLiquidar() > cantNuevoPrestamo) {
             throw new InvalidParameterException("No puede renovar el prestamo por una cantidad menor a la deuda");
-        }        
+        }
         Prestamo prestamoRenovar = this.findOne(prestamoId);
 
         Prestamo nuevoPrestamo = new Prestamo();
@@ -314,8 +304,13 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         cantidadAbono = distribuirMultaPostPlazo(p.getId(), abonos,
                 p.getFechaLimite(), cantidadAbono, cantidadMultaPostPlazo, distribucion);
 
+        if (cantidadAbono < mpt.getPorPagarIrAlCorriente()) {
+            ignorarMulta = false;
+        }
+
         distribuirAbono(abonos, p.getFechaLimite(), p.getCobroDiario(),
-                cantidadAbono, cantidadMultaDiaria, ignorarMulta, model.getDescripcion(), distribucion);
+                cantidadAbono, cantidadMultaDiaria, ignorarMulta,
+                model.getDescripcion(), distribucion, p.getMontoRedondeo());
 
         Cobro cobro = new Cobro(model.getCantidad(), new Date(), p, p.getCobrador());
         ModelPrestamoTotales nuevosTotales = this.totalesPrestamo(p);
@@ -338,9 +333,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
         } catch (Exception e) {
             throw e;
         } finally {
-            if (em != null) {
-                em.close();
-            }
+            em.close();
         }
 
         return mpa;
@@ -398,6 +391,14 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
                     abonoAPagar += prestamo.getCobroDiario();
                 } else {
                     abonoAPagar += prestamo.getCobroDiario() - abono.getCantidad();
+                }
+            }
+            //check for amount per round
+            if (abono.getAbonoPK().getFecha().equals(prestamo.getFechaLimite())) {
+                if (abono.getAbonado() && abono.getCantidad() > prestamo.getCobroDiario()) {
+                    abonosFuturos += (prestamo.getCobroDiario() + prestamo.getMontoRedondeo()) - abono.getCantidad();
+                } else {
+                    abonosFuturos += prestamo.getMontoRedondeo();
                 }
             }
         }
@@ -474,13 +475,10 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
      * @param descripcion descripcion del abono
      */
     private void distribuirAbono(List<Abono> abonos, Date fechaLimite, int cobroDiario, int cantidadAbono,
-            int cantidadMulta, boolean ignorarMulta, String descripcion, ModelDistribucionAbono distribucion) {
+            int cantidadMulta, boolean ignorarMulta, String descripcion, ModelDistribucionAbono distribucion, int montoRedondeo) {
         Date hoy = UtilsDate.dateWithoutTime();
         for (Abono abono : abonos) {
-            if (cantidadAbono == 0) {
-                break;
-            }
-            if (abono.getAbonoPK().getFecha().after(fechaLimite)) {
+            if (cantidadAbono == 0 || abono.getAbonoPK().getFecha().after(fechaLimite)) {
                 break;
             }
             if (!abono.getAbonoPK().getFecha().before(hoy)) {
@@ -556,6 +554,20 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
                     cantidadAbono = 0;
                 }
                 abono.setAbonado(true);
+            }
+        }
+        if (cantidadAbono > 0) {
+            Abono abonoLimite = abonos.stream().filter(a -> a.getAbonoPK().getFecha().equals(fechaLimite)).findFirst().get();
+            //check to apply the amount per round
+            if (abonoLimite.getAbonado() && abonoLimite.getCantidad() >= cobroDiario) {
+                int faltaAbonar = (cobroDiario + montoRedondeo) - abonoLimite.getCantidad();
+                if (cantidadAbono > faltaAbonar) {
+                    abonoLimite.setCantidad(cobroDiario + montoRedondeo);
+                    cantidadAbono -= faltaAbonar;
+                } else {
+                    abonoLimite.setCantidad(abonoLimite.getCantidad() + cantidadAbono);
+                    cantidadAbono = 0;
+                }
             }
         }
     }

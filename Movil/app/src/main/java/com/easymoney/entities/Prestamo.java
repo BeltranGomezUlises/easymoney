@@ -16,6 +16,7 @@ public class Prestamo implements Serializable {
     private Date fecha;
     private int cantidad;
     private int cantidadPagar;
+    private int montoRedondeo;
     private Date fechaLimite;
     private int cobroDiario;
     private Cliente cliente;
@@ -37,6 +38,15 @@ public class Prestamo implements Serializable {
         this.cantidadPagar = cantidadPagar;
         this.fechaLimite = fechaLimite;
         this.cobroDiario = cobroDiario;
+    }
+
+
+    public int getMontoRedondeo() {
+        return montoRedondeo;
+    }
+
+    public void setMontoRedondeo(int montoRedondeo) {
+        this.montoRedondeo = montoRedondeo;
     }
 
     public Integer getId() {

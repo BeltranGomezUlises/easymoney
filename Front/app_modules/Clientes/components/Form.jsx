@@ -160,7 +160,7 @@ export default class EntityForm extends React.Component {
                                     }}
                                 >
                                 </Form.Field>
-                                <Form.Field control={Input} required label='Apodo:'
+                                <Form.Field control={Input} required label='Dirección:'
                                     type='text' placeholder='Dirección del cliente...' maxLength='250'
                                     value={this.state.element.direccion}
                                     onChange={(evt) => {

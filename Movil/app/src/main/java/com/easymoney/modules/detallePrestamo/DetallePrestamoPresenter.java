@@ -11,6 +11,7 @@ import com.easymoney.models.ModelPrestamoTotales;
 import com.easymoney.models.services.Response;
 import com.easymoney.utils.UtilsDate;
 import com.easymoney.utils.UtilsPreferences;
+import com.easymoney.utils.UtilsSMS;
 import com.easymoney.utils.activities.Funcion;
 import com.easymoney.utils.bluetoothPrinterUtilities.UtilsPrinter;
 
@@ -87,6 +88,8 @@ public class DetallePrestamoPresenter extends DetallePrestamoContract.Presenter 
                                                 getFragment().showERROR(throwable.getMessage());
                                             }
                                         });
+
+                                        UtilsSMS.sendSMS(prestamo.getCliente().getTelefono(), "Gracias por su abono en EasyMoney!");
                                     }
                                 }, new Runnable() {
                                     @Override

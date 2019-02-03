@@ -61,6 +61,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         }
         entity.setCobroDiario(cantidadPagarPorAbono);
         entity.setAbonoList(listaAbonos);
+        entity.setMontoRedondeo(entity.getCantidadPagar() - diasPlazo * entity.getCobroDiario());
         em.merge(entity);
         em.merge(capital); //generar la actualización del capital                
         em.getTransaction().commit();

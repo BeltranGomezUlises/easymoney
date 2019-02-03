@@ -42,6 +42,11 @@ import javax.validation.constraints.NotNull;
     , @NamedQuery(name = "Prestamo.findByCobroDiario", query = "SELECT p FROM Prestamo p WHERE p.cobroDiario = :cobroDiario")})
 public class Prestamo implements Serializable, IEntity<Integer> {
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "monto_redondeo")
+    private int montoRedondeo;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -216,6 +221,14 @@ public class Prestamo implements Serializable, IEntity<Integer> {
                 .filter(a -> a.getAbonado()).mapToInt(a -> a.getCantidad()).sum();
         float porcentajeAbonado = (totalAbonado / (float) this.getCantidadPagar() * 100f);
         return porcentajeAbonado == 100;
+    }
+
+    public int getMontoRedondeo() {
+        return montoRedondeo;
+    }
+
+    public void setMontoRedondeo(int montoRedondeo) {
+        this.montoRedondeo = montoRedondeo;
     }
 
 }

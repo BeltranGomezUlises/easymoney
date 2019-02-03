@@ -64,6 +64,7 @@ public class LoginPresenter extends LoginContract.Presenter {
                                public void accept(Throwable err) throws Exception {
                                    getFragment().stopShowLoading();
                                    getFragment().showERROR(ERROR_COMUNICACION);
+                                   err.printStackTrace();
 
                                }
                            }
