@@ -54,7 +54,6 @@ public class Usuario implements Serializable, IEntity<Integer> {
     @NotNull
     @Size(min = 1, max = 2147483647)
     @Column(name = "contra")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String contra;
     @Basic(optional = false)
     @NotNull

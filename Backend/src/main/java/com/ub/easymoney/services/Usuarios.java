@@ -72,8 +72,14 @@ public class Usuarios extends ServiceFacade<Usuario, Integer> {
 
     @Override
     public Response<Usuario> modificar(String token, Usuario t) {
-        t.setContra(UtilsSecurity.cifrarMD5(t.getContra()));
-        return super.modificar(token, t); //To change body of generated methods, choose Tools | Templates.
+        Usuario u = null;
+        try {
+             u = this.manager.findOne(t.getId());
+             u.setNombre(t.getNombre());
+             u.setNombreCompleto(t.getNombreCompleto());
+        } catch (Exception e) {
+        }        
+        return super.modificar(token, u); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

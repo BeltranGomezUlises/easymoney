@@ -507,7 +507,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
                 continue;
             }
             if (abono.getAbonado()) {
-                if (!ignorarMulta) {
+                if (!ignorarMulta && abono.getCantidad() < cobroDiario) {
                     int faltaPorMultar = cantidadMulta - abono.getMulta();
                     if (cantidadAbono > faltaPorMultar) {
                         abono.setMulta(cantidadMulta);
