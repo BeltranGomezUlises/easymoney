@@ -324,5 +324,5 @@ public class Prestamos extends ServiceFacade<Prestamo, Integer> {
         map.put("pFechaInstant", prestamo.getFecha().toInstant().toString());
         
         return map;
-    }
+    } 
 }

@@ -49,7 +49,8 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
     @Column(name = "abonado")
     private boolean abonado;
     @Column(name = "multa")
-    private Integer multa;
+    @NotNull
+    private int multa;
     @Size(max = 255)
     @Column(name = "multa_des")
     private String multaDes;
@@ -75,7 +76,7 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.abonoPK = new AbonoPK(prestamo, fecha);
     }
 
-    public Abono(int prestamo, Date fecha, int cantidad, boolean abonado, Integer multa, String multaDes) {
+    public Abono(int prestamo, Date fecha, int cantidad, boolean abonado, int multa, String multaDes) {
         this.abonoPK = new AbonoPK(prestamo, fecha);
         this.cantidad = cantidad;
         this.abonado = abonado;
@@ -107,11 +108,11 @@ public class Abono implements Serializable, IEntity<AbonoPK> {
         this.abonado = abonado;
     }
 
-    public Integer getMulta() {
+    public int getMulta() {
         return multa;
     }
 
-    public void setMulta(Integer multa) {
+    public void setMulta(int multa) {
         this.multa = multa;
     }
 

@@ -8,7 +8,6 @@ package com.ub.easymoney.managers;
 import com.ub.easymoney.daos.DaoConfig;
 import com.ub.easymoney.daos.DaoUsuario;
 import com.ub.easymoney.daos.DaoAbono;
-import com.ub.easymoney.daos.DaoCapital;
 import com.ub.easymoney.daos.DaoCliente;
 import com.ub.easymoney.daos.DaoPrestamo;
 import com.ub.easymoney.entities.Abono;
@@ -28,6 +27,7 @@ import com.ub.easymoney.models.ModelSaldoPrestamos;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsDB;
 import com.ub.easymoney.utils.UtilsDate;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -506,8 +506,8 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
                 }
                 continue;
             }
-            if (abono.getAbonado()) {
-                if (!ignorarMulta && abono.getCantidad() < cobroDiario) {
+            if (abono.getAbonado() && abono.getCantidad() < cobroDiario) {
+                if (!ignorarMulta) {
                     int faltaPorMultar = cantidadMulta - abono.getMulta();
                     if (cantidadAbono > faltaPorMultar) {
                         abono.setMulta(cantidadMulta);
@@ -655,4 +655,37 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
             }
         }
     }
+
+    @Override
+    public void update(Prestamo entity) throws Exception {
+        int cantidad = entity.getAbonoList().stream().mapToInt(a -> a.getCantidad()).sum();
+        if (cantidad > entity.getCantidadPagar()) {
+            throw new InvalidParameterException("No puede tener más abono que el monto a pagar del prestamo");
+        }
+        Config config = new DaoConfig().findFirst();
+        int multaDiaria = config.getCantidadMultaDiaria();
+        int multaMes = config.getCantidadMultaMes();
+
+        boolean multaDiariaMayorAlPermitido = entity.getAbonoList().stream()
+                .filter(a -> !a.getAbonoPK().getFecha().after(entity.getFechaLimite()))
+                .anyMatch(a -> a.getMulta() > multaDiaria);
+        if (multaDiariaMayorAlPermitido) {
+            throw new InvalidParameterException(
+                    "No puede tener más cantidad de multa que la configurada "
+                    + "en los días DENTRO del plazo, el monto configurado es: " + multaDiaria);
+        }
+
+        boolean multaMesMayorAlPermitido = entity.getAbonoList().stream()
+                .filter(a -> a.getAbonoPK().getFecha().after(entity.getFechaLimite()))
+                .anyMatch(a -> a.getMulta() > multaMes);
+
+        if (multaMesMayorAlPermitido) {
+            throw new InvalidParameterException(
+                    "No puede tener más cantidad de multa que la configurada "
+                    + "en los días FUERA del plazo, el monto configurado es: " + multaMes);
+        }
+
+        super.update(entity); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

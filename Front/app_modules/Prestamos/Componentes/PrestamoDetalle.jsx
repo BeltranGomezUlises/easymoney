@@ -66,13 +66,11 @@ export default class PrestamoDetalle extends Component {
       body: JSON.stringify(this.state.prestamo)
     }).then((res) => res.json())
       .then((response) => {
-        if (response.meta.status == 'OK') {
-          this.setState({ loading: false });
+        this.setState({ loading: false });
+        utils.evalResponse(response, ()=>{
           this.cargarTotales();
           this.props.update();
-        } else {
-          this.setState({ loading: false });
-        }
+        })        
       })
   }
 
@@ -109,7 +107,7 @@ export default class PrestamoDetalle extends Component {
                 <input type="text" pattern="[0-9]*" onInput={(evt) => {
                   if (evt.target.value.length <= 4) {
                     let abonos = this.state.prestamo.abonoList;
-                    const cantidad = (evt.target.validity.valid) ? evt.target.value : abono.multa.multa;
+                    const cantidad = (evt.target.validity.valid) ? evt.target.value : abono.multa;
                     for (var i = 0; i < abonos.length; i++) {
                       if (abonos[i].abonoPK.fecha == abono.abonoPK.fecha) {
                         abonos[i].multa = cantidad;

@@ -157,7 +157,10 @@ public class ServiceFacade<T extends IEntity<K>, K> {
             setInvalidTokenResponse(response);
         } catch (EntidadYaExistenteException e) {
             UtilsService.setWarningResponse(response, e.getMessage(), "La entidad ya existe en el sistema");
-        } catch (Exception e) {
+        } catch (InvalidParameterException e) {
+            UtilsService.setWarningResponse(response, e.getMessage(), null);
+        } 
+        catch (Exception e) {
             setErrorResponse(response, e);
         }
         return response;
