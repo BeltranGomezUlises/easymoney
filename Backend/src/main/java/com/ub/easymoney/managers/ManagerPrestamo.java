@@ -442,7 +442,8 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
     private boolean ignorarMulta(Prestamo prestamo) {
         Date hoy = UtilsDate.dateWithoutTime();
         List<Abono> abonos = prestamo.getAbonoList().stream()
-                .filter(a -> a.getAbonoPK().getFecha().before(hoy))
+                .filter(a -> a.getAbonoPK().getFecha().before(hoy)
+                && !a.getAbonoPK().getFecha().after(prestamo.getFechaLimite()))
                 .sorted((a1, a2) -> a1.getAbonoPK().getFecha().compareTo(a2.getAbonoPK().getFecha()))
                 .collect(toList());
         Calendar cal = new GregorianCalendar();
@@ -506,7 +507,7 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
                 }
                 continue;
             }
-            if (abono.getAbonado() && abono.getCantidad() < cobroDiario) {
+            if (abono.getAbonado() && abono.getCantidad() <= cobroDiario) {
                 if (!ignorarMulta) {
                     int faltaPorMultar = cantidadMulta - abono.getMulta();
                     if (cantidadAbono > faltaPorMultar) {
