@@ -22,9 +22,9 @@ package com.ub.easymoney.models.commons.exceptions;
  *
  * @author Ulises Beltrán Gómez --- beltrangomezulises@gmail.com
  */
-public class ContraseñaIncorrectaException extends Exception {
+public class ContraseniaIncorrectaException extends Exception {
 
-    public ContraseñaIncorrectaException(String message) {
+    public ContraseniaIncorrectaException(String message) {
         super(message);
     }
 
