@@ -9,6 +9,7 @@ import com.ub.easymoney.utils.commons.DaoSQLFacade;
 import com.ub.easymoney.entities.Abono;
 import com.ub.easymoney.entities.Capital;
 import com.ub.easymoney.entities.Prestamo;
+import com.ub.easymoney.entities.RenovadosLog;
 import com.ub.easymoney.models.filtros.FiltroPrestamo;
 import com.ub.easymoney.utils.UtilsDB;
 import java.security.InvalidParameterException;
@@ -191,6 +192,9 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         capital.setCapital(capital.getCapital() - (nuevoPrestamo.getCantidad() - cantidadPorSaldar));
         em.merge(capital);
 
+        RenovadosLog rl = new RenovadosLog(prestamoRenovar.getId(), nuevoPrestamo.getId(), new Date());
+        em.persist(rl);
+        
         em.getTransaction().commit();
         em.close();
         return (nuevoPrestamo.getCantidad() - cantidadPorSaldar);

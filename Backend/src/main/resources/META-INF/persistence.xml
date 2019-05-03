@@ -12,6 +12,7 @@
         <class>com.ub.easymoney.entities.Capital</class>
         <class>com.ub.easymoney.entities.Movimiento</class>
         <class>com.ub.easymoney.entities.DistribucionCobro</class>
+        <class>com.ub.easymoney.entities.RenovadosLog</class>
         <properties>
             <!-- jdbc -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
@@ -19,15 +20,12 @@
             <!-- production -->
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
             <property name="javax.persistence.jdbc.password" value=".toString(24);"/>    
-            
             <!-- test -->
             <!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em_pruebas"/>
             <property name="javax.persistence.jdbc.password" value=".toString(24);"/>-->
-            
             <!-- development -->
-<!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
+            <!--      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/em"/>
             <property name="javax.persistence.jdbc.password" value="2424"/>-->
-      
             <!--remove for production-->
             <!--            <property name="eclipselink.logging.level" value="FINE"/>
             <property name="eclipselink.logging.parameters" value="true"/>-->
