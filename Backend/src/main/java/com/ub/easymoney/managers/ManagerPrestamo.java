@@ -11,6 +11,7 @@ import com.ub.easymoney.daos.DaoAbono;
 import com.ub.easymoney.daos.DaoCliente;
 import com.ub.easymoney.daos.DaoPrestamo;
 import com.ub.easymoney.entities.Abono;
+import com.ub.easymoney.entities.Capital;
 import com.ub.easymoney.entities.Cobro;
 import com.ub.easymoney.entities.Config;
 import com.ub.easymoney.entities.DistribucionCobro;
@@ -38,6 +39,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import org.jinq.tuples.Pair;
 
 /**
@@ -327,10 +329,19 @@ public class ManagerPrestamo extends ManagerSQL<Prestamo, Integer> {
 
             p.getCobroList().add(cobro);
             em.merge(p);
+            
+            Capital c = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);            
+            c.setCapital(c.getCapital() + cobro.getCantidad());
+            
             em.getTransaction().commit();
+            
             mpa.setPrestamo(p);
             mpa.setDistribucionCobro(dc);
         } catch (Exception e) {
+            try {
+                em.getTransaction().rollback();
+            } catch (Exception ex) {
+            }
             throw e;
         } finally {
             em.close();

@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import org.jinq.jpa.JPAJinqStream;
 
 /**
@@ -30,18 +31,26 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
     @Override
     public void persist(Movimiento entity) throws Exception {
         EntityManager em = this.getEMInstance();
-        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
-        if (entity.getCantidad() < 0) {
-            if (capital.getCapital() + entity.getCantidad() < 0) {
-                throw new InvalidParameterException("Capital insuficiente");
+        try {
+            em.getTransaction().begin();
+            Capital capital = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);            
+            if (entity.getCantidad() < 0) {
+                if (capital.getCapital() + entity.getCantidad() < 0) {
+                    throw new InvalidParameterException("Capital insuficiente");
+                }
             }
+            em.persist(entity);
+            capital.setCapital(capital.getCapital() + entity.getCantidad());
+            em.merge(capital);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            try {
+                em.getTransaction().rollback();
+            } catch (Exception ex) {
+            }
+        } finally {
+            em.close();
         }
-        capital.setCapital(capital.getCapital() + entity.getCantidad());
-        em.getTransaction().begin();
-        em.persist(entity);
-        em.merge(capital);
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**

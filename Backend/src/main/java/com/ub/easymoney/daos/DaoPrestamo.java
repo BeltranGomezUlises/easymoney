@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import org.jinq.jpa.JPAJinqStream;
 
 /**
@@ -36,12 +37,13 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
     public void persist(Prestamo entity) throws InvalidParameterException, Exception {
         EntityManager em = this.getEMInstance();
         Calendar cal = new GregorianCalendar();
-        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
+        
+        em.getTransaction().begin();
+        Capital capital = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);
         if (capital.getCapital() < entity.getCantidad()) {
             throw new InvalidParameterException("Capital insuficiente");
         }
         capital.setCapital(capital.getCapital() - entity.getCantidad());
-        em.getTransaction().begin();
         em.persist(entity);
         em.flush(); //para obtener el id del prestamo
 
@@ -159,15 +161,13 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      */
     public int renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo, int cantidadPorSaldar) throws InvalidParameterException, Exception {
         EntityManager em = this.getEMInstance();
-        Capital capital = em.createQuery("SELECT c FROM Capital c", Capital.class).getSingleResult();
+        
 
         for (Abono abono : prestamoRenovar.getAbonoList()) {            
             abono.setAbonado(true);
             abono.setCantidad(prestamoRenovar.getCobroDiario());
         }
-        if (!(capital.getCapital() >= nuevoPrestamo.getCantidad() - cantidadPorSaldar)) {
-            throw new InvalidParameterException("Capital insuficiente");
-        }
+        
         em.getTransaction().begin();
         em.merge(prestamoRenovar);
 
@@ -188,7 +188,11 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         nuevoPrestamo.setAbonoList(listaAbonos);
         em.merge(nuevoPrestamo);
 
-        //generar la actualización del capital        
+        //generar la actualización del capital      
+        Capital capital = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);   
+        if (!(capital.getCapital() >= nuevoPrestamo.getCantidad() - cantidadPorSaldar)) {
+            throw new InvalidParameterException("Capital insuficiente");
+        }
         capital.setCapital(capital.getCapital() - (nuevoPrestamo.getCantidad() - cantidadPorSaldar));
         em.merge(capital);
 
