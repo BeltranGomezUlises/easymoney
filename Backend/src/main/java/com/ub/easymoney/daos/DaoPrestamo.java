@@ -37,38 +37,47 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
     public void persist(Prestamo entity) throws InvalidParameterException, Exception {
         EntityManager em = this.getEMInstance();
         Calendar cal = new GregorianCalendar();
-        
-        em.getTransaction().begin();
-        Capital capital = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);
-        if (capital.getCapital() < entity.getCantidad()) {
-            throw new InvalidParameterException("Capital insuficiente");
-        }
-        capital.setCapital(capital.getCapital() - entity.getCantidad());
-        em.persist(entity);
-        em.flush(); //para obtener el id del prestamo
 
-        List<Abono> listaAbonos = new ArrayList<>();
+        try {
+            em.getTransaction().begin();
+            Capital capital = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);
+            if (capital.getCapital() < entity.getCantidad()) {
+                throw new InvalidParameterException("Capital insuficiente");
+            }
+            capital.setCapital(capital.getCapital() - entity.getCantidad());
+            em.persist(entity);
+            em.flush(); //para obtener el id del prestamo
 
-        cal.setTime(entity.getFecha());
-        cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
-        final int diasPlazo = new DaoConfig().findFirst().getDiasPrestamo();
-        final int cantidadPagarPorAbono = entity.getCantidadPagar() / diasPlazo;
-        for (int i = 0; i < diasPlazo; i++) {
-            Abono abono = new Abono(entity.getId(), cal.getTime());
-            abono.setCantidad(cantidadPagarPorAbono);
-            abono.setAbonado(false);
-            abono.setMulta(0);
-            abono.setMultaDes("");
-            listaAbonos.add(abono);
-            cal.add(Calendar.DAY_OF_YEAR, 1);
+            List<Abono> listaAbonos = new ArrayList<>();
+
+            cal.setTime(entity.getFecha());
+            cal.add(Calendar.DAY_OF_YEAR, 1); //primer dia de abono es el dia siguiente del prestamo
+            final int diasPlazo = new DaoConfig().findFirst().getDiasPrestamo();
+            final int cantidadPagarPorAbono = entity.getCantidadPagar() / diasPlazo;
+            for (int i = 0; i < diasPlazo; i++) {
+                Abono abono = new Abono(entity.getId(), cal.getTime());
+                abono.setCantidad(cantidadPagarPorAbono);
+                abono.setAbonado(false);
+                abono.setMulta(0);
+                abono.setMultaDes("");
+                listaAbonos.add(abono);
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+            }
+            entity.setCobroDiario(cantidadPagarPorAbono);
+            entity.setAbonoList(listaAbonos);
+            entity.setMontoRedondeo(entity.getCantidadPagar() - diasPlazo * entity.getCobroDiario());
+            em.merge(entity);
+            em.merge(capital); //generar la actualización del capital                
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            try {
+                em.getTransaction().rollback();
+            } catch (Exception ex) {
+            }
+            throw e;
+        } finally {
+            em.close();
         }
-        entity.setCobroDiario(cantidadPagarPorAbono);
-        entity.setAbonoList(listaAbonos);
-        entity.setMontoRedondeo(entity.getCantidadPagar() - diasPlazo * entity.getCobroDiario());
-        em.merge(entity);
-        em.merge(capital); //generar la actualización del capital                
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**
@@ -161,13 +170,12 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
      */
     public int renovarPrestamo(Prestamo prestamoRenovar, Prestamo nuevoPrestamo, int cantidadPorSaldar) throws InvalidParameterException, Exception {
         EntityManager em = this.getEMInstance();
-        
 
-        for (Abono abono : prestamoRenovar.getAbonoList()) {            
+        for (Abono abono : prestamoRenovar.getAbonoList()) {
             abono.setAbonado(true);
             abono.setCantidad(prestamoRenovar.getCobroDiario());
         }
-        
+
         em.getTransaction().begin();
         em.merge(prestamoRenovar);
 
@@ -189,7 +197,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
         em.merge(nuevoPrestamo);
 
         //generar la actualización del capital      
-        Capital capital = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);   
+        Capital capital = em.find(Capital.class, 1, LockModeType.PESSIMISTIC_WRITE);
         if (!(capital.getCapital() >= nuevoPrestamo.getCantidad() - cantidadPorSaldar)) {
             throw new InvalidParameterException("Capital insuficiente");
         }
@@ -198,7 +206,7 @@ public class DaoPrestamo extends DaoSQLFacade<Prestamo, Integer> {
 
         RenovadosLog rl = new RenovadosLog(prestamoRenovar.getId(), nuevoPrestamo.getId(), new Date());
         em.persist(rl);
-        
+
         em.getTransaction().commit();
         em.close();
         return (nuevoPrestamo.getCantidad() - cantidadPorSaldar);

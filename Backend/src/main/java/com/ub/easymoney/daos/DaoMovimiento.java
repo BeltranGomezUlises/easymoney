@@ -48,6 +48,7 @@ public class DaoMovimiento extends DaoSQLFacade<Movimiento, Integer> {
                 em.getTransaction().rollback();
             } catch (Exception ex) {
             }
+            throw e;
         } finally {
             em.close();
         }
